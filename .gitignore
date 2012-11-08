@@ -1,2 +1,4 @@
-places
-backups/
+*
+!init.el
+!.gitignore
+!README
