@@ -2,35 +2,25 @@
 (if (string-equal "darwin" (symbol-name system-type))
     (setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH"))))
 
-;; el-get package management
-(add-to-list 'load-path "~/.emacs.d/el-get/el-get")
-(unless (require 'el-get nil 'noerror)
-  (with-current-buffer
-      (url-retrieve-synchronously
-       "https://raw.github.com/dimitri/el-get/master/el-get-install.el")
-    (goto-char (point-max))
-    (eval-print-last-sexp)))
+(require 'package)
+(add-to-list 'package-archives
+             '("marmalade" . "http://marmalade-repo.org/packages/"))
+(package-initialize)
+(when (not package-archive-contents)
+  (package-refresh-contents))
 
-(setq el-get-sources
-      '((:name exec-path-from-shell :type elpa)
-        (:name ido-ubiquitous :type elpa)
-        (:name clojure-project-mode :type elpa)
-        (:name clojure-test-mode :type elpa)))
+(defvar my-packages '(starter-kit
+                      starter-kit-lisp
+                      starter-kit-bindings scpaste
+                      clojure-mode clojure-test-mode
+                      nrepl ac-nrepl
+                      markdown-mode yaml-mode
+                      marmalade oddmuse scpaste
+                      color-theme color-theme-solarized))
 
-(setq el-get-packages
-      '(el-get
-        clojure-mode
-        color-theme
-        color-theme-solarized))
-
-(setq my-packages
-      (append el-get-packages
-              (mapcar 'el-get-source-name el-get-sources)))
-(el-get 'sync my-packages)
-
-;; fix the PATH variable
-(when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize))
+(dolist (p my-packages)
+  (when (not (package-installed-p p))
+    (package-install p)))
 
 ;; use true OS X fullscreen
 (global-set-key (kbd "M-RET") 'ns-toggle-fullscreen)
@@ -38,6 +28,7 @@
 ;; Set some window defaults
 (setq default-frame-alist
       '((width . 100) (height . 56)))
+(menu-bar-mode)
 
 ;; Use the solarized theme
 (color-theme-solarized-dark)
@@ -59,7 +50,7 @@
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere t)
 (ido-mode 1)
-(ido-ubiquitous)
+(ido-ubiquitous-mode)
 
 ;; don't EVER put tabs in indents
 (setq-default indent-tabs-mode nil)
@@ -69,6 +60,12 @@
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
 
 ;; clojure support
+;; nrepl
+(add-hook 'nrepl-interaction-mode-hook 'nrepl-turn-on-eldoc-mode)
+(setq nrepl-popup-stacktraces nil)
+(add-to-list 'same-window-buffer-names "*nrepl*")
+(add-hook 'nrepl-mode-hook 'paredit-mode)
+
 (defadvice show-paren-function
   (after show-matching-paren-offscreen activate)
   "If the matching paren is offscreen, show the matching line in the
@@ -85,6 +82,16 @@
     (if (not (null matching-text))
         (message matching-text))))
 
+;; Auto complete
+(require 'auto-complete-config)
+(ac-config-default)
+(define-key ac-completing-map "\M-/" 'ac-stop) ; use M-/ to stop completion
+;; ac-nrepl
+(require 'ac-nrepl)
+(add-hook 'nrepl-mode-hook 'ac-nrepl-setup)
+(add-hook 'nrepl-interaction-mode-hook 'ac-nrepl-setup)
+(eval-after-load "auto-complete" '(add-to-list 'ac-modes 'nrepl-mode))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -92,7 +99,6 @@
  ;; If there is more than one, they won't work right.
  '(inhibit-startup-screen t)
  '(kill-whole-line t)
- '(menu-bar-mode nil)
  '(show-trailing-whitespace t)
  '(tool-bar-mode nil)
  '(tooltip-mode nil))
