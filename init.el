@@ -15,7 +15,8 @@
                       clojure-mode clojure-test-mode
                       nrepl ac-nrepl
                       markdown-mode yaml-mode
-                      marmalade oddmuse scpaste
+                      puppet-mode
+                      marmalade scpaste
                       color-theme color-theme-solarized))
 
 (dolist (p my-packages)
