@@ -34,8 +34,12 @@
 ;; Use the solarized theme
 (color-theme-solarized-dark)
 
-;; I *hate* this keybinding
-(put 'iconify-or-deiconify-frame 'disabled t)
+;; I *hate* this keybinding outside of the command line
+(when window-system
+  (if (eq (key-binding "\C-x\C-z") 'suspend-frame)
+      (global-unset-key "\C-x\C-z"))
+  (if (eq (key-binding "\C-z") 'suspend-frame)
+      (global-unset-key "\C-z")))
 
 ;; Enable backup files.
 (setq make-backup-files t)
