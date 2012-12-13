@@ -1,6 +1,7 @@
 ;;; A quick & ugly PATH solution to Emacs on Mac OSX
-(if (string-equal "darwin" (symbol-name system-type))
-    (setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH"))))
+(when (string-equal "darwin" (symbol-name system-type))
+  (setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH")))
+  (push "/usr/local/bin" exec-path))
 
 (require 'package)
 (add-to-list 'package-archives
@@ -14,7 +15,8 @@
                       starter-kit-bindings scpaste
                       clojure-mode clojure-test-mode
                       nrepl ac-nrepl
-                      markdown-mode yaml-mode
+                      markdown-mode
+                      yaml-mode
                       puppet-mode
                       marmalade scpaste
                       color-theme color-theme-solarized))
