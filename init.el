@@ -12,21 +12,31 @@
 
 (defvar my-packages '(starter-kit
                       starter-kit-lisp
-                      starter-kit-bindings scpaste
+                      starter-kit-bindings
+                      scpaste
                       clojure-mode clojure-test-mode
                       nrepl ac-nrepl
                       markdown-mode
                       yaml-mode
                       puppet-mode
-                      marmalade scpaste
+                      haml-mode
+                      scss-mode
+                      marmalade
                       color-theme color-theme-solarized))
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
 
-;; use true OS X fullscreen
-(global-set-key (kbd "M-RET") 'ns-toggle-fullscreen)
+;; create a fn to enter fullscreen and bind it
+(defun toggle-fullscreen ()
+  "Toggle full screen"
+  (interactive)
+  (set-frame-parameter
+     nil 'fullscreen
+     (when (not (frame-parameter nil 'fullscreen)) 'fullboth)))
+
+(global-set-key (kbd "M-RET") 'toggle-fullscreen)
 
 ;; Set some window defaults
 (setq default-frame-alist
@@ -108,8 +118,7 @@
  '(inhibit-startup-screen t)
  '(kill-whole-line t)
  '(show-trailing-whitespace t)
- '(tool-bar-mode nil)
- '(tooltip-mode nil))
+ '(tool-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
