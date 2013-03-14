@@ -109,6 +109,9 @@
 (add-hook 'nrepl-interaction-mode-hook 'ac-nrepl-setup)
 (eval-after-load "auto-complete" '(add-to-list 'ac-modes 'nrepl-mode))
 
+;; invoke puppet mode for .pp files
+(add-to-list 'auto-mode-alist '("\\.pp\\'" . puppet-mode))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
