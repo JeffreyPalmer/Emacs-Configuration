@@ -21,6 +21,7 @@
                       puppet-mode
                       haml-mode
                       scss-mode
+                      coffee-mode
                       marmalade
                       color-theme color-theme-solarized))
 
@@ -118,6 +119,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(ac-delay 2.0)
+ '(coffee-tab-width 2)
  '(inhibit-startup-screen t)
  '(kill-whole-line t)
  '(show-trailing-whitespace t)
