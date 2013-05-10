@@ -122,6 +122,8 @@
  '(coffee-tab-width 2)
  '(inhibit-startup-screen t)
  '(kill-whole-line t)
+ '(scss-compile-at-save nil)
+ '(scss-sass-command "sass")
  '(show-trailing-whitespace t)
  '(tool-bar-mode nil))
 (custom-set-faces
