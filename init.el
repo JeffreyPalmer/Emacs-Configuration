@@ -25,6 +25,9 @@
                       haml-mode
                       scss-mode
                       coffee-mode
+                      yasnippet
+                      clojure-snippets
+                      highlight-parentheses
                       marmalade
                       color-theme
                       color-theme-solarized
@@ -73,6 +76,10 @@
 (setq ido-everywhere t)
 (ido-mode 1)
 (ido-ubiquitous-mode)
+
+;; enable yasnippets
+(yas-global-mode 1)
+
 
 ;; don't EVER put tabs in indents
 (setq-default indent-tabs-mode nil)
@@ -124,6 +131,8 @@
 (add-hook 'nrepl-mode-hook 'ac-nrepl-setup)
 (add-hook 'nrepl-interaction-mode-hook 'ac-nrepl-setup)
 (eval-after-load "auto-complete" '(add-to-list 'ac-modes 'nrepl-mode))
+
+(require 'highlight-parentheses)
 
 ;; invoke puppet mode for .pp files
 (add-to-list 'auto-mode-alist '("\\.pp\\'" . puppet-mode))
