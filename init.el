@@ -29,6 +29,7 @@
                       clojure-snippets
                       highlight-parentheses
                       marmalade
+                      restclient
                       color-theme
                       color-theme-solarized
                       color-theme-sanityinc-solarized
@@ -101,8 +102,12 @@
   (context 2))
 
 ;; nrepl
+(require 'nrepl)
 (add-hook 'nrepl-interaction-mode-hook 'nrepl-turn-on-eldoc-mode)
+(setq nrepl-hide-special-buffers t)
+(setq nrepl-use-pretty-printing t)
 (setq nrepl-popup-stacktraces nil)
+(setq nrepl-popup-stacktraces-in-repl t)
 (add-to-list 'same-window-buffer-names "*nrepl*")
 (add-hook 'nrepl-mode-hook 'paredit-mode)
 
