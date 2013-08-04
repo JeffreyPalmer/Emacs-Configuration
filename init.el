@@ -24,9 +24,12 @@
                       puppet-mode
                       haml-mode
                       scss-mode
+                      less-css-mode
                       coffee-mode
+                      jade-mode
                       yasnippet
                       clojure-snippets
+                      dash-at-point
                       highlight-parentheses
                       marmalade
                       restclient
@@ -48,6 +51,10 @@
      (when (not (frame-parameter nil 'fullscreen)) 'fullboth)))
 
 (global-set-key (kbd "M-RET") 'toggle-fullscreen)
+
+;; enable dash lookup
+(global-set-key "\C-cd" 'dash-at-point)
+
 
 ;; Set some window defaults
 (setq default-frame-alist
@@ -79,7 +86,13 @@
 (ido-ubiquitous-mode)
 
 ;; enable yasnippets
-(yas-global-mode 1)
+(require 'yasnippet)
+(yas-reload-all)
+
+;; Emmet mode
+(add-hook 'sgml-mode-hook 'emmet-mode) ;; Auto-start on any markup modes
+(add-hook 'css-mode-hook  'emmet-mode) ;; enable Emmet's css abbreviation.
+(add-hook 'emmet-mode-hook (lambda () (setq emmet-indentation 2))) ;indent 2 spaces.
 
 
 ;; don't EVER put tabs in indents
@@ -101,6 +114,9 @@
   (ANY 2)
   (context 2))
 
+(add-hook 'clojure-mode-hook
+          '(lambda ()
+             (yas-minor-mode)))
 ;; nrepl
 (require 'nrepl)
 (add-hook 'nrepl-interaction-mode-hook 'nrepl-turn-on-eldoc-mode)
@@ -168,6 +184,7 @@
  '(fci-rule-color "#e9e2cb")
  '(foreground-color "#708183")
  '(inhibit-startup-screen t)
+ '(js-indent-level 2)
  '(kill-whole-line t)
  '(scss-compile-at-save nil)
  '(scss-sass-command "sass")
