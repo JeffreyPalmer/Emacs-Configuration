@@ -31,12 +31,10 @@
                       clojure-snippets
                       dash-at-point
                       highlight-parentheses
-                      marmalade
                       restclient
                       color-theme
                       color-theme-solarized
-                      color-theme-sanityinc-solarized
-                      nzenburn-theme))
+                      color-theme-sanityinc-solarized))
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
