@@ -29,6 +29,7 @@
                       jade-mode
                       yasnippet
                       clojure-snippets
+                      datomic-snippets
                       dash-at-point
                       highlight-parentheses
                       restclient
@@ -52,7 +53,6 @@
 
 ;; enable dash lookup
 (global-set-key "\C-cd" 'dash-at-point)
-
 
 ;; Set some window defaults
 (setq default-frame-alist
@@ -120,8 +120,20 @@
 (add-hook 'nrepl-interaction-mode-hook 'nrepl-turn-on-eldoc-mode)
 (setq nrepl-hide-special-buffers t)
 (setq nrepl-use-pretty-printing t)
+
+(defun toggle-nrepl-stack-traces-in-repl ()
+  "toggle nrepl stack traces in the repl"
+  (interactive)
+  (setq nrepl-popup-stacktraces-in-repl
+        (not nrepl-popup-stacktraces-in-repl)))
+
+;; use the function keys for somethig useful
+(global-set-key [(f13)] 'nrepl-jack-in)
+(global-set-key [(f14)] 'nrepl-set-ns)
+(global-set-key [(f15)] 'toggle-nrepl-stack-traces-in-repl)
+
 (setq nrepl-popup-stacktraces nil)
-(setq nrepl-popup-stacktraces-in-repl t)
+; (setq nrepl-popup-stacktraces-in-repl t)
 (add-to-list 'same-window-buffer-names "*nrepl*")
 (add-hook 'nrepl-mode-hook 'paredit-mode)
 
@@ -167,6 +179,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ac-auto-start nil)
  '(ac-delay 2.0)
  '(ansi-color-faces-vector [default bold shadow italic underline bold bold-italic bold])
  '(ansi-color-names-vector (vector "#52676f" "#c60007" "#728a05" "#a57705" "#2075c7" "#c61b6e" "#259185" "#fcf4dc"))
