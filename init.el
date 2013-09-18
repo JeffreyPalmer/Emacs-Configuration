@@ -10,32 +10,37 @@
 (when (not package-archive-contents)
   (package-refresh-contents))
 
-(defvar my-packages '(starter-kit
-                      starter-kit-lisp
-                      starter-kit-bindings
-                      scpaste
+(defvar my-packages '(ac-nrepl
+                      ample-theme
+                      base16-theme
                       clojure-mode
-                      clojure-test-mode
-                      slime
-                      nrepl ac-nrepl
-                      midje-mode
-                      markdown-mode
-                      yaml-mode
-                      puppet-mode
-                      haml-mode
-                      scss-mode
-                      less-css-mode
-                      coffee-mode
-                      jade-mode
-                      yasnippet
                       clojure-snippets
-                      datomic-snippets
-                      dash-at-point
-                      highlight-parentheses
-                      restclient
+                      clojure-test-mode
+                      coffee-mode
                       color-theme
+                      color-theme-sanityinc-solarized
+                      color-theme-sanityinc-tomorrow
                       color-theme-solarized
-                      color-theme-sanityinc-solarized))
+                      dash-at-point
+                      datomic-snippets
+                      haml-mode
+                      highlight-parentheses
+                      jade-mode
+                      less-css-mode
+                      markdown-mode
+                      midje-mode
+                      nginx-mode
+                      nrepl
+                      puppet-mode
+                      restclient
+                      scpaste
+                      scss-mode
+                      slime
+                      starter-kit
+                      starter-kit-bindings
+                      starter-kit-lisp
+                      yaml-mode
+                      yasnippet))
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
