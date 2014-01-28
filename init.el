@@ -5,7 +5,8 @@
 
 (require 'package)
 (add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/"))
+             '("marmalade" . "http://marmalade-repo.org/packages/")
+             '("melpa"     . "http://melpa.milkbox.net/packages/"))
 (package-initialize)
 (when (not package-archive-contents)
   (package-refresh-contents))
@@ -135,7 +136,7 @@
 (setq nrepl-popup-stacktraces nil)
 ; (setq nrepl-popup-stacktraces-in-repl t)
 (add-to-list 'same-window-buffer-names "*nrepl*")
-(add-hook 'nrepl-mode-hook 'paredit-mode)
+(add-hook 'nrepl-repl-mode-hook 'paredit-mode)
 
 
 (eval-after-load "paredit"
@@ -210,6 +211,7 @@
  '(js-indent-level 2)
  '(kill-whole-line t)
  '(linum-format " %7i ")
+ '(reb-re-syntax (quote string))
  '(scss-compile-at-save nil)
  '(scss-sass-command "sass")
  '(show-paren-mode t)
