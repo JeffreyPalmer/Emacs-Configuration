@@ -5,15 +5,16 @@
 
 (require 'package)
 (add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/")
              '("melpa"     . "http://melpa.milkbox.net/packages/"))
 (package-initialize)
 (when (not package-archive-contents)
   (package-refresh-contents))
 
-(defvar my-packages '(ac-nrepl
-                      ample-theme
+(defvar my-packages '(ample-theme
+                      auto-complete
                       base16-theme
+                      cider
+                      ac-nrepl
                       clojure-mode
                       clojure-snippets
                       clojure-test-mode
@@ -31,7 +32,6 @@
                       markdown-mode
                       midje-mode
                       nginx-mode
-                      nrepl
                       puppet-mode
                       restclient
                       scpaste
@@ -122,21 +122,14 @@
           '(lambda ()
              (yas-minor-mode)))
 ;; nrepl
-(require 'nrepl)
-(add-hook 'nrepl-interaction-mode-hook 'nrepl-turn-on-eldoc-mode)
+(require 'cider)
+(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
 (setq nrepl-hide-special-buffers t)
-(setq nrepl-use-pretty-printing t)
+(setq cider-use-pretty-printing t)
 
-(defun toggle-nrepl-stack-traces-in-repl ()
-  "toggle nrepl stack traces in the repl"
-  (interactive)
-  (setq nrepl-popup-stacktraces-in-repl
-        (not nrepl-popup-stacktraces-in-repl)))
-
-(setq nrepl-popup-stacktraces nil)
-; (setq nrepl-popup-stacktraces-in-repl t)
-(add-to-list 'same-window-buffer-names "*nrepl*")
-(add-hook 'nrepl-repl-mode-hook 'paredit-mode)
+(setq cider-popup-stacktraces nil)
+(add-to-list 'same-window-buffer-names "*cider*")
+(add-hook 'cider-repl-mode-hook 'paredit-mode)
 
 
 (eval-after-load "paredit"
@@ -173,9 +166,9 @@
 (define-key ac-completing-map "\M-/" 'ac-stop) ; use M-/ to stop completion
 ;; ac-nrepl
 (require 'ac-nrepl)
-(add-hook 'nrepl-mode-hook 'ac-nrepl-setup)
-(add-hook 'nrepl-interaction-mode-hook 'ac-nrepl-setup)
-(eval-after-load "auto-complete" '(add-to-list 'ac-modes 'nrepl-mode))
+(add-hook 'cider-repl-mode-hook 'ac-nrepl-setup)
+(add-hook 'cider-mode-hook 'ac-nrepl-setup)
+(eval-after-load "auto-complete" '(add-to-list 'ac-modes 'cider-repl-mode))
 
 (require 'highlight-parentheses)
 
