@@ -16,6 +16,7 @@
      (when (not (frame-parameter nil 'fullscreen)) 'fullboth)))
 
 (global-set-key (kbd "M-RET") 'toggle-fullscreen)
+(global-set-key (kbd "C-@") 'er/expand-region)
 
 ;; enable dash lookup
 (global-set-key "\C-cd" 'dash-at-point)
