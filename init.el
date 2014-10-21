@@ -3,7 +3,7 @@
   (setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH")))
   (push "/usr/local/bin" exec-path))
 
-(require 'cask "/usr/local/Cellar/cask/0.7.1/cask.el")
+(require 'cask "/usr/local/share/emacs/site-lisp/cask.el")
 (cask-initialize)
 (require 'pallet)
 
@@ -60,6 +60,9 @@
 
 ;; Allow auto-fill-mode in all text modes
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
+
+;; enable table editing in markdown mode
+(add-hook 'markdown-mode-hook 'turn-on-orgtbl)
 
 ;; clojure support
 (require 'clojure-mode)
