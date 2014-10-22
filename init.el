@@ -7,15 +7,7 @@
 (cask-initialize)
 (require 'pallet)
 
-;; create a fn to enter fullscreen and bind it
-(defun toggle-fullscreen ()
-  "Toggle full screen"
-  (interactive)
-  (set-frame-parameter
-     nil 'fullscreen
-     (when (not (frame-parameter nil 'fullscreen)) 'fullboth)))
-
-(global-set-key (kbd "M-RET") 'toggle-fullscreen)
+(global-set-key (kbd "M-RET") 'toggle-frame-fullscreen)
 (global-set-key (kbd "C-@") 'er/expand-region)
 
 ;; enable dash lookup
@@ -23,7 +15,7 @@
 
 ;; Set some window defaults
 (setq default-frame-alist
-      '((width . 110) (height . 50)))
+      '((width . 110) (height . 46)))
 (menu-bar-mode)
 
 ;; I *hate* this keybinding outside of the command line
