@@ -42,9 +42,9 @@
 (ido-ubiquitous-mode)
 
 ;; enable yasnippets
-(require 'yasnippet)
-(yas-reload-all)
-(yas-global-mode 1)
+;; (require 'yasnippet)
+;; (yas-reload-all)
+;; (yas-global-mode 1)
 
 ;; don't EVER put tabs in indents
 (setq-default indent-tabs-mode nil)
