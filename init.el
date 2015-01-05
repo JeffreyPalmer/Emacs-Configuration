@@ -51,7 +51,7 @@
 (setq default-tab-width 4)
 
 ;; Allow auto-fill-mode in all text modes
-(add-hook 'text-mode-hook 'turn-on-auto-fill)
+; (add-hook 'text-mode-hook 'turn-on-auto-fill)
 
 ;; enable table editing in markdown mode
 (add-hook 'markdown-mode-hook 'turn-on-orgtbl)
@@ -123,6 +123,9 @@
 
 ;; invoke puppet mode for .pp files
 (add-to-list 'auto-mode-alist '("\\.pp$" . puppet-mode))
+
+;; default to github-flavored markdown mode
+(add-to-list 'auto-mode-alist '("\\.md$" . gfm-mode))
 
 (when (eq system-type 'darwin)
       ;; default Latin font (e.g. Consolas)
