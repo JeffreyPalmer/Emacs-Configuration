@@ -1,3 +1,4 @@
+; -*- emacs-lisp -*-
 (source gnu)
 (source melpa)
 
@@ -5,6 +6,7 @@
 (depends-on "auto-complete")
 (depends-on "base16-theme")
 (depends-on "cask")
+(depends-on "cider")
 (depends-on "clojure-mode")
 (depends-on "color-theme")
 (depends-on "color-theme-sanityinc-solarized")
@@ -18,6 +20,7 @@
 (depends-on "f")
 (depends-on "feature-mode")
 (depends-on "find-file-in-project")
+(depends-on "flx-ido")
 (depends-on "git-commit-mode")
 (depends-on "git-rebase-mode")
 (depends-on "highlight-parentheses")
@@ -31,6 +34,7 @@
 (depends-on "paredit")
 (depends-on "pkg-info")
 (depends-on "popup")
+(depends-on "projectile")
 (depends-on "puppet-mode")
 (depends-on "restclient")
 (depends-on "s")
