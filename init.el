@@ -66,6 +66,13 @@
 ;; enable table editing in markdown mode
 (add-hook 'markdown-mode-hook 'turn-on-orgtbl)
 
+;; allow eash ssh to vagrant instances
+(eval-after-load 'tramp
+  '(vagrant-tramp-enable))
+
+;; always enable projectile file finding
+(projectile-global-mode)
+
 ;; clojure support
 (require 'clojure-mode)
 (define-clojure-indent

@@ -44,5 +44,6 @@
 (depends-on "starter-kit")
 (depends-on "starter-kit-bindings")
 (depends-on "starter-kit-lisp")
+(depends-on "vagrant-tramp")
 (depends-on "yaml-mode")
 (depends-on "yasnippet")
