@@ -9,6 +9,7 @@
 
 (global-set-key (kbd "M-RET") 'toggle-frame-fullscreen)
 (global-set-key (kbd "C-@") 'er/expand-region)
+(global-set-key (kbd "C-x C-b") 'ibuffer)
 
 ;; enable dash lookup
 (global-set-key "\C-cd" 'dash-at-point)
@@ -41,11 +42,14 @@
 ;; ido mode support
 (require 'flx-ido)
 (ido-mode 1)
-(setq ido-everywhere t)
 (flx-ido-mode 1)
 (ido-ubiquitous-mode)
-(setq ido-enable-flex-matching t)
-(setq ido-use-faces nil)
+(setq ido-enable-flex-matching t
+      ido-use-faces nil
+      ido-everywhere t
+      require-final-newline t
+      visual-bell t
+      apropos-do-all t)
 
 ;; enable yasnippets
 ;; (require 'yasnippet)
