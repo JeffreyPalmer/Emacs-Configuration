@@ -6,7 +6,7 @@
 (depends-on "auto-complete")
 (depends-on "base16-theme")
 (depends-on "cask")
-(depends-on "cider")
+(depends-on "cider" :archive "melpa-stable")
 (depends-on "clojure-mode")
 (depends-on "color-theme")
 (depends-on "color-theme-sanityinc-solarized")
