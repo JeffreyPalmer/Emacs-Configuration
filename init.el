@@ -26,6 +26,12 @@
   (if (eq (key-binding "\C-z") 'suspend-frame)
       (global-unset-key "\C-z")))
 
+(when (eq system-type 'darwin)
+      ;; default Latin font (e.g. Consolas)
+      (set-face-attribute 'default nil :family "Inconsolata")
+      ;; default font size (point * 10)
+      (set-face-attribute 'default nil :height 140))
+
 ;; Enable backup files.
 (setq make-backup-files t)
 
@@ -37,7 +43,7 @@
 (setq delete-old-versions t)
 
 ;; reduce gc frequency on today's machines
-(setq gc-cons-threshold 20000000)
+(setq gc-cons-threshold 10000000)
 
 ;; ido mode support
 (require 'flx-ido)
@@ -50,6 +56,8 @@
       require-final-newline t
       visual-bell t
       apropos-do-all t)
+
+(global-company-mode)
 
 ;; enable yasnippets
 ;; (require 'yasnippet)
@@ -85,31 +93,32 @@
   (ANY 2)
   (context 2))
 
-(add-hook 'clojure-mode-hook
-          '(lambda ()
-             (yas-minor-mode)))
+;; (add-hook 'clojure-mode-hook
+;;           '(lambda ()
+;;              (yas-minor-mode)))
 
 ;; cider support
-;; (require 'cider)
-;; (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
-;; (setq nrepl-hide-special-buffers t)
-;; (setq cider-use-pretty-printing t)
+(require 'cider)
+(add-hook 'cider-mode-hook #'eldoc-mode)
+(add-hook 'cider-repl-mode-hook #'paredit-mode)
+(add-to-list 'same-window-buffer-names "*cider*")
 
-;; (setq cider-popup-stacktraces nil)
-;; (add-to-list 'same-window-buffer-names "*cider*")
-;; (add-hook 'cider-repl-mode-hook 'paredit-mode)
+(setq nrepl-hide-special-buffers t
+      cider-repl-use-pretty-printing t
+      cider-popup-stacktraces nil
+      cider-auto-select-error-buffer nil)
 
-;; (eval-after-load "paredit"
-;;   '(progn
-;;      (define-key paredit-mode-map (kbd "C-<left>") 'backward-sexp)
-;;      (define-key paredit-mode-map (kbd "C-<right>") 'forward-sexp)
-;;      (define-key paredit-mode-map (kbd "C-S-<left>") 'paredit-forward-barf-sexp)
-;;      (define-key paredit-mode-map (kbd "C-S-<right>") 'paredit-forward-slurp-sexp)
-;;      ;; use the function keys for something useful
-;;      (define-key paredit-mode-map [(f5)] 'nrepl-jack-in)
-;;      (define-key paredit-mode-map [(f6)] 'nrepl-set-ns)
-;;      (define-key paredit-mode-map [(f7)] 'toggle-nrepl-stack-traces-in-repl)
-;;      (define-key paredit-mode-map [(f8)] 'nrepl-switch-to-repl-buffer)))
+(eval-after-load "paredit"
+  '(progn
+     (define-key paredit-mode-map (kbd "C-<left>") 'backward-sexp)
+     (define-key paredit-mode-map (kbd "C-<right>") 'forward-sexp)
+     (define-key paredit-mode-map (kbd "C-S-<left>") 'paredit-forward-barf-sexp)
+     (define-key paredit-mode-map (kbd "C-S-<right>") 'paredit-forward-slurp-sexp)
+     ;; use the function keys for something useful
+     (define-key paredit-mode-map [(f5)] 'cider-jack-in)
+     (define-key paredit-mode-map [(f6)] 'cider-repl-set-ns)
+     ; (define-key paredit-mode-map [(f7)] 'toggle-nrepl-stack-traces-in-repl)
+     (define-key paredit-mode-map [(f8)] 'cider-switch-to-repl-buffer)))
 
 ;; (defadvice show-paren-function
 ;;   (after show-matching-paren-offscreen activate)
@@ -128,9 +137,9 @@
 ;;         (message matching-text))))
 
 ;; Auto complete
-(require 'auto-complete-config)
-(ac-config-default)
-(define-key ac-completing-map "\M-/" 'ac-stop) ; use M-/ to stop completion
+;;(require 'auto-complete-config)
+;;(ac-config-default)
+;;(define-key ac-completing-map "\M-/" 'ac-stop) ; use M-/ to stop completion
 ;; ac-nrepl
 ;; (require 'ac-nrepl)
 ;; (add-hook 'cider-repl-mode-hook 'ac-nrepl-setup)
@@ -144,12 +153,6 @@
 
 ;; default to github-flavored markdown mode
 (add-to-list 'auto-mode-alist '("\\.md$" . gfm-mode))
-
-(when (eq system-type 'darwin)
-      ;; default Latin font (e.g. Consolas)
-      (set-face-attribute 'default nil :family "Inconsolata")
-      ;; default font size (point * 10)
-      (set-face-attribute 'default nil :height 140))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.

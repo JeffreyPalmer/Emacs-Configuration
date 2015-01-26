@@ -12,6 +12,7 @@
 (depends-on "color-theme-sanityinc-solarized")
 (depends-on "color-theme-sanityinc-tomorrow")
 (depends-on "color-theme-solarized")
+(depends-on "company")
 (depends-on "dash")
 (depends-on "dash-at-point")
 (depends-on "elisp-slime-nav")
