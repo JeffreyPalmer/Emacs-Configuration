@@ -27,10 +27,13 @@
       (global-unset-key "\C-z")))
 
 (when (eq system-type 'darwin)
-      ;; default Latin font (e.g. Consolas)
-      (set-face-attribute 'default nil :family "Inconsolata")
-      ;; default font size (point * 10)
-      (set-face-attribute 'default nil :height 140))
+  ;; default Latin font (e.g. Consolas)
+  ;; default font size (point * 10)
+  (set-face-attribute 'default nil
+                      :family "Inconsolata"
+                      :height 140
+                      :weight 'normal
+                      :width 'normal))
 
 ;; Enable backup files.
 (setq make-backup-files t)
