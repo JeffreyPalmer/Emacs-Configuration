@@ -100,6 +100,9 @@
 ;;           '(lambda ()
 ;;              (yas-minor-mode)))
 
+;; scala support
+(require 'scala-mode2)
+
 ;; cider support
 (require 'cider)
 (add-hook 'cider-mode-hook #'eldoc-mode)

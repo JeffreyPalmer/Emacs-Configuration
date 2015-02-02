@@ -39,6 +39,7 @@
 (depends-on "puppet-mode")
 (depends-on "restclient")
 (depends-on "s")
+(depends-on "scala-mode2")
 (depends-on "scpaste")
 (depends-on "shut-up")
 (depends-on "smex")
