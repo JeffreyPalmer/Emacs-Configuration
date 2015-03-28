@@ -34,6 +34,7 @@
 (depends-on "pallet")
 (depends-on "paredit")
 (depends-on "pkg-info")
+(depends-on "polymode")
 (depends-on "popup")
 (depends-on "projectile")
 (depends-on "puppet-mode")

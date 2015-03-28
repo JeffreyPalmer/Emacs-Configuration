@@ -45,15 +45,33 @@
 (setq backup-directory-alist (quote ((".*" . "~/.emacs_backups/"))))
 (setq delete-old-versions t)
 
+;; set up polymode for ConTeXt / Ruby
+(require 'polymode)
+(defcustom pm-inner/erb-ruby
+  (pm-hbtchunkmode "ruby"
+                   :mode 'ruby-mode
+                   :head-reg  "<%"
+                   :tail-reg  "%>")
+  "Ruby chunk"
+  :group 'innermodes
+  :type 'object)
+
+(defcustom pm-poly/latex-ruby
+  (pm-polymode-one "latex-ruby"
+                   :hostmode 'pm-host/latex
+                   :innermode 'pm-inner/erb-ruby)
+  "ERB LaTeX/Ruby typical polymode."
+  :group 'polymodes
+  :type 'object)
+
+(define-polymode poly-latex-ruby-mode pm-poly/latex-ruby)
+
 ;; reduce gc frequency on today's machines
 (setq gc-cons-threshold 10000000)
 
 ;; general configuration
 (setq ac-auto-start nil
       ac-delay 2.0
-      ; ansi-color-faces-vector [default bold shadow italic underline bold bold-italic bold]
-      ; ansi-color-names-vector ["#073642" "#dc322f" "#859900" "#b58900" "#268bd2" "#6c71c4" "#268bd2" "#eee8d5"]
-      ; ansi-term-color-vector [unspecified "#393939" "#f2777a" "#99cc99" "#ffcc66" "#6699cc" "#cc99cc" "#6699cc" "#e8e6df"] t
       apropos-do-all t
       color-theme-sanityinc-solarized-rgb-is-srgb t
       cursor-color "#708183"
@@ -191,7 +209,7 @@
  '(custom-enabled-themes (quote (sanityinc-tomorrow-night)))
  '(custom-safe-themes
    (quote
-    ("e8c75a832ba978b9ff20dd2b61aedfe5ecf3c84e86ed24fe093850f500177076" "635518bf81b80533e3ee3a76d55f992494ea7bf3018bf58cd3d44f100d66fa8e" "978ff9496928cc94639cb1084004bf64235c5c7fb0cfbcc38a3871eb95fa88f6" "1b8d67b43ff1723960eb5e0cba512a2c7a2ad544ddb2533a90101fd1852b426e" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "3b68c1b83adeed5a87121839c36143aeaa25fbdcd65c815259b1fbb6f5cc536c" "978bd4603630ecb1f01793af60beb52cb44734fc14b95c62e7b1a05f89b6c811" "e26780280b5248eb9b2d02a237d9941956fc94972443b0f7aeec12b5c15db9f3" "29a4267a4ae1e8b06934fec2ee49472daebd45e1ee6a10d8ff747853f9a3e622" "dc46381844ec8fcf9607a319aa6b442244d8c7a734a2625dac6a1f63e34bc4a6" "f220c05492910a305f5d26414ad82bf25a321c35aa05b1565be12f253579dec6" "c7359bd375132044fe993562dfa736ae79efc620f68bab36bd686430c980df1c" "d293542c9d4be8a9e9ec8afd6938c7304ac3d0d39110344908706614ed5861c9" "61d1a82d5eaafffbdd3cab1ac843da873304d1f05f66ab5a981f833a3aec3fc0" "d0ff5ea54497471567ed15eb7279c37aef3465713fb97a50d46d95fe11ab4739" "47583b577fb062aeb89d3c45689a4f2646b7ebcb02e6cb2d5f6e2790afb91a18" "e16a771a13a202ee6e276d06098bc77f008b73bbac4d526f160faa2d76c1dd0e" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016" "f41fd682a3cd1e16796068a2ca96e82cfd274e58b978156da0acce4d56f2b0d5" "405fda54905200f202dd2e6ccbf94c1b7cc1312671894bc8eca7e6ec9e8a41a2" "1affe85e8ae2667fb571fc8331e1e12840746dae5c46112d5abb0c3a973f5f5a" "e53cc4144192bb4e4ed10a3fa3e7442cae4c3d231df8822f6c02f1220a0d259a" "de2c46ed1752b0d0423cde9b6401062b67a6a1300c068d5d7f67725adc6c3afb" "41b6698b5f9ab241ad6c30aea8c9f53d539e23ad4e3963abff4b57c0f8bf6730" "51bea7765ddaee2aac2983fac8099ec7d62dff47b708aa3595ad29899e9e9e44" "9bac44c2b4dfbb723906b8c491ec06801feb57aa60448d047dbfdbd1a8650897" "4c9ba94db23a0a3dea88ee80f41d9478c151b07cb6640b33bfc38be7c2415cc4" "fc5fcb6f1f1c1bc01305694c59a1a861b008c534cae8d0e48e4d5e81ad718bc6" "4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" "4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" default)))
+    ("06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" default)))
  '(desktop-save-mode t)
  '(feature-cucumber-command
    "TEST_DRIVER=poltergeist bundle exec cucumber {options} {feature}")
