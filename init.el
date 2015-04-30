@@ -215,6 +215,8 @@
    "TEST_DRIVER=poltergeist bundle exec cucumber {options} {feature}")
  '(feature-ruby-command "bundle exec ruby")
  '(frame-background-mode (quote dark))
+ '(midnight-delay "10:00am")
+ '(midnight-mode t nil (midnight))
  '(show-paren-mode t)
  '(show-trailing-whitespace t)
  '(tool-bar-mode nil)
