@@ -200,6 +200,9 @@
 ;; default to github-flavored markdown mode
 (add-to-list 'auto-mode-alist '("\\.md$" . gfm-mode))
 
+;; Don't bother me with your warnings, magit!
+(setq magit-last-seen-setup-instructions "1.4.0")
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
