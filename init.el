@@ -10,13 +10,46 @@
 (global-set-key (kbd "M-RET") 'toggle-frame-fullscreen)
 (global-set-key (kbd "C-@") 'er/expand-region)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
-
+(global-set-key (kbd "C-c f") 'projectile-find-file)
 ;; enable dash lookup
 (global-set-key "\C-cd" 'dash-at-point)
 
-;; Set some window defaults
-;; (setq default-frame-alist
-;;       '((width . 110) (height . 46)))
+;; Settings taken from starter-kit-bindings
+;; Use regex searches by default.
+(global-set-key (kbd "C-s") 'isearch-forward-regexp)
+(global-set-key (kbd "\C-r") 'isearch-backward-regexp)
+(global-set-key (kbd "M-%") 'query-replace-regexp)
+(global-set-key (kbd "C-M-s") 'isearch-forward)
+(global-set-key (kbd "C-M-r") 'isearch-backward)
+(global-set-key (kbd "C-M-%") 'query-replace)
+
+;; Window switching. (C-x o goes to the next window)
+(windmove-default-keybindings) ;; Shift+direction
+
+;; File finding
+(global-set-key (kbd "C-x M-f") 'ido-find-file-other-window)
+(global-set-key (kbd "C-c y") 'bury-buffer)
+(global-set-key (kbd "C-c r") 'revert-buffer)
+
+;; Completion that uses many different methods to find options.
+(global-set-key (kbd "M-/") 'hippie-expand)
+
+;; Font size
+(define-key global-map (kbd "C-+") 'text-scale-increase)
+(define-key global-map (kbd "C--") 'text-scale-decrease)
+
+;; Help should search more than just commands
+(define-key 'help-command "a" 'apropos)
+
+;; So good!
+(global-set-key (kbd "C-c g") 'magit-status)
+
+;; M-S-6 is awkward
+(global-set-key (kbd "C-c q") 'join-line)
+
+;; misc optimizations
+(defalias 'yes-or-no-p 'y-or-n-p)
+(global-hl-line-mode 1)
 (menu-bar-mode)
 
 ;; I *hate* this keybinding outside of the command line
@@ -95,6 +128,8 @@
       ido-use-faces nil
       ido-everywhere t)
 
+;; always enable projectile file finding
+(projectile-global-mode)
 (global-company-mode)
 
 ;; enable yasnippets
@@ -116,8 +151,13 @@
 (eval-after-load 'tramp
   '(vagrant-tramp-enable))
 
-;; always enable projectile file finding
-(projectile-global-mode)
+(defun my-coding-hook ()
+  (make-local-variable 'column-number-mode)
+  (column-number-mode t)
+  (if window-system (hl-line-mode t))
+  (idle-highlight-mode t))
+
+(add-hook 'prog-mode-hook 'my-coding-hook)
 
 ;; ruby support
 (add-hook 'ruby-mode-hook
