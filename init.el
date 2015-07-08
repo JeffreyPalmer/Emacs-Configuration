@@ -15,8 +15,8 @@
 (global-set-key "\C-cd" 'dash-at-point)
 
 ;; Set some window defaults
-(setq default-frame-alist
-      '((width . 110) (height . 46)))
+;; (setq default-frame-alist
+;;       '((width . 110) (height . 46)))
 (menu-bar-mode)
 
 ;; I *hate* this keybinding outside of the command line
