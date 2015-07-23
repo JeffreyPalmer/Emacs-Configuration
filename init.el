@@ -14,44 +14,6 @@
 ;; enable dash lookup
 (global-set-key "\C-cd" 'dash-at-point)
 
-;; Settings taken from starter-kit-bindings
-;; Use regex searches by default.
-(global-set-key (kbd "C-s") 'isearch-forward-regexp)
-(global-set-key (kbd "\C-r") 'isearch-backward-regexp)
-(global-set-key (kbd "M-%") 'query-replace-regexp)
-(global-set-key (kbd "C-M-s") 'isearch-forward)
-(global-set-key (kbd "C-M-r") 'isearch-backward)
-(global-set-key (kbd "C-M-%") 'query-replace)
-
-;; Window switching. (C-x o goes to the next window)
-(windmove-default-keybindings) ;; Shift+direction
-
-;; File finding
-(global-set-key (kbd "C-x M-f") 'ido-find-file-other-window)
-(global-set-key (kbd "C-c y") 'bury-buffer)
-(global-set-key (kbd "C-c r") 'revert-buffer)
-
-;; Completion that uses many different methods to find options.
-(global-set-key (kbd "M-/") 'hippie-expand)
-
-;; Font size
-(define-key global-map (kbd "C-+") 'text-scale-increase)
-(define-key global-map (kbd "C--") 'text-scale-decrease)
-
-;; Help should search more than just commands
-(define-key 'help-command "a" 'apropos)
-
-;; So good!
-(global-set-key (kbd "C-c g") 'magit-status)
-
-;; M-S-6 is awkward
-(global-set-key (kbd "C-c q") 'join-line)
-
-;; misc optimizations
-(defalias 'yes-or-no-p 'y-or-n-p)
-(global-hl-line-mode 1)
-(menu-bar-mode)
-
 ;; I *hate* this keybinding outside of the command line
 (when window-system
   (if (eq (key-binding "\C-x\C-z") 'suspend-frame)
@@ -264,7 +226,6 @@
    "TEST_DRIVER=poltergeist bundle exec cucumber {options} {feature}")
  '(feature-ruby-command "bundle exec ruby")
  '(frame-background-mode (quote dark))
- '(magit-auto-revert-mode nil)
  '(midnight-delay "10:00am")
  '(midnight-mode t nil (midnight))
  '(show-paren-mode t)
