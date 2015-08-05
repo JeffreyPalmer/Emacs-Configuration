@@ -3,7 +3,7 @@
   (setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH")))
   (push "/usr/local/bin" exec-path))
 
-(require 'cask "/usr/local/share/emacs/site-lisp/cask.el")
+(require 'cask "/usr/local/share/emacs/site-lisp/cask/cask.el")
 (cask-initialize)
 (require 'pallet)
 
@@ -222,10 +222,10 @@
  '(desktop-restore-in-current-display t)
  '(desktop-save-mode t)
  '(fci-rule-color "#383838" t)
- '(feature-cucumber-command
-   "TEST_DRIVER=poltergeist bundle exec cucumber {options} {feature}")
+ '(feature-cucumber-command "bundle exec cucumber {options} {feature}")
  '(feature-ruby-command "bundle exec ruby")
  '(frame-background-mode (quote dark))
+ '(magit-revert-buffers t)
  '(midnight-delay "10:00am")
  '(midnight-mode t nil (midnight))
  '(show-paren-mode t)
