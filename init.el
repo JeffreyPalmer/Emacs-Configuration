@@ -90,6 +90,10 @@
       ido-use-faces nil
       ido-everywhere t)
 
+;; enable avy mode for rapid navigation
+(avy-setup-default)
+(global-set-key (kbd "C-;") 'avy-goto-word-1)
+
 ;; always enable projectile file finding
 (projectile-global-mode)
 (global-company-mode)

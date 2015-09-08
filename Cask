@@ -3,6 +3,7 @@
 (source melpa)
 
 (depends-on "auto-complete")
+(depends-on "avy")
 (depends-on "base16-theme")
 (depends-on "better-defaults")
 (depends-on "cask")
