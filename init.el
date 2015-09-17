@@ -92,7 +92,11 @@
 
 ;; enable avy mode for rapid navigation
 (avy-setup-default)
-(global-set-key (kbd "C-;") 'avy-goto-word-1)
+(global-set-key (kbd "C-;") 'avy-goto-char-2)
+
+;; enable which-key
+(require 'which-key)
+(which-key-mode)
 
 ;; always enable projectile file finding
 (projectile-global-mode)

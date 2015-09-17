@@ -49,6 +49,7 @@
 (depends-on "starter-kit-bindings")
 (depends-on "starter-kit-lisp")
 (depends-on "vagrant-tramp")
+(depends-on "which-key")
 (depends-on "yaml-mode")
 (depends-on "yasnippet")
 (depends-on "zenburn-theme")
