@@ -11,6 +11,7 @@
 (global-set-key (kbd "C-@") 'er/expand-region)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "C-c f") 'projectile-find-file)
+(global-set-key (kbd "C-x g") 'rgrep)
 ;; enable dash lookup
 (global-set-key "\C-cd" 'dash-at-point)
 
