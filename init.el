@@ -82,6 +82,10 @@
       require-final-newline t
       visible-bell t)
 
+;; temporary fix for El Capitan
+(setq visible-bell nil) ;; The default
+(setq ring-bell-function 'ignore)
+
 ;; ido mode support
 (require 'flx-ido)
 (ido-mode 1)
