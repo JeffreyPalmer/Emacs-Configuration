@@ -239,6 +239,7 @@
  '(feature-ruby-command "bundle exec ruby")
  '(frame-background-mode (quote dark))
  '(magit-revert-buffers t)
+ '(menu-bar-mode nil)
  '(midnight-delay "10:00am")
  '(midnight-mode t nil (midnight))
  '(show-paren-mode t)
