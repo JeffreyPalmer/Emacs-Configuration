@@ -26,10 +26,6 @@
                       :height 140
                       :weight 'normal
                       :width 'normal))
-;; keybindings
-(global-set-key (kbd "M-RET") 'toggle-frame-fullscreen)
-(global-set-key (kbd "C-x g") 'rgrep)
-
 ;; temporary fix for El Capitan
 (setq visible-bell nil) ;; The default
 (setq ring-bell-function 'ignore)
@@ -63,10 +59,17 @@
   :config (projectile-global-mode))
 (use-package feature-mode)
 (use-package flx)
-(use-package idle-highlight-mode)
+(use-package idle-highlight-mode
+  :config
+  (add-hook 'prog-mode-hook
+            (lambda ()
+              (idle-highlight-mode t))))
 (use-package highlight-parentheses)
-(use-package magit)
-(use-package markdown-mode)
+(use-package magit
+  :bind ("C-c g" . magit-status))
+(use-package markdown-mode
+  :config
+  (add-hook 'markdown-mode-hook 'turn-on-orgtbl))
 (use-package paredit
   :config
   (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
@@ -79,31 +82,57 @@
 (use-package yaml-mode)
 (use-package yasnippet)
 
-(defun my-coding-hook ()
-  (make-local-variable 'column-number-mode)
-  (column-number-mode t)
-  (if window-system (hl-line-mode t))
-  (idle-highlight-mode t))
-
-(add-hook 'prog-mode-hook 'my-coding-hook)
-
-;; ruby support
-(add-hook 'ruby-mode-hook
+;; changes to generic programming modes
+(add-hook 'prod-mode-hook
           (lambda ()
-            (set-fill-column 100)))
+            (make-local-variable 'column-number-mode)
+            (column-number-mode t)
+            (if window-system (hl-line-mode t))))
+
+;; ruby-specific changes
+(use-package ruby-mode
+  :config
+  (add-hook 'ruby-mode-hook
+            (lambda ()
+              (set-fill-column 100))))
+
+;; set up polymode for ConTeXt / Ruby
+(use-package polymode
+  :config
+  (defcustom pm-inner/erb-ruby
+    (pm-hbtchunkmode "ruby"
+                     :mode 'ruby-mode
+                     :head-reg  "<%"
+                     :tail-reg  "%>")
+    "Ruby chunk"
+    :group 'innermodes
+    :type 'object)
+  (defcustom pm-poly/latex-ruby
+    (pm-polymode-one "latex-ruby"
+                     :hostmode 'pm-host/latex
+                     :innermode 'pm-inner/erb-ruby)
+    "ERB LaTeX/Ruby typical polymode."
+    :group 'polymodes
+    :type 'object)
+  (define-polymode poly-latex-ruby-mode pm-poly/latex-ruby))
+
+;; TODO: set up a mapping for requirements templates (Feature/Ruby modes)
 
 ;;
 ;; generic keybindings
 ;;
 (progn
+  ;; i use this constantly - probably a bug
+  (global-set-key (kbd "C-x g") 'rgrep)
   ;; Font size
-  (define-key global-map (kbd "C-+") 'text-scale-increase)
-  (define-key global-map (kbd "C--") 'text-scale-decrease)
-  (windmove-default-keybindings)        ; Shift+direction
+  (global-set-key (kbd "C-+") 'text-scale-increase)
+  (global-set-key (kbd "C--") 'text-scale-decrease)
+  ;; OS X fullscreen mode
+  (global-set-key (kbd "M-RET") 'toggle-frame-fullscreen)
+  ;; Shift+direction
+  (windmove-default-keybindings)
   ;; M-S-6 is awkward
-  (global-set-key (kbd "C-c q") 'join-line)
-  ;; So good!
-  (global-set-key (kbd "C-c g") 'magit-status))
+  (global-set-key (kbd "C-c q") 'join-line))
 
 ;; emacs internal configuration management
 (custom-set-variables
@@ -111,11 +140,16 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-faces-vector
+   [default bold shadow italic underline bold bold-italic bold])
+ '(ansi-color-names-vector
+   ["#3F3F3F" "#CC9393" "#7F9F7F" "#F0DFAF" "#8CD0D3" "#DC8CC3" "#93E0E3" "#DCDCCC"])
  '(blink-cursor-mode nil)
  '(desktop-restore-in-current-display t)
  '(desktop-save-mode t)
  '(frame-background-mode (quote dark))
  '(magit-revert-buffers t t)
+ '(menu-bar-mode nil)
  '(show-paren-mode t)
  '(show-trailing-whitespace t)
  '(custom-safe-themes
