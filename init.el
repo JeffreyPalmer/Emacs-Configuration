@@ -6,7 +6,7 @@
   (setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH")))
   (push "/usr/local/bin" exec-path))
 
-;; bootstrap cask so that we can bootstrap into use-package
+;; bootstrap cask so that we can use use-package, because i'm lazy
 (require 'cask "/usr/local/share/emacs/site-lisp/cask/cask.el")
 (cask-initialize)
 
@@ -18,6 +18,7 @@
   (if (eq (key-binding "\C-z") 'suspend-frame)
       (global-unset-key "\C-z")))
 
+;; default fonts
 (when (eq system-type 'darwin)
   ;; default Latin font (e.g. Consolas)
   ;; default font size (point * 10)
@@ -33,6 +34,7 @@
 ;; Always install missing packages
 (setq use-package-always-ensure t)
 
+;; other general settings
 (setq apropos-do-all t
       cursor-color "#708183"
       fci-rule-color "#e9e2cb"
@@ -45,13 +47,15 @@
       default-tab-width 4)
 
 ;; Make sure that we start with sane defaults
+(use-package better-defaults)
+
+;; load and configure any required packages
 (use-package auto-complete
   :config (setq ac-auto-start nil
                 ac-delay 2.0))
 (use-package avy
   :config (avy-setup-default)
   :bind (("C-;" . avy-goto-char-2)))
-(use-package better-defaults)
 (use-package base16-theme)
 (use-package company
   :config (global-company-mode))
@@ -83,7 +87,7 @@
 (use-package yasnippet)
 
 ;; changes to generic programming modes
-(add-hook 'prod-mode-hook
+(add-hook 'prog-mode-hook
           (lambda ()
             (make-local-variable 'column-number-mode)
             (column-number-mode t)
@@ -145,16 +149,16 @@
  '(ansi-color-names-vector
    ["#3F3F3F" "#CC9393" "#7F9F7F" "#F0DFAF" "#8CD0D3" "#DC8CC3" "#93E0E3" "#DCDCCC"])
  '(blink-cursor-mode nil)
+ '(custom-safe-themes
+   (quote
+    ("f245c9f24b609b00441a6a336bcc556fe38a6b24bfc0ca4aedd4fe23d858ba31" default)))
  '(desktop-restore-in-current-display t)
  '(desktop-save-mode t)
  '(frame-background-mode (quote dark))
  '(magit-revert-buffers t t)
- '(menu-bar-mode nil)
+ '(menu-bar-mode t)
  '(show-paren-mode t)
- '(show-trailing-whitespace t)
- '(custom-safe-themes
-   (quote
-    ("f245c9f24b609b00441a6a336bcc556fe38a6b24bfc0ca4aedd4fe23d858ba31" default))))
+ '(show-trailing-whitespace t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
