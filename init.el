@@ -13,7 +13,7 @@
 (global-set-key (kbd "C-c f") 'projectile-find-file)
 (global-set-key (kbd "C-x g") 'rgrep)
 ;; enable dash lookup
-(global-set-key "\C-cd" 'dash-at-point)
+(global-set-key (kbd "C-c d") 'dash-at-point)
 
 ;; I *hate* this keybinding outside of the command line
 (when window-system
