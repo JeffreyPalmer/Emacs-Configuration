@@ -11,12 +11,17 @@
 (cask-initialize)
 
 ;; generic setup
-;; I *hate* this keybinding outside of the command line
+;; i *hate* these keybindings outside of the command line
 (when window-system
-  (if (eq (key-binding "\C-x\C-z") 'suspend-frame)
-      (global-unset-key "\C-x\C-z"))
-  (if (eq (key-binding "\C-z") 'suspend-frame)
-      (global-unset-key "\C-z")))
+  (when (eq (key-binding (kbd "s-m")) 'iconify-frame)
+      (global-unset-key (kbd "s-m")))
+  (when (eq (key-binding (kbd "C-x C-z")) 'suspend-frame)
+      (global-unset-key (kbd "C-x C-z")))
+  (when (eq (key-binding (kbd "C-z")) 'suspend-frame)
+      (global-unset-key (kbd "C-z"))))
+
+;; enable winner mode for restoring window configurations
+(winner-mode 1)
 
 ;; default fonts
 (when (eq system-type 'darwin)
@@ -33,6 +38,9 @@
 
 ;; Always install missing packages
 (setq use-package-always-ensure t)
+
+;; don't make me type, i know what i'm doing
+(defalias 'yes-or-no-p 'y-or-n-p)
 
 ;; other general settings
 (setq apropos-do-all t
@@ -58,10 +66,17 @@
   :bind (("C-;" . avy-goto-char-2)))
 (use-package base16-theme)
 (use-package company
+  :diminish company-mode
   :config (global-company-mode))
 (use-package projectile
   :config (projectile-global-mode))
 (use-package feature-mode)
+(use-package fic-mode
+  :diminish fic-mode
+  :config
+  (add-hook 'prog-mode-hook
+            (lambda ()
+              (fic-mode 1))))
 (use-package flx)
 (use-package idle-highlight-mode
   :config
@@ -79,19 +94,22 @@
   (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
   (add-hook 'lisp-mode-hook #'enable-paredit-mode)
   (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode))
+(use-package pretty-lambdada
+  :config (pretty-lambda-for-modes))
 (use-package restclient)
 (use-package smex)
 (use-package which-key
   :config (which-key-mode))
 (use-package yaml-mode)
-(use-package yasnippet)
+(use-package yasnippet
+  :config (yas-global-mode 1))
 
 ;; changes to generic programming modes
 (add-hook 'prog-mode-hook
           (lambda ()
             (make-local-variable 'column-number-mode)
             (column-number-mode t)
-            (if window-system (hl-line-mode t))))
+            (when window-system (hl-line-mode t))))
 
 ;; ruby-specific changes
 (use-package ruby-mode
@@ -154,9 +172,11 @@
     ("f245c9f24b609b00441a6a336bcc556fe38a6b24bfc0ca4aedd4fe23d858ba31" default)))
  '(desktop-restore-in-current-display t)
  '(desktop-save-mode t)
+ '(fic-background-color "dark gray")
  '(frame-background-mode (quote dark))
  '(magit-revert-buffers t t)
  '(menu-bar-mode t)
+ '(sentence-end-double-space nil)
  '(show-paren-mode t)
  '(show-trailing-whitespace t))
 (custom-set-faces
