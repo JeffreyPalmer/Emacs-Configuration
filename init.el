@@ -80,6 +80,7 @@
               (fic-mode 1))))
 (use-package flx)
 (use-package idle-highlight-mode
+  :diminish idle-highlight-mode
   :config
   (add-hook 'prog-mode-hook
             (lambda ()
@@ -91,6 +92,7 @@
   :config
   (add-hook 'markdown-mode-hook 'turn-on-orgtbl))
 (use-package paredit
+  :diminish paredit-mode
   :config
   (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
   (add-hook 'lisp-mode-hook #'enable-paredit-mode)
