@@ -32,6 +32,7 @@
                       :height 140
                       :weight 'normal
                       :width 'normal))
+
 ;; temporary fix for El Capitan
 (setq visible-bell nil) ;; The default
 (setq ring-bell-function 'ignore)
@@ -97,6 +98,7 @@
 (use-package pretty-lambdada
   :config (pretty-lambda-for-modes))
 (use-package restclient)
+(use-package smart-mode-line)
 (use-package smex)
 (use-package which-key
   :config (which-key-mode))
@@ -156,34 +158,10 @@
   ;; M-S-6 is awkward
   (global-set-key (kbd "C-c q") 'join-line))
 
-;; emacs internal configuration management
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ansi-color-faces-vector
-   [default bold shadow italic underline bold bold-italic bold])
- '(ansi-color-names-vector
-   ["#3F3F3F" "#CC9393" "#7F9F7F" "#F0DFAF" "#8CD0D3" "#DC8CC3" "#93E0E3" "#DCDCCC"])
- '(blink-cursor-mode nil)
- '(custom-safe-themes
-   (quote
-    ("f245c9f24b609b00441a6a336bcc556fe38a6b24bfc0ca4aedd4fe23d858ba31" default)))
- '(desktop-restore-in-current-display t)
- '(desktop-save-mode t)
- '(fic-background-color "dark gray")
- '(frame-background-mode (quote dark))
- '(magit-revert-buffers t t)
- '(menu-bar-mode t)
- '(sentence-end-double-space nil)
- '(show-paren-mode t)
- '(show-trailing-whitespace t))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+;; keep those custom variables out of here!
+(setq custom-file "~/.emacs.d/custom.el")
+(load custom-file)
 
+;;; configure themes at the end to make sure we avoid the safe themes warning
 (load-theme 'base16-eighties-dark)
+(sml/setup)
