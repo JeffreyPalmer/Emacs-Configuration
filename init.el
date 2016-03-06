@@ -70,6 +70,7 @@
   :diminish company-mode
   :config (global-company-mode))
 (use-package projectile
+  :diminish projectile-mode
   :config (projectile-global-mode))
 (use-package feature-mode)
 (use-package fic-mode
