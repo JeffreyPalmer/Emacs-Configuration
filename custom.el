@@ -15,14 +15,15 @@
  '(desktop-save-mode t)
  '(fic-background-color "dark gray")
  '(frame-background-mode (quote dark))
+ '(fringe-mode 0 nil (fringe))
  '(magit-revert-buffers t t)
- '(menu-bar-mode t)
  '(sentence-end-double-space nil)
  '(show-paren-mode t)
- '(show-trailing-whitespace t))
+ '(show-trailing-whitespace t)
+ '(tool-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(mode-line ((t (:background "gray13" :foreground "gray60" :inverse-video nil :box nil)))))
