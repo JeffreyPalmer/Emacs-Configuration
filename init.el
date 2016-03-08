@@ -101,13 +101,17 @@
 (use-package pretty-lambdada
   :config (pretty-lambda-for-modes))
 (use-package restclient)
-(use-package smart-mode-line)
 (use-package smex)
 (use-package which-key
   :config (which-key-mode))
 (use-package yaml-mode)
 (use-package yasnippet
   :config (yas-global-mode 1))
+
+;; mode line customization
+(use-package smart-mode-line)
+(use-package smart-mode-line-powerline-theme)
+(use-package powerline)
 
 ;; changes to generic programming modes
 (add-hook 'prog-mode-hook
@@ -167,4 +171,20 @@
 
 ;;; configure themes at the end to make sure we avoid the safe themes warning
 (load-theme 'base16-eighties-dark)
+(setq sml/theme 'powerline)
 (sml/setup)
+
+;;; EXPERIMENTAL
+;; Keybindings for Mac Emacs
+(global-set-key [(hyper a)] 'mark-whole-buffer)
+(global-set-key [(hyper v)] 'yank)
+(global-set-key [(hyper c)] 'kill-ring-save)
+(global-set-key [(hyper s)] 'save-buffer)
+(global-set-key [(hyper l)] 'goto-line)
+(global-set-key [(hyper w)]
+                (lambda () (interactive) (delete-window)))
+(global-set-key [(hyper z)] 'undo)
+
+;; make sure modifier keybindings are sane
+(setq mac-option-modifier 'meta)
+(setq mac-command-modifier 'hyper)
