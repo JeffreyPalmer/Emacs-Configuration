@@ -92,6 +92,9 @@
 (use-package markdown-mode
   :config
   (add-hook 'markdown-mode-hook 'turn-on-orgtbl))
+(use-package midnight
+  :config
+  (midnight-delay-set 'midnight-delay "10:00am"))
 (use-package paredit
   :diminish paredit-mode
   :config
