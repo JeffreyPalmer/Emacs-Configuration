@@ -28,9 +28,9 @@
   ;; default Latin font (e.g. Consolas)
   ;; default font size (point * 10)
   (set-face-attribute 'default nil
-                      :family "Inconsolata"
-                      :height 140
-                      :weight 'normal
+                      :family "Anonymous Pro"
+                      :height 160
+                      :weight 'bold
                       :width 'normal))
 
 ;; temporary fix for El Capitan
