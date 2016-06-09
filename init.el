@@ -10,6 +10,10 @@
 (require 'cask "/usr/local/share/emacs/site-lisp/cask/cask.el")
 (cask-initialize)
 
+;; make sure we have access to melpa-stable
+(add-to-list 'package-archives
+             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+
 ;; generic setup
 ;; i *hate* these keybindings outside of the command line
 (when window-system
@@ -150,7 +154,9 @@
     :type 'object)
   (define-polymode poly-latex-ruby-mode pm-poly/latex-ruby))
 
-;; TODO: set up a mapping for requirements templates (Feature/Ruby modes)
+;; clojure support
+(use-package cider
+  :pin melpa-stable)
 
 ;;
 ;; generic keybindings
