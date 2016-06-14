@@ -2,7 +2,7 @@ This is just a github version of my emacs configuration, for my sanity. :)
 
 This now uses Cask and Pallet to manage packages, and should be used
 with the [OS X version of emacs][1]. Also, make sure that the font
-[Anonymous Pro][2] is installed.
+[Fira Code][2] is installed.
 
 Getting started with a new checkout:
 ```
@@ -17,4 +17,4 @@ cask install
 ```
 
 [1]: https://github.com/railwaycat/homebrew-emacsmacport
-[2]: http://www.marksimonson.com/fonts/view/anonymous-pro
+[2]: https://github.com/tonsky/FiraCode

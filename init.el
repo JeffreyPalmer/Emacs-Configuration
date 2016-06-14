@@ -32,9 +32,9 @@
   ;; default Latin font (e.g. Consolas)
   ;; default font size (point * 10)
   (set-face-attribute 'default nil
-                      :family "Anonymous Pro"
-                      :height 160
-                      :weight 'bold
+                      :family "Fira Code"
+                      :height 141
+                      :weight 'normal
                       :width 'normal))
 
 ;; temporary fix for El Capitan
@@ -157,6 +157,9 @@
 ;; clojure support
 (use-package cider
   :pin melpa-stable)
+
+;; Fira Code Ligature Support
+(mac-auto-operator-composition-mode)
 
 ;;
 ;; generic keybindings
