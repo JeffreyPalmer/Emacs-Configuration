@@ -104,7 +104,9 @@
   :config
   (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
   (add-hook 'lisp-mode-hook #'enable-paredit-mode)
-  (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode))
+  (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+  (add-hook 'clojure-mode-hook #'enable-paredit-mode)
+  (add-hook 'clojurescript-mode-hook #'enable-paredit-mode))
 (use-package pretty-lambdada
   :config (pretty-lambda-for-modes))
 (use-package restclient)
