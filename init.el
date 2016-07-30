@@ -104,9 +104,8 @@
   :config
   (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
   (add-hook 'lisp-mode-hook #'enable-paredit-mode)
-  (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
-  (add-hook 'clojure-mode-hook #'enable-paredit-mode)
-  (add-hook 'clojurescript-mode-hook #'enable-paredit-mode))
+  (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode))
+
 (use-package pretty-lambdada
   :config (pretty-lambda-for-modes))
 (use-package restclient)
@@ -128,6 +127,20 @@
             (make-local-variable 'column-number-mode)
             (column-number-mode t)
             (when window-system (hl-line-mode t))))
+
+;; clojure support
+(use-package clojure-mode
+  :config
+  (add-hook 'clojure-mode-hook #'enable-paredit-mode)
+  (add-hook 'clojurescript-mode-hook #'enable-paredit-mode)
+  (add-hook 'clojure-mode-hook #'turn-on-eldoc-mode))
+
+(use-package cider
+  :pin melpa-stable
+  :config
+  (add-hook 'cider-mode-hook #'eldoc-mode)
+  (add-hook 'cider-repl-mode-hook #'subword-mode)
+  (add-hook 'cider-repl-mode-hook #'paredit-mode))
 
 ;; ruby-specific changes
 (use-package ruby-mode
@@ -155,10 +168,6 @@
     :group 'polymodes
     :type 'object)
   (define-polymode poly-latex-ruby-mode pm-poly/latex-ruby))
-
-;; clojure support
-(use-package cider
-  :pin melpa-stable)
 
 ;; Fira Code Ligature Support
 (mac-auto-operator-composition-mode)
