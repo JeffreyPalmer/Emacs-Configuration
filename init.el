@@ -27,6 +27,19 @@
 ;; enable winner mode for restoring window configurations
 (winner-mode 1)
 
+(setq user-full-name "Jeffrey Palmer"
+      user-mail-address "jeffrey.palmer@acm.org")
+
+;; Always load newest byte code
+(setq load-prefer-newer t)
+
+;; reduce the frequency of garbage collection by making it happen on
+;; each 50MB of allocated data (the default is on every 0.76MB)
+(setq gc-cons-threshold 50000000)
+
+;; warn when opening files bigger than 100MB
+(setq large-file-warning-threshold 100000000)
+
 ;; default fonts
 (when (eq system-type 'darwin)
   ;; default Latin font (e.g. Consolas)
@@ -110,6 +123,13 @@
   :config (pretty-lambda-for-modes))
 (use-package restclient)
 (use-package smex)
+(use-package undo-tree
+  :bind
+  ("C-z" . undo)
+  ("C-S-z" . undo-tree-redo)
+  :config
+  (setq undo-tree-auto-save-history t)
+  (global-undo-tree-mode))
 (use-package which-key
   :config (which-key-mode))
 (use-package yaml-mode)
