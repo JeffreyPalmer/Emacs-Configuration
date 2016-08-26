@@ -1,6 +1,9 @@
 ;;
 ;; Emacs Configuration
 ;;
+(package-initialize)
+
+;;
 ;; A quick & ugly PATH solution to Emacs on Mac OSX
 (when (eq system-type 'darwin)
   (setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH")))
