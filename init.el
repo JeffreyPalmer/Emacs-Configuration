@@ -24,21 +24,18 @@
   (when (eq (key-binding (kbd "C-z")) 'suspend-frame)
       (global-unset-key (kbd "C-z"))))
 
-;; enable winner mode for restoring window configurations
-(winner-mode 1)
-
-(setq user-full-name "Jeffrey Palmer"
-      user-mail-address "jeffrey.palmer@acm.org")
-
-;; Always load newest byte code
-(setq load-prefer-newer t)
-
 ;; reduce the frequency of garbage collection by making it happen on
 ;; each 50MB of allocated data (the default is on every 0.76MB)
 (setq gc-cons-threshold 50000000)
 
 ;; warn when opening files bigger than 100MB
 (setq large-file-warning-threshold 100000000)
+
+;; enable winner mode for restoring window configurations
+(winner-mode 1)
+
+(setq user-full-name "Jeffrey Palmer"
+      user-mail-address "jeffrey.palmer@acm.org")
 
 ;; default fonts
 (when (eq system-type 'darwin)
@@ -50,10 +47,6 @@
                       :weight 'normal
                       :width 'normal))
 
-;; temporary fix for El Capitan
-(setq visible-bell nil) ;; The default
-(setq ring-bell-function 'ignore)
-
 ;; Always install missing packages
 (setq use-package-always-ensure t)
 
@@ -63,6 +56,7 @@
 ;; other general settings
 (setq apropos-do-all t
       cursor-color "#708183"
+      default-tab-width 4
       fci-rule-color "#e9e2cb"
       fill-column 80
       global-visual-line-mode t
@@ -70,7 +64,8 @@
       kill-whole-line t
       linum-format " %7i "
       require-final-newline t
-      default-tab-width 4)
+      ring-bell-function 'ignore
+      visible-bell nil)
 
 ;; Make sure that we start with sane defaults
 (use-package better-defaults)
@@ -129,7 +124,9 @@
   ("C-S-z" . undo-tree-redo)
   :config
   (setq undo-tree-auto-save-history t)
-  (global-undo-tree-mode))
+  (global-undo-tree-mode)
+  (setq undo-tree-visualizer-timestamps t)
+  (setq undo-tree-visualizer-diff t))
 (use-package which-key
   :config (which-key-mode))
 (use-package yaml-mode)
