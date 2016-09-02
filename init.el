@@ -169,26 +169,6 @@
             (lambda ()
               (set-fill-column 100))))
 
-;; set up polymode for ConTeXt / Ruby
-(use-package polymode
-  :config
-  (defcustom pm-inner/erb-ruby
-    (pm-hbtchunkmode "ruby"
-                     :mode 'ruby-mode
-                     :head-reg  "<%"
-                     :tail-reg  "%>")
-    "Ruby chunk"
-    :group 'innermodes
-    :type 'object)
-  (defcustom pm-poly/latex-ruby
-    (pm-polymode-one "latex-ruby"
-                     :hostmode 'pm-host/latex
-                     :innermode 'pm-inner/erb-ruby)
-    "ERB LaTeX/Ruby typical polymode."
-    :group 'polymodes
-    :type 'object)
-  (define-polymode poly-latex-ruby-mode pm-poly/latex-ruby))
-
 ;; Fira Code Ligature Support
 (mac-auto-operator-composition-mode)
 
