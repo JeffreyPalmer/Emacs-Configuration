@@ -193,7 +193,7 @@
 (load custom-file)
 
 ;;; configure themes at the end to make sure we avoid the safe themes warning
-(load-theme 'base16-eighties-dark)
+(load-theme 'base16-eighties)
 (setq sml/theme 'powerline)
 (sml/setup)
 
