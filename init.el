@@ -1,21 +1,26 @@
 ;;
 ;; Emacs Configuration
 ;;
+(require 'package)
+(setq package-enable-at-startup nil)
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/"))
+;; make sure we have access to melpa-stable
+(add-to-list 'package-archives
+             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+
 (package-initialize)
+
+;; Bootstrap `use-package'
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
 
 ;;
 ;; A quick & ugly PATH solution to Emacs on Mac OSX
 (when (eq system-type 'darwin)
   (setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH")))
   (push "/usr/local/bin" exec-path))
-
-;; bootstrap cask so that we can use use-package, because i'm lazy
-(require 'cask "/usr/local/share/emacs/site-lisp/cask/cask.el")
-(cask-initialize)
-
-;; make sure we have access to melpa-stable
-(add-to-list 'package-archives
-             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 
 ;; generic setup
 ;; i *hate* these keybindings outside of the command line
