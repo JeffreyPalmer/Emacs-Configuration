@@ -136,9 +136,11 @@
   (setq undo-tree-visualizer-timestamps t)
   (setq undo-tree-visualizer-diff t))
 (use-package which-key
+  :diminish which-key-mode
   :config (which-key-mode))
 (use-package yaml-mode)
 (use-package yasnippet
+  :diminish yas-minor-mode
   :config (yas-global-mode 1))
 
 ;; mode line customization
