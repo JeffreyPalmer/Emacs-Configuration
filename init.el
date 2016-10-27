@@ -218,15 +218,15 @@
 
 ;;; EXPERIMENTAL
 ;; Keybindings for Mac Emacs
-(global-set-key [(hyper a)] 'mark-whole-buffer)
-(global-set-key [(hyper v)] 'yank)
-(global-set-key [(hyper c)] 'kill-ring-save)
-(global-set-key [(hyper s)] 'save-buffer)
-(global-set-key [(hyper l)] 'goto-line)
-(global-set-key [(hyper w)]
+(global-set-key [(super a)] 'mark-whole-buffer)
+(global-set-key [(super v)] 'yank)
+(global-set-key [(super c)] 'kill-ring-save)
+(global-set-key [(super s)] 'save-buffer)
+(global-set-key [(super l)] 'goto-line)
+(global-set-key [(super w)]
                 (lambda () (interactive) (delete-window)))
-(global-set-key [(hyper z)] 'undo)
+(global-set-key [(super z)] 'undo)
 
 ;; make sure modifier keybindings are sane
-(setq mac-option-modifier 'meta)
-(setq mac-command-modifier 'hyper)
+(setq mac-command-modifier 'meta)
+(setq mac-option-modifier 'super)
