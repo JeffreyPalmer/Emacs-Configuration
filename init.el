@@ -245,5 +245,5 @@
 (global-set-key [(super z)] 'undo)
 
 ;; make sure modifier keybindings are sane
-(setq mac-command-modifier 'meta)
-(setq mac-option-modifier 'super)
+(setq mac-command-modifier 'super)
+(setq mac-option-modifier 'meta)
