@@ -61,13 +61,15 @@
 ;; don't make me type, i know what i'm doing
 (defalias 'yes-or-no-p 'y-or-n-p)
 
+;; only use visual-line-mode in text files
+(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+
 ;; other general settings
 (setq apropos-do-all t
       cursor-color "#708183"
       default-tab-width 4
       fci-rule-color "#e9e2cb"
       fill-column 80
-      global-visual-line-mode t
       inhibit-startup-screen t
       kill-whole-line t
       linum-format " %7i "
@@ -120,8 +122,10 @@
     (kill-buffer)
     (jump-to-register :magit-fullscreen))
   (define-key magit-status-mode-map (kbd "q") 'magit-quit-session))
-
 (use-package markdown-mode
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
   :config
   (add-hook 'markdown-mode-hook 'turn-on-orgtbl))
 (use-package midnight
@@ -144,6 +148,7 @@
   ("C-S-z" . undo-tree-redo)
   :config
   (global-undo-tree-mode)
+  (setq undo-tree-history-directory-alist `(("." . (concat user-emacs-directory "backups"))))
   (setq undo-tree-visualizer-timestamps t)
   (setq undo-tree-visualizer-diff t))
 (use-package which-key
