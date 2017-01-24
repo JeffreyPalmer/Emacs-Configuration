@@ -11,10 +11,15 @@
 
 (package-initialize)
 
-;; Bootstrap `use-package'
+;; Bootstrap use-package
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
+
+(eval-when-compile
+  (require 'use-package))
+(require 'diminish)
+(require 'bind-key)
 
 ;;
 ;; A quick & ugly PATH solution to Emacs on Mac OSX
