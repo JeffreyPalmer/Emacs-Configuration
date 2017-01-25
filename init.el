@@ -21,21 +21,27 @@
 (require 'diminish)
 (require 'bind-key)
 
-;;
-;; A quick & ugly PATH solution to Emacs on Mac OSX
-(when (eq system-type 'darwin)
-  (setenv "PATH" (concat "/usr/local/bin:" (getenv "PATH")))
-  (push "/usr/local/bin" exec-path))
+;; Always install missing packages
+(setq use-package-always-ensure t)
 
 ;; generic setup
 ;; i *hate* these keybindings outside of the command line
 (when window-system
   (when (eq (key-binding (kbd "s-m")) 'iconify-frame)
-      (global-unset-key (kbd "s-m")))
+    (global-unset-key (kbd "s-m")))
   (when (eq (key-binding (kbd "C-x C-z")) 'suspend-frame)
-      (global-unset-key (kbd "C-x C-z")))
+    (global-unset-key (kbd "C-x C-z")))
   (when (eq (key-binding (kbd "C-z")) 'suspend-frame)
-      (global-unset-key (kbd "C-z"))))
+    (global-unset-key (kbd "C-z")))
+  ;; default fonts
+  (when (eq system-type 'darwin)
+    ;; default Latin font (e.g. Consolas)
+    ;; default font size (point * 10)
+    (set-face-attribute 'default nil
+                        :family "Fira Code"
+                        :height 141
+                        :weight 'normal
+                        :width 'normal)))
 
 ;; reduce the frequency of garbage collection by making it happen on
 ;; each 50MB of allocated data (the default is on every 0.76MB)
@@ -47,21 +53,10 @@
 ;; enable winner mode for restoring window configurations
 (winner-mode 1)
 
+;; Generic user configuration
 (setq user-full-name "Jeffrey Palmer"
       user-mail-address "jeffrey.palmer@acm.org")
 
-;; default fonts
-(when (eq system-type 'darwin)
-  ;; default Latin font (e.g. Consolas)
-  ;; default font size (point * 10)
-  (set-face-attribute 'default nil
-                      :family "Fira Code"
-                      :height 141
-                      :weight 'normal
-                      :width 'normal))
-
-;; Always install missing packages
-(setq use-package-always-ensure t)
 
 ;; don't make me type, i know what i'm doing
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -96,6 +91,9 @@
 (use-package company
   :diminish company-mode
   :config (global-company-mode))
+(use-package exec-path-from-shell
+  :config (when (memq window-system '(mac ns))
+            (exec-path-from-shell-initialize)))
 (use-package projectile
   :diminish projectile-mode
   :config (projectile-global-mode))
