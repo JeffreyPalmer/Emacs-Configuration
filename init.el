@@ -151,7 +151,8 @@
   ("C-S-z" . undo-tree-redo)
   :config
   (global-undo-tree-mode)
-  (setq undo-tree-history-directory-alist `(("." . (concat user-emacs-directory "backups"))))
+  (setq undo-tree-history-directory-alist
+        `(("." . (concat user-emacs-directory "backups"))))
   (setq undo-tree-visualizer-timestamps t)
   (setq undo-tree-visualizer-diff t))
 (use-package which-key
