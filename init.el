@@ -87,6 +87,9 @@
 (use-package auto-complete
   :config (setq ac-auto-start nil
                 ac-delay 2.0))
+(use-package auto-package-update
+  :config
+  (setq auto-package-update-delete-old-versions t))
 (use-package avy
   :config (avy-setup-default)
   :bind (("C-;" . avy-goto-char-2)))
@@ -94,6 +97,9 @@
 (use-package company
   :diminish company-mode
   :config (global-company-mode))
+(use-package discover-my-major
+  :bind (("C-h C-m" . discover-my-major)
+         ("C-h M-m" . discover-my-mode)))
 (use-package exec-path-from-shell
   :config (when (memq window-system '(mac ns))
             (exec-path-from-shell-initialize)))
@@ -115,6 +121,7 @@
             (lambda ()
               (idle-highlight-mode t))))
 (use-package highlight-parentheses)
+(use-package ido-hacks)
 (use-package magit
   :bind ("C-c g" . magit-status)
   :config
@@ -148,6 +155,10 @@
   :config (pretty-lambda-for-modes))
 (use-package restclient)
 (use-package smex)
+(use-package symon
+  :config
+  (setq symon-sparkline-type 'plain)
+  (symon-mode))
 (use-package undo-tree
   :bind
   ("C-z" . undo)
