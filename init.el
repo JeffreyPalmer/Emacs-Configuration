@@ -80,6 +80,9 @@
 ;; Make sure that we start with sane defaults
 (use-package better-defaults)
 
+;; elixir support
+(use-package alchemist)
+
 ;; load and configure any required packages
 (use-package auto-complete
   :config (setq ac-auto-start nil
