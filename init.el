@@ -157,7 +157,8 @@
 (use-package smex)
 (use-package symon
   :config
-  (setq symon-sparkline-type 'plain)
+  (setq symon-sparkline-type 'bounded
+        symon-refresh-rate 10)
   (symon-mode))
 (use-package undo-tree
   :bind
