@@ -155,11 +155,6 @@
   :config (pretty-lambda-for-modes))
 (use-package restclient)
 (use-package smex)
-(use-package symon
-  :config
-  (setq symon-sparkline-type 'bounded
-        symon-refresh-rate 10)
-  (symon-mode))
 (use-package undo-tree
   :bind
   ("C-z" . undo)
@@ -179,9 +174,11 @@
   :config (yas-global-mode 1))
 
 ;; mode line customization
-(use-package smart-mode-line)
-(use-package smart-mode-line-powerline-theme)
 (use-package powerline)
+(use-package spaceline
+  :config
+  (require 'spaceline-config)
+  (spaceline-emacs-theme))
 
 ;; changes to generic programming modes
 (add-hook 'prog-mode-hook
@@ -254,8 +251,6 @@
 
 ;;; configure themes at the end to make sure we avoid the safe themes warning
 (load-theme 'base16-eighties)
-(setq sml/theme 'powerline)
-(sml/setup)
 
 ;;; EXPERIMENTAL
 ;; Keybindings for Mac Emacs
