@@ -114,13 +114,13 @@
             (lambda ()
               (fic-mode 1))))
 (use-package flx)
+(use-package highlight-parentheses)
 (use-package idle-highlight-mode
   :diminish idle-highlight-mode
   :config
   (add-hook 'prog-mode-hook
             (lambda ()
               (idle-highlight-mode t))))
-(use-package highlight-parentheses)
 (use-package ido-hacks)
 (use-package magit
   :bind ("C-c g" . magit-status)
@@ -175,9 +175,9 @@
 
 ;; mode line customization
 (use-package powerline)
-(use-package spaceline
+(use-package spaceline-config
+  :ensure spaceline
   :config
-  (require 'spaceline-config)
   (spaceline-emacs-theme))
 
 ;; changes to generic programming modes
