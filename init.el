@@ -89,7 +89,8 @@
                 ac-delay 2.0))
 (use-package auto-package-update
   :config
-  (setq auto-package-update-delete-old-versions t))
+  (setq auto-package-update-delete-old-versions t)
+  :bind (("C-c u" . auto-package-update-now)))
 (use-package avy
   :config (avy-setup-default)
   :bind (("C-;" . avy-goto-char-2)))
