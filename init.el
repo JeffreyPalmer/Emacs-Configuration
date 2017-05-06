@@ -84,9 +84,6 @@
 (use-package alchemist)
 
 ;; load and configure any required packages
-(use-package auto-complete
-  :config (setq ac-auto-start nil
-                ac-delay 2.0))
 (use-package auto-package-update
   :config
   (setq auto-package-update-delete-old-versions t)
@@ -97,7 +94,8 @@
 (use-package base16-theme)
 (use-package company
   :diminish company-mode
-  :config (global-company-mode))
+  :config
+  (global-company-mode))
 (use-package discover-my-major
   :bind (("C-h C-m" . discover-my-major)
          ("C-h M-m" . discover-my-mode)))
@@ -105,8 +103,7 @@
   :config (when (memq window-system '(mac ns))
             (exec-path-from-shell-initialize)))
 (use-package projectile
-  :diminish projectile-mode
-  :config (projectile-global-mode))
+  :diminish projectile-mode)
 (use-package feature-mode)
 (use-package fic-mode
   :diminish fic-mode
@@ -115,6 +112,9 @@
             (lambda ()
               (fic-mode 1))))
 (use-package flx)
+(use-package flycheck
+  :pin melpa-stable
+  :init (global-flycheck-mode))
 (use-package highlight-parentheses)
 (use-package idle-highlight-mode
   :diminish idle-highlight-mode
@@ -183,10 +183,10 @@
 
 ;; changes to generic programming modes
 (add-hook 'prog-mode-hook
-          (lambda ()
-            (make-local-variable 'column-number-mode)
-            (column-number-mode t)
-            (when window-system (hl-line-mode t))))
+    (lambda ()
+    (make-local-variable 'column-number-mode)
+    (column-number-mode t)
+    (when window-system (hl-line-mode t))))
 
 ;; clojure support
 (use-package clojure-mode
@@ -206,8 +206,21 @@
 (use-package ruby-mode
   :config
   (add-hook 'ruby-mode-hook
-            (lambda ()
-              (set-fill-column 100))))
+    (lambda ()
+    (set-fill-column 100)))
+  :bind (([(meta down)] . ruby-forward-sexp)
+         ([(meta up)]   . ruby-backward-sexp)
+         (("C-c C-e"    . ruby-send-region))))
+(use-package inf-ruby
+  :init (add-hook 'ruby-mode-hook 'inf-ruby-minor-mode))
+(use-package smartparens
+  :init
+  (require 'smartparens-config)
+  (add-hook 'ruby-mode-hook 'smartparens-strict-mode)
+  :diminish smartparens-mode)
+(use-package rubocop
+  :init (add-hook 'ruby-mode-hook 'rubocop-mode)
+  :diminish rubocop-mode)
 
 ;; Fira Code Ligature Support
 (mac-auto-operator-composition-mode)
@@ -267,3 +280,4 @@
 ;; make sure modifier keybindings are sane
 (setq mac-command-modifier 'super)
 (setq mac-option-modifier 'meta)
+
