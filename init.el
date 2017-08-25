@@ -91,7 +91,6 @@
 (use-package avy
   :config (avy-setup-default)
   :bind (("C-;" . avy-goto-char-2)))
-(use-package base16-theme)
 (use-package company
   :diminish company-mode
   :config
@@ -111,7 +110,7 @@
   (add-hook 'prog-mode-hook
             (lambda ()
               (fic-mode 1))))
-(use-package flx)
+(use-package flx-ido)
 (use-package flycheck
   :pin melpa-stable
   :init (global-flycheck-mode))
@@ -145,6 +144,25 @@
 (use-package midnight
   :config
   (midnight-delay-set 'midnight-delay "10:00am"))
+(use-package neotree
+  :bind ("<f8>" . neotree-project-dir)
+  :init
+  (setq neo-smart-open t
+        projectile-switch-project-action 'neotree-projectile-action)
+  :config
+  (defun neotree-project-dir ()
+    "Open NeoTree using the git root."
+    (interactive)
+    (let ((project-dir (projectile-project-root))
+          (file-name (buffer-file-name)))
+      (neotree-toggle)
+      (if project-dir
+          (if (neo-global--window-exists-p)
+              (progn
+                (neotree-dir project-dir)
+                (neotree-find file-name)))
+        (message "Could not find git project root.")))))
+
 (use-package paredit
   :diminish paredit-mode
   :config
@@ -264,7 +282,8 @@
 (load custom-file)
 
 ;;; configure themes at the end to make sure we avoid the safe themes warning
-(load-theme 'base16-eighties)
+(use-package color-theme-sanityinc-tomorrow)
+(color-theme-sanityinc-tomorrow-eighties)
 
 ;;; EXPERIMENTAL
 ;; Keybindings for Mac Emacs
