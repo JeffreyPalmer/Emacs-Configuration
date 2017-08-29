@@ -304,6 +304,7 @@
 
 (use-package cider
   :pin melpa-stable
+  :init (setq cider-repl-use-pretty-printing t)
   :config
   (add-hook 'cider-mode-hook #'eldoc-mode)
   (add-hook 'cider-repl-mode-hook #'subword-mode)
