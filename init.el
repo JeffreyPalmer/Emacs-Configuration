@@ -35,6 +35,7 @@
     (global-unset-key (kbd "C-z")))
   ;; default fonts
   (when (eq system-type 'darwin)
+    (setq mac-frame-tabbing nil)
     ;; default Latin font (e.g. Consolas)
     ;; default font size (point * 10)
     (set-face-attribute 'default nil
@@ -320,15 +321,32 @@
          ([(meta up)]   . ruby-backward-sexp)
          (("C-c C-e"    . ruby-send-region))))
 (use-package inf-ruby
-  :init (add-hook 'ruby-mode-hook 'inf-ruby-minor-mode))
+  :config (add-hook 'ruby-mode-hook 'inf-ruby-minor-mode))
 (use-package smartparens
-  :init
+  :config
   (require 'smartparens-config)
   (add-hook 'ruby-mode-hook 'smartparens-strict-mode)
   :diminish smartparens-mode)
 (use-package rubocop
-  :init (add-hook 'ruby-mode-hook 'rubocop-mode)
+  :config (add-hook 'ruby-mode-hook 'rubocop-mode)
   :diminish rubocop-mode)
+(use-package chruby)
+(use-package robe
+  :config
+  (add-hook 'ruby-mode-hook 'robe-mode)
+  (eval-after-load 'company
+    '(push 'company-robe company-backends)))
+(use-package rspec-mode
+  :init (setq rspec-use-rake-when-possible t
+              rspec-use-chruby t)
+  :config
+  (rspec-install-snippets)
+  (defadvice rspec-compile (around rspec-compile-around)
+    "Use BASH shell for running the specs because of ZSH issues."
+    (let ((shell-file-name "/bin/bash"))
+      ad-do-it))
+  (ad-activate 'rspec-compile))
+(use-package bundler)
 
 ;; Fira Code Ligature Support
 (mac-auto-operator-composition-mode)
