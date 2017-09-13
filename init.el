@@ -58,16 +58,15 @@
 (setq user-full-name "Jeffrey Palmer"
       user-mail-address "jeffrey.palmer@acm.org")
 
-
 ;; don't make me type, i know what i'm doing
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 ;; only use visual-line-mode in text files
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+(set-cursor-color "goldenrod")
 
 ;; other general settings
 (setq apropos-do-all t
-      cursor-color "#708183"
       default-tab-width 4
       fci-rule-color "#e9e2cb"
       fill-column 80
@@ -334,6 +333,7 @@
 (use-package robe
   :config
   (add-hook 'ruby-mode-hook 'robe-mode)
+  (advice-add 'inf-ruby-console-auto :before #'chruby-use-corresponding)
   (eval-after-load 'company
     '(push 'company-robe company-backends)))
 (use-package rspec-mode
