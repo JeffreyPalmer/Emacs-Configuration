@@ -290,10 +290,10 @@
 
 ;; changes to generic programming modes
 (add-hook 'prog-mode-hook
-    (lambda ()
-    (make-local-variable 'column-number-mode)
-    (column-number-mode t)
-    (when window-system (hl-line-mode t))))
+          (lambda ()
+            (make-local-variable 'column-number-mode)
+            (column-number-mode t)
+            (when window-system (hl-line-mode t))))
 
 ;; clojure support
 (use-package clojure-mode
@@ -347,6 +347,8 @@
       ad-do-it))
   (ad-activate 'rspec-compile))
 (use-package bundler)
+(use-package zoom
+  :config (zoom-mode t))
 
 ;; Fira Code Ligature Support
 (mac-auto-operator-composition-mode)
