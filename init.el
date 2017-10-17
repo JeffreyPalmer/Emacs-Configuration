@@ -348,7 +348,11 @@
   (ad-activate 'rspec-compile))
 (use-package bundler)
 (use-package zoom
-  :config (zoom-mode t))
+  :config
+  (zoom-mode t)
+  (custom-set-variables
+   '(zoom-size '(0.618 . 0.618))
+   '(zoom-ignore-predicates '((lambda () (< (count-lines (point-min) (point-max)) 20))))))
 
 ;; Fira Code Ligature Support
 (mac-auto-operator-composition-mode)
