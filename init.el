@@ -18,11 +18,12 @@
 
 (eval-when-compile
   (require 'use-package))
-(require 'diminish)
-(require 'bind-key)
 
 ;; Always install missing packages
 (setq use-package-always-ensure t)
+
+(use-package diminish)
+(use-package bind-key)
 
 ;; generic setup
 ;; i *hate* these keybindings outside of the command line
@@ -114,6 +115,8 @@
   :pin melpa-stable
   :init (global-flycheck-mode))
 (use-package highlight-parentheses)
+(use-package hungry-delete
+  :config (global-hungry-delete-mode))
 (use-package idle-highlight-mode
   :diminish idle-highlight-mode
   :config
@@ -263,6 +266,21 @@
   :config (pretty-lambda-for-modes))
 (use-package restclient)
 (use-package smex)
+(use-package sql
+  :config
+  ;; fix for underscores in postgres prompts
+  (add-hook 'sql-interactive-mode-hook
+            (lambda ()
+              (toggle-truncate-lines t)
+              (setq sql-prompt-regexp "^[_[:alpha:]]*[=][#>] ")
+              (setq sql-prompt-cont-regexp "^[_[:alpha:]]*[-][#>] ")))
+  ;; output each query before executing it
+  (add-hook 'sql-login-hook
+            (lambda ()
+              (when (eq sql-product 'postgres)
+                (let ((proc (get-buffer-process (current-buffer))))
+                  (comint-send-string proc "\\set ECHO queries\n"))))))
+
 (use-package undo-tree
   :bind
   ("C-z" . undo)
@@ -310,6 +328,17 @@
   (add-hook 'cider-repl-mode-hook #'subword-mode)
   (add-hook 'cider-repl-mode-hook #'paredit-mode))
 
+(use-package clj-refactor
+  :config
+  (add-hook 'clojure-mode-hook
+            (lambda ()
+              (clj-refactor-mode 1)
+              (cljr-add-keybindings-with-prefix "C-c C-m"))))
+
+;; lua support
+(use-package lua-mode)
+
+
 ;; ruby-specific changes
 (use-package ruby-mode
   :config
@@ -347,12 +376,12 @@
       ad-do-it))
   (ad-activate 'rspec-compile))
 (use-package bundler)
-(use-package zoom
-  :config
-  (zoom-mode t)
-  (custom-set-variables
-   '(zoom-size '(0.618 . 0.618))
-   '(zoom-ignore-predicates '((lambda () (< (count-lines (point-min) (point-max)) 20))))))
+;; (use-package zoom
+;;   :config
+;;   (zoom-mode t)
+;;   (custom-set-variables
+;;    '(zoom-size '(0.618 . 0.618))
+;;    '(zoom-ignore-predicates '((lambda () (< (count-lines (point-min) (point-max)) 20))))))
 
 ;; Fira Code Ligature Support
 (mac-auto-operator-composition-mode)
@@ -389,7 +418,14 @@
   ;; Shift+direction
   (windmove-default-keybindings)
   ;; M-S-6 is awkward
-  (global-set-key (kbd "C-c q") 'join-line))
+  (global-set-key (kbd "C-c q") 'join-line)
+  ;; Retain muscle memory on Atreus
+  ;; TODO: Can this be conditional on keyboard layout?
+  (global-set-key (kbd "C-x q") 'delete-other-windows)
+  ;; TODO: aparently this keybinding is already used - need to figure out how to remap the originating package
+  ;; (global-set-key (kbd "C-x w") 'split-window-below)
+  ;; (global-set-key (kbd "C-x f") 'split-window-right)
+  )
 
 ;; keep those custom variables out of here!
 (setq custom-file "~/.emacs.d/custom.el")
@@ -414,3 +450,5 @@
 (setq mac-command-modifier 'super)
 (setq mac-option-modifier 'meta)
 
+(provide 'init)
+;;; init.el ends here

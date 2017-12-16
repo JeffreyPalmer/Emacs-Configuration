@@ -8,7 +8,7 @@
  '(ansi-color-names-vector
    ["#3F3F3F" "#CC9393" "#7F9F7F" "#F0DFAF" "#8CD0D3" "#DC8CC3" "#93E0E3" "#DCDCCC"])
  '(ansi-term-color-vector
-   [unspecified "#2d2d2d" "#f2777a" "#99cc99" "#ffcc66" "#6699cc" "#cc99cc" "#6699cc" "#d3d0c8"])
+   [unspecified "#2d2d2d" "#f2777a" "#99cc99" "#ffcc66" "#6699cc" "#cc99cc" "#6699cc" "#d3d0c8"] t)
  '(blink-cursor-mode nil)
  '(custom-enabled-themes (quote (sanityinc-tomorrow-eighties)))
  '(custom-safe-themes
@@ -27,7 +27,16 @@
  '(sentence-end-double-space nil)
  '(show-paren-mode t)
  '(show-trailing-whitespace t)
- '(tool-bar-mode nil))
+ '(tool-bar-mode nil)
+ '(zoom-ignore-predicates
+   (quote
+    ((lambda nil
+       (<
+        (count-lines
+         (point-min)
+         (point-max))
+        20)))))
+ '(zoom-size (quote (0.618 . 0.618))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
