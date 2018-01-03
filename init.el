@@ -102,6 +102,14 @@
 (use-package exec-path-from-shell
   :config (when (memq window-system '(mac ns))
             (exec-path-from-shell-initialize)))
+
+(use-package eyebrowse
+  :ensure t
+  :config
+  (setq eyebrowse-mode-line-separator " "
+        eyebrowse-new-workspace t)
+  (eyebrowse-mode t))
+
 (use-package projectile
   :diminish projectile-mode)
 (use-package feature-mode)
@@ -331,6 +339,7 @@
   (add-hook 'clojure-mode-hook
             (lambda ()
               (clj-refactor-mode 1)
+              (yas-minor-mode 1)
               (cljr-add-keybindings-with-prefix "C-c C-m"))))
 
 ;; lua support
@@ -374,12 +383,6 @@
       ad-do-it))
   (ad-activate 'rspec-compile))
 (use-package bundler)
-;; (use-package zoom
-;;   :config
-;;   (zoom-mode t)
-;;   (custom-set-variables
-;;    '(zoom-size '(0.618 . 0.618))
-;;    '(zoom-ignore-predicates '((lambda () (< (count-lines (point-min) (point-max)) 20))))))
 
 ;; Fira Code Ligature Support
 (mac-auto-operator-composition-mode)
