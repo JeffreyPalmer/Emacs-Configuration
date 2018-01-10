@@ -145,10 +145,8 @@
   :config (ivy-set-display-transformer 'ivy-switch-buffer 'ivy-rich-switch-buffer-transformer))
 
 (use-package counsel-projectile
-  :bind* (("C-c p p" . counsel-projectile))
   :init
-  (setq counsel-projectile-drop-to-switch-project-binding "C-c s p")
-  (counsel-projectile-on))
+  (counsel-projectile-mode))
 
 (use-package counsel
   :bind*
