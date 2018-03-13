@@ -285,7 +285,8 @@
             (lambda ()
               (when (eq sql-product 'postgres)
                 (let ((proc (get-buffer-process (current-buffer))))
-                  (comint-send-string proc "\\set ECHO queries\n"))))))
+                  (comint-send-string proc "\\set ECHO queries\n")))))
+  (sql-set-product "postgres"))
 
 (use-package undo-tree
   :bind
