@@ -407,6 +407,22 @@
   (sort-regexp-fields reverse "\\(\\sw\\|\\s_\\)+" "\\&" beg end))
 
 ;;
+;; org mode support
+;;
+(use-package org
+  :bind (("C-c l" . org-store-link)
+         ("C-c a" . org-agenda)
+         ("C-c c" . org-capture)
+         ("C-c b" . org-iswitchb))
+  :config
+  (setq org-hide-leading-stars t))
+(use-package org-bullets
+  :config
+  (add-hook 'org-mode-hook
+            (lambda () (org-bullets-mode 1))))
+
+
+;;
 ;; generic keybindings
 ;;
 (progn
