@@ -66,6 +66,9 @@
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 (set-cursor-color "goldenrod")
 
+;; enable pretty symbols mode
+(global-prettify-symbols-mode 1)
+
 ;; other general settings
 (setq apropos-do-all t
       default-tab-width 4
@@ -268,8 +271,6 @@
   (add-hook 'lisp-mode-hook #'enable-paredit-mode)
   (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode))
 
-(use-package pretty-lambdada
-  :config (pretty-lambda-for-modes))
 (use-package restclient)
 (use-package smex)
 (use-package sql
