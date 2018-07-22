@@ -437,14 +437,7 @@
   ;; Shift+direction
   (windmove-default-keybindings)
   ;; M-S-6 is awkward
-  (global-set-key (kbd "C-c q") 'join-line)
-  ;; Retain muscle memory on Atreus
-  ;; TODO: Can this be conditional on keyboard layout?
-  (global-set-key (kbd "C-x q") 'delete-other-windows)
-  ;; TODO: aparently this keybinding is already used - need to figure out how to remap the originating package
-  ;; (global-set-key (kbd "C-x w") 'split-window-below)
-  ;; (global-set-key (kbd "C-x f") 'split-window-right)
-  )
+  (global-set-key (kbd "C-c q") 'join-line))
 
 ;; keep those custom variables out of here!
 (setq custom-file "~/.emacs.d/custom.el")
