@@ -8,6 +8,9 @@
 ;; make sure we have access to melpa-stable
 (add-to-list 'package-archives
              '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+;; support for org-mode contributions
+(add-to-list 'package-archives
+             '("org" . "https://orgmode.org/elpa/") t)
 
 (package-initialize)
 
@@ -86,6 +89,10 @@
 
 ;; elixir support
 (use-package alchemist)
+
+(use-package alert
+  :config
+  (setq alert-default-style 'osx-notifier))
 
 ;; load and configure any required packages
 (use-package auto-package-update
@@ -182,7 +189,7 @@
    ("C-c d s" . describe-symbol)
    :map ivy-minibuffer-map
    ("M-y" . ivy-next-line-and-call))
- 
+
   :config
   (defun reloading (cmd)
     (lambda (x)
@@ -197,7 +204,7 @@
     (funcall cmd source target 1))))
   (defun confirm-delete-file (x)
     (dired-delete-file x 'confirm-each-subdirectory))
- 
+
   (ivy-add-actions
    'counsel-find-file
    `(("c" ,(given-file #'copy-file "Copy") "copy")
@@ -209,12 +216,12 @@
      ("d" ,(reloading #'confirm-delete-file) "delete")
      ("m" ,(reloading (given-file #'rename-file "Move")) "move")
      ("b" counsel-find-file-cd-bookmark-action "cd bookmark")))
- 
+
   ;; to make counsel-ag search the root projectile directory.
   (defun counsel-ag-projectile ()
     (interactive)
     (counsel-ag nil (projectile-project-root)))
- 
+
   (setq counsel-find-file-at-point t)
   ;; ignore . files or temporary files
   (setq counsel-find-file-ignore-regexp
@@ -240,15 +247,18 @@
     (kill-buffer)
     (jump-to-register :magit-fullscreen))
   (define-key magit-status-mode-map (kbd "q") 'magit-quit-session))
+
 (use-package markdown-mode
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
   :config
   (add-hook 'markdown-mode-hook 'turn-on-orgtbl))
+
 (use-package midnight
   :config
   (midnight-delay-set 'midnight-delay "10:00am"))
+
 (use-package neotree
   :bind ("<f8>" . neotree-project-dir)
   :init
@@ -419,19 +429,43 @@
   :bind (("C-c l" . org-store-link)
          ("C-c a" . org-agenda)
          ("C-c c" . org-capture)
-         ("C-c b" . org-iswitchb))
+         ("C-c b" . org-switchb)
+         ("<f12>" . org-agenda)
+         )
   :config
-  (setq org-agenda-files '("~/org")
+  (setq org-directory "~/Dropbox/org"
+        org-agenda-files (list org-directory)
+        org-default-notes-file (concat org-directory "/inbox.org")
         org-clock-persist 'history
         org-enforce-todo-dependencies t
         org-hide-emphasis-markers t
         org-hide-leading-stars t
         org-insert-heading-respect-content t
+        ;; don't show scheduled TODO items
+        org-agenda-todo-ignore-scheduled 'future
+        ;; logging work
         org-log-done 'time
         org-log-into-drawer "LOGBOOK"
         org-log-redeadline 'time
         org-log-refile 'time
         org-log-reschedule 'time
+        ;; capture settings
+        org-capture-templates (quote (("t" "To Do" entry (file "")
+                                       "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
+                                      ("g" "Generic" entry (file "")
+                                       "* %?\n%U\n%a\n" :clock-in t :clock-resume t)
+                                      ("j" "Journal Entry"
+                                       entry (file+olp+datetree "journal.org")
+                                       "* %?"
+                                       :empty-lines 1)
+                                      ("l" "A link, for reading later." entry (file "")
+                                       "* [[%:link][%:description]]\n%u\n%?")))
+        ;; refile settings
+        org-refile-targets '((nil :maxlevel . 9)
+                             (org-agenda-files :maxlevel . 9))
+        org-refile-use-outline-path t
+        org-outline-path-complete-in-steps nil
+        org-refile-allow-creating-parent-nodes 'confirm
         org-log-note-headings
         (setq org-log-note-headings
               '((done .  "CLOSING NOTE %t")
@@ -459,7 +493,12 @@
               ("WAITING" :foreground "orange" :weight bold)
               ("SOMEDAY" :foreground "magenta" :weight bold)
               ("CANCELLED" :foreground "forest green" :weight bold))))
-  (org-clock-persistence-insinuate))
+  (org-clock-persistence-insinuate)
+  (add-hook 'org-mode-hook
+            '(lambda ()
+               ;; undefine C-c [ and C-c ]
+               (org-defkey org-mode-map "\C-c[" 'undefined)
+               (org-defkey org-mode-map "\C-c]" 'undefined))))
 
 
 (use-package org-bullets
@@ -467,12 +506,17 @@
   (add-hook 'org-mode-hook
             (lambda () (org-bullets-mode 1))))
 
+(use-package org-checklist
+  :ensure org-plus-contrib)
+
 (use-package org-indent
   :ensure nil
   :diminish)
 
-(use-package org-pomodoro)
-
+(use-package org-pomodoro
+  :commands (org-pomodoro)
+  :config
+  (setq alert-user-configuration '((((:category . "org-pomodoro")) osx-notifier nil))))
 
 ;;
 ;; generic keybindings
@@ -511,5 +555,4 @@
 ;; make sure modifier keybindings are sane
 (setq mac-command-modifier 'super)
 (setq mac-option-modifier 'meta)
-
 (setq gc-cons-threshold best-gc-cons-threshold)
