@@ -99,6 +99,7 @@
   :diminish company-mode
   :config
   (global-company-mode))
+
 (use-package discover-my-major
   :bind (("C-h C-m" . discover-my-major)
          ("C-h M-m" . discover-my-mode)))
@@ -108,6 +109,8 @@
 
 (use-package eyebrowse
   :ensure t
+  :init
+  (setq eyebrowse-keymap-prefix (kbd "C-c M-w"))
   :config
   (setq eyebrowse-mode-line-separator " "
         eyebrowse-new-workspace t)
@@ -140,7 +143,8 @@
   :diminish ivy-mode
   :init (setq projectile-completion-system 'ivy)
   :bind (:map ivy-mode-map ("C-'" . ivy-avy))
-  :config (ivy-mode 1)
+  :config
+  (ivy-mode 1)
   (setq ivy-use-virtual-buffers t
         ivy-height 13
         ivy-initial-inputs-alist nil
@@ -152,8 +156,8 @@
                                 (counsel-ag . ivy--regex-plus)
                                 (counsel-grep-or-swiper . ivy--regex-plus)
                                 (t . ivy--regex-fuzzy))))
-(use-package ivy-rich
-  :config (ivy-set-display-transformer 'ivy-switch-buffer 'ivy-rich-switch-buffer-transformer))
+;; (use-package ivy-rich
+;;   :config (ivy-set-display-transformer 'ivy-switch-buffer 'ivy-rich-switch-buffer-transformer))
 
 (use-package counsel-projectile
   :init
@@ -306,6 +310,11 @@
 (use-package yasnippet
   :diminish yas-minor-mode
   :config (yas-global-mode 1))
+(use-package whitespace
+  :init
+  (setq whitespace-style '(face tabs trailing newline empty space-before-tab space-after-tab))
+  :config
+  (global-whitespace-mode 1))
 
 ;; mode line customization
 (use-package powerline)
@@ -343,10 +352,6 @@
               (clj-refactor-mode 1)
               (yas-minor-mode 1)
               (cljr-add-keybindings-with-prefix "C-c C-m"))))
-
-;; lua support
-(use-package lua-mode)
-
 
 ;; ruby-specific changes
 (use-package ruby-mode
@@ -416,11 +421,57 @@
          ("C-c c" . org-capture)
          ("C-c b" . org-iswitchb))
   :config
-  (setq org-hide-leading-stars t))
+  (setq org-agenda-files '("~/org")
+        org-clock-persist 'history
+        org-enforce-todo-dependencies t
+        org-hide-emphasis-markers t
+        org-hide-leading-stars t
+        org-insert-heading-respect-content t
+        org-log-done 'time
+        org-log-into-drawer "LOGBOOK"
+        org-log-redeadline 'time
+        org-log-refile 'time
+        org-log-reschedule 'time
+        org-log-note-headings
+        (setq org-log-note-headings
+              '((done .  "CLOSING NOTE %t")
+                (state . "State %-12s from %-12S %t")
+                (note .  "Note taken on %t")
+                (reschedule .  "Rescheduled from %S on %t")
+                (delschedule .  "Not scheduled, was %S on %t")
+                (redeadline .  "New deadline from %S on %t")
+                (deldeadline .  "Removed deadline, was %S on %t")
+                (refile . "Refiled from %s to %S on %t")))
+        org-startup-indented t
+        org-todo-keywords
+        '(
+          ;; Task transitions
+          (sequence "TODO(t)" "TODAY(y!)" "STARTED(s!)" "PAUSED(p)" "WAITING(w@/!)" "|" "DONE(d!/!)" "CANCELLED(c@)")
+          ;; Project transitions - don't need this yet
+          ; (sequence "WAITING(w@/!)" "SOMEDAY(S!)" "OPEN(o@)")
+          )        org-todo-keyword-faces
+        (setq org-todo-keyword-faces
+            '(("TODO" :foreground "red" :weight bold)
+              ("TODAY" :foreground "color-27" :weight bold)
+              ("STARTED" :foreground "color-27" :weight bold)
+              ("PAUSED" :foreground "gold" :weight bold)
+              ("DONE" :foreground "forest green" :weight bold)
+              ("WAITING" :foreground "orange" :weight bold)
+              ("SOMEDAY" :foreground "magenta" :weight bold)
+              ("CANCELLED" :foreground "forest green" :weight bold))))
+  (org-clock-persistence-insinuate))
+
+
 (use-package org-bullets
   :config
   (add-hook 'org-mode-hook
             (lambda () (org-bullets-mode 1))))
+
+(use-package org-indent
+  :ensure nil
+  :diminish)
+
+(use-package org-pomodoro)
 
 
 ;;
@@ -428,7 +479,7 @@
 ;;
 (progn
   ;; i use this constantly - probably a bug
-  (global-set-key (kbd "C-x g") 'rgrep)
+  ;; (global-set-key (kbd "C-x g") 'rgrep)
   ;; Font size
   (global-set-key (kbd "C-+") 'text-scale-increase)
   (global-set-key (kbd "C--") 'text-scale-decrease)
@@ -445,7 +496,6 @@
 
 ;;; configure themes at the end to make sure we avoid the safe themes warning
 (use-package color-theme-sanityinc-tomorrow)
-(color-theme-sanityinc-tomorrow-eighties)
 
 ;;; EXPERIMENTAL
 ;; Keybindings for Mac Emacs
