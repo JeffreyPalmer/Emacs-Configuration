@@ -322,7 +322,7 @@
   :config (yas-global-mode 1))
 (use-package whitespace
   :init
-  (setq whitespace-style '(face tabs trailing empty space-before-tab space-after-tab))
+  (setq whitespace-style '(face tabs trailing space-before-tab space-after-tab))
   :config
   (global-whitespace-mode 1))
 
