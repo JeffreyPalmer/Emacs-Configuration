@@ -14,7 +14,7 @@
  '(fic-background-color "dark gray")
  '(flycheck-color-mode-line-face-to-color (quote mode-line-buffer-id))
  '(frame-background-mode (quote dark))
- '(fringe-mode 0 nil (fringe))
+ '(fringe-mode nil nil (fringe))
  '(magit-revert-buffers t t)
  '(menu-bar-mode nil)
  '(package-selected-packages
@@ -22,7 +22,6 @@
     (org-checklist shackle org-bullets org-mode eyebrowse chruby cider clojure-mode smart-mode-line-powerline-theme smart-mode-line yasnippet yaml-mode which-key undo-tree smex restclient pretty-lambdada paredit markdown-mode magit highlight-parentheses idle-highlight-mode flx fic-mode feature-mode projectile company base16-theme avy auto-complete better-defaults use-package)))
  '(sentence-end-double-space nil)
  '(show-paren-mode t)
- '(show-trailing-whitespace t)
  '(tool-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
