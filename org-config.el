@@ -23,7 +23,7 @@
         org-log-redeadline 'time
         org-log-refile 'time
         org-log-reschedule 'time
-        org-habit-graph-column 50
+        org-habit-graph-column 65
         ;; capture settings
         org-capture-templates '(("t" "To Do" entry (file "")
                                  "* TODO %?\n" :clock-in t :clock-resume t)
@@ -65,7 +65,8 @@
                                  ("WAITING" :foreground "coral")
                                  ("SOMEDAY" :foreground "purple")
                                  ("MAYBE" :foreground "purple"))
-        org-todo-state-tags-triggers '(("ACTIVE" ("active" . t))
+        org-todo-state-tags-triggers '(("PROJECT" ("project" . t))
+                                       ("ACTIVE" ("active" . t))
                                        ("PROJECT" ("active" . nil))
                                        ("FINISHED" ("active" . nil))
                                        ("SOMEDAY" ("active" . nil))
@@ -89,56 +90,25 @@
             (todo "TODAY"
                   ((org-agenda-overriding-header "Most Important Tasks for Today")))
             (tags-todo "active/!TODO|NEXT"
-                  ((org-agenda-overriding-header "Active Project Tasks")))
-            (tags-todo "-active/!NEXT|TODO"
-                       ((org-agenda-overriding-header (concat "Other Project Tasks"
-                                                              (if bh/hide-scheduled-and-waiting-next-tasks
-                                                                  ""
-                                                                " (including WAITING and SCHEDULED tasks)")))
-                        (org-agenda-skip-function 'bh/skip-projects-and-habits-and-single-tasks)
-                        (org-tags-match-list-sublevels t)
-                        (org-agenda-todo-ignore-scheduled bh/hide-scheduled-and-waiting-next-tasks)
-                        (org-agenda-todo-ignore-deadlines bh/hide-scheduled-and-waiting-next-tasks)
-                        (org-agenda-todo-ignore-with-date bh/hide-scheduled-and-waiting-next-tasks)
-                        (org-agenda-sorting-strategy
-                         '(todo-state-down effort-up category-keep))))
+                       ((org-agenda-overriding-header "Active Project Tasks")
+                        (org-agenda-sorting-strategy '(todo-state-down category-keep))))
+            (tags-todo "-active+project/!NEXT|TODO"
+                       ((org-agenda-overriding-header "Other Project Tasks")
+                        (org-agenda-sorting-strategy '(todo-state-down category-keep))))
             (todo "WAITING"
                   ((org-agenda-overriding-header "Waiting")))))
+          ("n" "Non-Project Tasks"
+           ((tags-todo "-project-active/!TODO|NEXT"
+                  ((org-agenda-overriding-header "Non-Project Tasks")))))
           ("p" "Project Review"
-           ((agenda "" nil)
-            (todo "ACTIVE"
+           ((todo "ACTIVE"
                   ((org-agenda-overriding-header "Active Projects")))
-            ;; active project tasks
-            (tags-todo "active/!TODO|NEXT"
-                  ((org-agenda-overriding-header "Active Project Tasks")))
             (todo "PROJECT"
                   ((org-agenda-overriding-header "Stuck Projects")
                    (org-agenda-skip-function '(org-agenda-skip-subtree-if 'todo '("NEXT" "TODAY")))))
             ;; other projects
-            ;; other project tasks
-            (tags-todo "-CANCELLED/!NEXT"
-                       ((org-agenda-overriding-header (concat "Project Next Tasks"
-                                                              (if bh/hide-scheduled-and-waiting-next-tasks
-                                                                  ""
-                                                                " (including WAITING and SCHEDULED tasks)")))
-                        (org-agenda-skip-function 'bh/skip-projects-and-habits-and-single-tasks)
-                        (org-tags-match-list-sublevels t)
-                        (org-agenda-todo-ignore-scheduled bh/hide-scheduled-and-waiting-next-tasks)
-                        (org-agenda-todo-ignore-deadlines bh/hide-scheduled-and-waiting-next-tasks)
-                        (org-agenda-todo-ignore-with-date bh/hide-scheduled-and-waiting-next-tasks)
-                        (org-agenda-sorting-strategy
-                         '(todo-state-down effort-up category-keep))))
-            (tags-todo "-REFILE-CANCELLED-WAITING-HOLD/!"
-                       ((org-agenda-overriding-header (concat "Project Subtasks"
-                                                              (if bh/hide-scheduled-and-waiting-next-tasks
-                                                                  ""
-                                                                " (including WAITING and SCHEDULED tasks)")))
-                        (org-agenda-skip-function 'bh/skip-non-project-tasks)
-                        (org-agenda-todo-ignore-scheduled bh/hide-scheduled-and-waiting-next-tasks)
-                        (org-agenda-todo-ignore-deadlines bh/hide-scheduled-and-waiting-next-tasks)
-                        (org-agenda-todo-ignore-with-date bh/hide-scheduled-and-waiting-next-tasks)
-                        (org-agenda-sorting-strategy
-                         '(category-keep))))))
+            (todo "PROJECT"
+                  ((org-agenda-overriding-header "Other Projects")))))
           ("h" "Habits" tags-todo "STYLE=\"habit\""
            ((org-agenda-overriding-header "Habits")
             (org-agenda-sorting-strategy
