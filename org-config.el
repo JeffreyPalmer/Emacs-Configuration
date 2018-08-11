@@ -103,7 +103,7 @@
           ("p" "Project Review"
            ((todo "ACTIVE"
                   ((org-agenda-overriding-header "Active Projects")))
-            (todo "PROJECT"
+            (todo "PROJECT|ACTIVE"
                   ((org-agenda-overriding-header "Stuck Projects")
                    (org-agenda-skip-function '(org-agenda-skip-subtree-if 'todo '("NEXT" "TODAY")))))
             ;; other projects
