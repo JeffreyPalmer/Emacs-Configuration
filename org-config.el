@@ -101,14 +101,15 @@
            ((tags-todo "-project-active/!TODO|NEXT"
                   ((org-agenda-overriding-header "Non-Project Tasks")))))
           ("p" "Project Review"
-           ((todo "ACTIVE"
-                  ((org-agenda-overriding-header "Active Projects")))
-            (todo "PROJECT|ACTIVE"
+           ((todo "PROJECT|ACTIVE"
                   ((org-agenda-overriding-header "Stuck Projects")
                    (org-agenda-skip-function '(org-agenda-skip-subtree-if 'todo '("NEXT" "TODAY")))))
-            ;; other projects
+            (todo "ACTIVE"
+                  ((org-agenda-overriding-header "Active Projects")
+                   (org-agenda-skip-function '(org-agenda-skip-subtree-if 'nottodo '("NEXT" "TODAY")))))
             (todo "PROJECT"
-                  ((org-agenda-overriding-header "Other Projects")))))
+                  ((org-agenda-overriding-header "Other Projects")
+                   (org-agenda-skip-function '(org-agenda-skip-subtree-if 'nottodo '("NEXT" "TODAY")))))))
           ("h" "Habits" tags-todo "STYLE=\"habit\""
            ((org-agenda-overriding-header "Habits")
             (org-agenda-sorting-strategy
@@ -533,38 +534,38 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
 (add-hook 'org-agenda-finalize-hook #'org-agenda-delete-empty-blocks)
 
 ;; completely hide drawers
-(defun org-cycle-hide-drawers (state)
-  "Re-hide all drawers after a visibility state change."
-  (when (and (derived-mode-p 'org-mode)
-             (not (memq state '(overview folded contents))))
-    (save-excursion
-      (let* ((globalp (memq state '(contents all)))
-             (beg (if globalp
-                    (point-min)
-                    (point)))
-             (end (if globalp
-                    (point-max)
-                    (if (eq state 'children)
-                      (save-excursion
-                        (outline-next-heading)
-                        (point))
-                      (org-end-of-subtree t)))))
-        (goto-char beg)
-        (while (re-search-forward org-drawer-regexp end t)
-          (save-excursion
-            (beginning-of-line 1)
-            (when (looking-at org-drawer-regexp)
-              (let* ((start (1- (match-beginning 0)))
-                     (limit
-                       (save-excursion
-                         (outline-next-heading)
-                           (point)))
-                     (msg (format
-                            (concat
-                              "org-cycle-hide-drawers:  "
-                              "`:END:`"
-                              " line missing at position %s")
-                            (1+ start))))
-                (if (re-search-forward "^[ \t]*:END:" limit t)
-                  (outline-flag-region start (point-at-eol) t)
-                  (user-error msg))))))))))
+;; (defun org-cycle-hide-drawers (state)
+;;   "Re-hide all drawers after a visibility state change."
+;;   (when (and (derived-mode-p 'org-mode)
+;;              (not (memq state '(overview folded contents))))
+;;     (save-excursion
+;;       (let* ((globalp (memq state '(contents all)))
+;;              (beg (if globalp
+;;                     (point-min)
+;;                     (point)))
+;;              (end (if globalp
+;;                     (point-max)
+;;                     (if (eq state 'children)
+;;                       (save-excursion
+;;                         (outline-next-heading)
+;;                         (point))
+;;                       (org-end-of-subtree t)))))
+;;         (goto-char beg)
+;;         (while (re-search-forward org-drawer-regexp end t)
+;;           (save-excursion
+;;             (beginning-of-line 1)
+;;             (when (looking-at org-drawer-regexp)
+;;               (let* ((start (1- (match-beginning 0)))
+;;                      (limit
+;;                        (save-excursion
+;;                          (outline-next-heading)
+;;                            (point)))
+;;                      (msg (format
+;;                             (concat
+;;                               "org-cycle-hide-drawers:  "
+;;                               "`:END:`"
+;;                               " line missing at position %s")
+;;                             (1+ start))))
+;;                 (if (re-search-forward "^[ \t]*:END:" limit t)
+;;                   (outline-flag-region start (point-at-eol) t)
+;;                   (user-error msg))))))))))
