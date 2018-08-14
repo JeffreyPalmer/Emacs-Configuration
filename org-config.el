@@ -31,8 +31,7 @@
                                  "* %?\n" :clock-in t :clock-resume t)
                                 ("j" "Journal Entry"
                                  entry (file+olp+datetree "journal.org")
-                                 "* %?"
-                                 :empty-lines 1)
+                                 "* %?")
                                 ("l" "A link, for reading later." entry (file "")
                                  "* [[%:link][%:description]]\n%u\n%?"))
         ;; refile settings
