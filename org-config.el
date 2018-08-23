@@ -78,15 +78,15 @@
         org-agenda-custom-commands
         '(
           ;; a view that supports:
-          ;; - most important task of the day NEXT / priority A
-          ;; - secondary tasks NEXT / priority B
-          ;; - other tasks if i have time NEXT / priority C
+          ;; - most important task of the day
+          ;; - secondary tasks
+          ;; - other tasks if i have time
           ("d" "Daily View"
            ((agenda "" nil)
             (tags "REFILE"
                   ((org-agenda-overriding-header "Inbox")
                    (org-tags-match-list-sublevels nil)))
-            (todo "TODAY"
+            (tags-todo "/TODAY"
                   ((org-agenda-overriding-header "Most Important Tasks for Today")))
             (tags-todo "active/!TODO|NEXT"
                        ((org-agenda-overriding-header "Active Project Tasks")
@@ -97,7 +97,7 @@
             (todo "WAITING"
                   ((org-agenda-overriding-header "Waiting")))))
           ("n" "Non-Project Tasks"
-           ((tags-todo "-project-active/!TODO|NEXT"
+           ((tags-todo "-project-active/!TODO|NEXT|TODAY"
                   ((org-agenda-overriding-header "Non-Project Tasks")))))
           ("p" "Project Review"
            ((todo "PROJECT|ACTIVE"
@@ -531,6 +531,7 @@ Skip project and sub-project tasks, habits, and loose non-project tasks."
   (setq buffer-read-only t))
 
 (add-hook 'org-agenda-finalize-hook #'org-agenda-delete-empty-blocks)
+
 
 ;; completely hide drawers
 ;; (defun org-cycle-hide-drawers (state)
