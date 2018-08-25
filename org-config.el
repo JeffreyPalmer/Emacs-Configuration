@@ -64,9 +64,9 @@
                                  ("WAITING" :foreground "coral")
                                  ("SOMEDAY" :foreground "purple")
                                  ("MAYBE" :foreground "purple"))
-        org-todo-state-tags-triggers '(("PROJECT" ("project" . t))
+        org-todo-state-tags-triggers '(("PROJECT" ("project" . t) ("active" . nil))
+                                       ("" ("project" . nil) ("active" . nil))
                                        ("ACTIVE" ("active" . t))
-                                       ("PROJECT" ("active" . nil))
                                        ("FINISHED" ("active" . nil))
                                        ("SOMEDAY" ("active" . nil))
                                        ("MAYBE" ("active" . nil)))
@@ -94,19 +94,19 @@
             (tags-todo "-active+project/!NEXT|TODO"
                        ((org-agenda-overriding-header "Other Project Tasks")
                         (org-agenda-sorting-strategy '(todo-state-down category-keep))))
-            (todo "WAITING"
+            (tags-todo "/WAITING"
                   ((org-agenda-overriding-header "Waiting")))))
           ("n" "Non-Project Tasks"
            ((tags-todo "-project-active/!TODO|NEXT|TODAY"
                   ((org-agenda-overriding-header "Non-Project Tasks")))))
           ("p" "Project Review"
-           ((todo "PROJECT|ACTIVE"
+           ((tags-todo "/PROJECT|ACTIVE"
                   ((org-agenda-overriding-header "Stuck Projects")
                    (org-agenda-skip-function '(org-agenda-skip-subtree-if 'todo '("NEXT" "TODAY")))))
-            (todo "ACTIVE"
+            (tags-todo "/ACTIVE"
                   ((org-agenda-overriding-header "Active Projects")
                    (org-agenda-skip-function '(org-agenda-skip-subtree-if 'nottodo '("NEXT" "TODAY")))))
-            (todo "PROJECT"
+            (tags-todo "/PROJECT"
                   ((org-agenda-overriding-header "Other Projects")
                    (org-agenda-skip-function '(org-agenda-skip-subtree-if 'nottodo '("NEXT" "TODAY")))))))
           ("h" "Habits" tags-todo "STYLE=\"habit\""
