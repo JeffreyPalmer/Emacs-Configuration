@@ -86,16 +86,22 @@
             (tags "REFILE"
                   ((org-agenda-overriding-header "Inbox")
                    (org-tags-match-list-sublevels nil)))
-            (tags-todo "/TODAY"
-                  ((org-agenda-overriding-header "Most Important Tasks for Today")))
-            (tags-todo "active/!TODO|NEXT"
-                       ((org-agenda-overriding-header "Active Project Tasks")
-                        (org-agenda-sorting-strategy '(todo-state-down category-keep))))
-            (tags-todo "-active+project/!NEXT|TODO"
-                       ((org-agenda-overriding-header "Other Project Tasks")
-                        (org-agenda-sorting-strategy '(todo-state-down category-keep))))
             (tags-todo "/WAITING"
-                  ((org-agenda-overriding-header "Waiting")))))
+                       ((org-agenda-overriding-header "Waiting")))
+            (tags-todo "/TODAY"
+                       ((org-agenda-overriding-header "Most Important Tasks for Today")))
+            (tags-todo "active/NEXT"
+                       ((org-agenda-overriding-header "Active Project Next Tasks")
+                        (org-agenda-sorting-strategy '(todo-state-down category-keep))))
+            (tags-todo "-active+project/NEXT"
+                       ((org-agenda-overriding-header "Other Project Next Tasks")
+                        (org-agenda-sorting-strategy '(todo-state-down category-keep))))
+            (tags-todo "+active|+project/TODO"
+                       ((org-agenda-overriding-header "Other Project Tasks")
+                        (org-agenda-sorting-strategy '(todo-state-down category-keep))))))
+          ("D" "Review completed tasks"
+           ((tags-todo "/DONE"
+                       ((org-agenda-overriding-header "Completed Tasks and Projects")))))
           ("n" "Non-Project Tasks"
            ((tags-todo "-project-active/!TODO|NEXT|TODAY"
                   ((org-agenda-overriding-header "Non-Project Tasks")))))
