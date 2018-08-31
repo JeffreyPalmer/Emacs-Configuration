@@ -173,7 +173,8 @@
 
 (use-package ivy-rich
   :config
-  (ivy-set-display-transformer 'ivy-switch-buffer 'ivy-rich-switch-buffer-transformer))
+  (ivy-rich-mode 1)
+  (setq ivy-rich-path-style 'abbrev))
 
 (use-package counsel-projectile
   :init

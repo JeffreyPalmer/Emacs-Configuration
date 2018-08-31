@@ -20,9 +20,6 @@
         ;; logging work
         org-log-done 'time
         org-log-into-drawer "LOGBOOK"
-        org-log-redeadline 'time
-        org-log-refile 'time
-        org-log-reschedule 'time
         org-habit-graph-column 65
         ;; capture settings
         org-capture-templates '(("t" "To Do" entry (file "")
@@ -41,13 +38,11 @@
         org-outline-path-complete-in-steps nil
         org-refile-allow-creating-parent-nodes 'confirm
         org-log-note-headings '((done        . "CLOSING NOTE %t")
-                                (state       . "State %-12s from %-12S %t")
                                 (note        . "Note taken on %t")
                                 (reschedule  . "Rescheduled from %S on %t")
                                 (delschedule . "Not scheduled, was %S on %t")
                                 (redeadline  . "New deadline from %S on %t")
-                                (deldeadline . "Removed deadline, was %S on %t")
-                                (refile      . "Refiled from %s to %S on %t"))
+                                (deldeadline . "Removed deadline, was %S on %t"))
         org-startup-indented t
         org-todo-keywords '((sequence "TODO(t)" "NEXT(n!)" "TODAY(y!)" "|" "DONE(d!/!)")
                             (sequence "PROJECT(p)" "ACTIVE(a!)" "|" "FINISHED(f!)" "CANCELLED(c@)")
