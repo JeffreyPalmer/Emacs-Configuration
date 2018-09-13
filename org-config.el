@@ -23,9 +23,9 @@
         org-habit-graph-column 65
         ;; capture settings
         org-capture-templates '(("t" "To Do" entry (file "")
-                                 "* TODO %?\n" :clock-in t :clock-resume t)
+                                 "* TODO %?\n")
                                 ("g" "Generic" entry (file "")
-                                 "* %?\n" :clock-in t :clock-resume t)
+                                 "* %?\n")
                                 ("j" "Journal Entry"
                                  entry (file+olp+datetree "journal.org")
                                  "* %?")
@@ -39,13 +39,14 @@
         org-refile-allow-creating-parent-nodes 'confirm
         org-log-note-headings '((done        . "CLOSING NOTE %t")
                                 (note        . "Note taken on %t")
+                                (state       . "State %-12s from %-12S %t")
                                 (reschedule  . "Rescheduled from %S on %t")
                                 (delschedule . "Not scheduled, was %S on %t")
                                 (redeadline  . "New deadline from %S on %t")
                                 (deldeadline . "Removed deadline, was %S on %t"))
         org-startup-indented t
-        org-todo-keywords '((sequence "TODO(t)" "NEXT(n!)" "TODAY(y!)" "|" "DONE(d!/!)")
-                            (sequence "PROJECT(p)" "ACTIVE(a!)" "|" "FINISHED(f!)" "CANCELLED(c@)")
+        org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "TODAY(y)" "|" "DONE(d!/!)")
+                            (sequence "PROJECT(p)" "ACTIVE(a)" "|" "FINISHED(f!)" "CANCELLED(c@)")
                             (sequence "SOMEDAY(S!)" "MAYBE(m!)")
                             (sequence "WAITING(w@/!)"))
         org-todo-keyword-faces '(("TODO" :foreground "red4")
