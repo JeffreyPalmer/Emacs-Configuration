@@ -14,7 +14,7 @@
         org-hide-emphasis-markers t
         org-hide-leading-stars t
         org-insert-heading-respect-content t
-        org-catch-invisible-edits 'smart
+        org-catch-invisible-edits 'show-and-error
         ;; don't show scheduled TODO items
         org-agenda-todo-ignore-scheduled 'future
         ;; logging work

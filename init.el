@@ -37,6 +37,8 @@
     (global-unset-key (kbd "C-x C-z")))
   (when (eq (key-binding (kbd "C-z")) 'suspend-frame)
     (global-unset-key (kbd "C-z")))
+  (when (eq (key-binding (kbd "<C-tab>")) 'mac-next-tab-or-toggle-tab-bar)
+    (global-unset-key (kbd "<C-tab>")))
   ;; default fonts
   (when (eq system-type 'darwin)
     (setq mac-frame-tabbing nil)
