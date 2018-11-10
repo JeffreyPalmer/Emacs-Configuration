@@ -133,6 +133,11 @@
         eyebrowse-new-workspace t)
   (eyebrowse-mode t))
 
+(use-package easy-kill
+  :config
+  (global-set-key [remap kill-ring-save] #'easy-kill)
+  (global-set-key [remap mark-sexp] #'easy-mark))
+
 (use-package projectile
   :diminish projectile-mode)
 
