@@ -108,7 +108,8 @@
   :bind
   (("C-;" . avy-goto-char-2))
   :config
-  (avy-setup-default))
+  (avy-setup-default)
+  (setq avy-keys '(?a ?r ?s ?t ?n ?e ?i ?o)))
 
 (use-package company
   :diminish company-mode
