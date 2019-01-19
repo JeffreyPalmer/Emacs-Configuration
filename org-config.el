@@ -1,5 +1,7 @@
 ;; org mode configuration is here because of its length
 (use-package org
+  :ensure org-plus-contrib
+  :pin org
   :bind (("C-c l" . org-store-link)
          ("C-c a" . org-agenda)
          ("C-c c" . org-capture)
@@ -20,7 +22,6 @@
         ;; logging work
         org-log-done 'time
         org-log-into-drawer "LOGBOOK"
-        org-habit-graph-column 65
         ;; capture settings
         org-capture-templates '(("t" "To Do" entry (file "")
                                  "* TODO %?\n")
@@ -122,13 +123,16 @@
                (org-defkey org-mode-map (kbd "C-c ]") 'undefined))))
 
 (use-package org-bullets
+  :ensure org-plus-contrib
   :hook ((org-mode . (lambda () (org-bullets-mode 1)))))
 
 (use-package org-checklist
   :ensure org-plus-contrib)
 
 (use-package org-habit
-  :ensure org-plus-contrib)
+  :ensure org-plus-contrib
+  :config
+  (setq org-habit-graph-column 65))
 
 (use-package org-indent
   :ensure nil
@@ -141,7 +145,6 @@
   :config
   (setq alert-user-configuration '((((:category . "org-pomodoro")) osx-notifier nil))
         org-pomodoro-format "🍅~%s"))
-
 
 ;; hide empty blocks in the agenda view
 (defun org-agenda-delete-empty-blocks ()

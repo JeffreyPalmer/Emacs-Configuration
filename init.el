@@ -496,3 +496,6 @@
 (setq mac-command-modifier 'super)
 (setq mac-option-modifier 'meta)
 (setq gc-cons-threshold best-gc-cons-threshold)
+
+;; start the emacs server
+(server-start)
