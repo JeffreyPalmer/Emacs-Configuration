@@ -123,7 +123,6 @@
                (org-defkey org-mode-map (kbd "C-c ]") 'undefined))))
 
 (use-package org-bullets
-  :ensure org-plus-contrib
   :hook ((org-mode . (lambda () (org-bullets-mode 1)))))
 
 (use-package org-checklist
