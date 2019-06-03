@@ -79,9 +79,6 @@
           ;; - other tasks if i have time
           ("d" "Daily View"
            ((agenda "" nil)
-            (tags "REFILE"
-                  ((org-agenda-overriding-header "Inbox")
-                   (org-tags-match-list-sublevels nil)))
             (todo "WAITING"
                        ((org-agenda-overriding-header "Waiting")))
             (tags-todo "/TODAY"
@@ -89,6 +86,9 @@
             (tags-todo "active/NEXT"
                        ((org-agenda-overriding-header "Active Project Next Tasks")
                         (org-agenda-sorting-strategy '(todo-state-down category-keep))))
+            (tags "REFILE"
+                       ((org-agenda-overriding-header "Inbox")
+                        (org-tags-match-list-sublevels nil)))
             (tags-todo "-active+project/NEXT"
                        ((org-agenda-overriding-header "Other Project Next Tasks")
                         (org-agenda-sorting-strategy '(todo-state-down category-keep))))
@@ -114,7 +114,10 @@
           ("h" "Habits" tags-todo "STYLE=\"habit\""
            ((org-agenda-overriding-header "Habits")
             (org-agenda-sorting-strategy
-             '(todo-state-down effort-up category-keep))))))
+             '(todo-state-down effort-up category-keep))))
+          ("i" "Inbox" tags "REFILE"
+           ((org-agenda-overriding-header "Inbox")
+            (org-tags-match-list-sublevels nil)))))
   (org-clock-persistence-insinuate)
   (add-hook 'org-mode-hook
             '(lambda ()

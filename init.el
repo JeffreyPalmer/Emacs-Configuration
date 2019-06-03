@@ -49,7 +49,9 @@
                         :family "Fira Code"
                         :height 141
                         :weight 'normal
-                        :width 'normal)))
+                        :width 'normal)
+    (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+    (add-to-list 'default-frame-alist '(ns-appearance . dark))))
 
 (defvar best-gc-cons-threshold 4000000 "Best default gc threshold value. Should't be too big.")
 ;; don't GC during startup to save time
@@ -60,6 +62,11 @@
 
 ;; enable winner mode for restoring window configurations
 (winner-mode 1)
+
+;; use ace-window to simplify window navigation
+(use-package ace-window
+  :bind
+  (("M-o" . ace-window)))
 
 ;; Generic user configuration
 (setq user-full-name "Jeffrey Palmer"
@@ -285,9 +292,7 @@
   :mode
   (("README\\.md\\'" . gfm-mode)
    ("\\.md\\'" . markdown-mode)
-   ("\\.markdown\\'" . markdown-mode))
-  :config
-  (add-hook 'markdown-mode-hook 'turn-on-orgtbl))
+   ("\\.markdown\\'" . markdown-mode)))
 
 (use-package midnight
   :config
@@ -310,6 +315,8 @@
                 (neotree-dir project-dir)
                 (neotree-find file-name)))
         (message "Could not find git project root.")))))
+
+(use-package olivetti)
 
 (use-package paredit
   :diminish paredit-mode
@@ -346,8 +353,7 @@
         `(("." . (concat user-emacs-directory "backups")))
         undo-tree-visualizer-timestamps t
         undo-tree-visualizer-diff t)
-  (global-undo-tree-mode)
-)
+  (global-undo-tree-mode))
 
 (use-package which-key
   :diminish which-key-mode
@@ -357,7 +363,7 @@
 
 (use-package whitespace
   :config
-  (setq whitespace-style '(face trailing))
+  (setq whitespace-style '(face trailing newline))
   (global-whitespace-mode '(clojure-mode elisp-mode markdown-mode org-mode)))
 
 ;; mode line customization
@@ -489,7 +495,6 @@
 
 ;;; configure themes at the end to make sure we avoid the safe themes warning
 (use-package color-theme-sanityinc-tomorrow)
-
 
 ;;; EXPERIMENTAL
 ;; Keybindings for Mac Emacs
