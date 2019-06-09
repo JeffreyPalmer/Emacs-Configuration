@@ -123,7 +123,9 @@
             '(lambda ()
                ;; undefine C-c [ and C-c ]
                (org-defkey org-mode-map (kbd "C-c [") 'undefined)
-               (org-defkey org-mode-map (kbd "C-c ]") 'undefined))))
+               (org-defkey org-mode-map (kbd "C-c ]") 'undefined)
+               ;; make sure that org-reveal is bound
+               (org-defkey org-mode-map (kbd "C-c r") 'org-reveal))))
 
 (use-package org-bullets
   :hook ((org-mode . (lambda () (org-bullets-mode 1)))))
