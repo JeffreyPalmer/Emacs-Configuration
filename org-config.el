@@ -8,7 +8,7 @@
          ("C-c b" . org-switchb)
          ("<f12>" . org-agenda))
   :config
-  (setq org-directory "~/Dropbox/org"
+  (setq org-directory "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org"
         org-agenda-files (list org-directory)
         org-default-notes-file (concat org-directory "/inbox.org")
         org-clock-persist 'history
