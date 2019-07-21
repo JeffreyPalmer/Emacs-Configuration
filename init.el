@@ -63,11 +63,6 @@
 ;; enable winner mode for restoring window configurations
 (winner-mode 1)
 
-;; use ace-window to simplify window navigation
-(use-package ace-window
-  :bind
-  (("M-o" . ace-window)))
-
 ;; Generic user configuration
 (setq user-full-name "Jeffrey Palmer"
       user-mail-address "jeffrey.palmer@acm.org")
@@ -97,12 +92,21 @@
 ;; Make sure that we start with sane defaults
 (use-package better-defaults)
 
+;; use ace-window to simplify window navigation
+(use-package ace-window
+  :bind
+  (("M-o" . ace-window)))
+
 ;; elixir support
 (use-package alchemist)
 
 (use-package alert
   :config
   (setq alert-default-style 'osx-notifier))
+
+;; install some fonts to provide convenient icons
+;; make sure to run M-x all-the-icons-install-fonts in a new setup
+(use-package all-the-icons)
 
 ;; load and configure any required packages
 (use-package auto-package-update
@@ -135,7 +139,7 @@
 
 (use-package eyebrowse
   :init
-  (setq eyebrowse-keymap-prefix (kbd "C-c M-w"))
+  (setq eyebrowse-keymap-prefix (kbd "C-c w"))
   :config
   (setq eyebrowse-mode-line-separator " "
         eyebrowse-new-workspace t)
@@ -366,13 +370,14 @@
   (setq whitespace-style '(face trailing newline))
   (global-whitespace-mode '(clojure-mode elisp-mode markdown-mode org-mode)))
 
-;; mode line customization
-(use-package powerline)
-
 (use-package spaceline-config
-  :ensure spaceline
+  :ensure spaceline)
+
+(use-package spaceline-all-the-icons
+  :after powerline
   :config
-  (spaceline-emacs-theme))
+  (setq spaceline-all-the-icons-separator-type 'arrow)
+  (spaceline-all-the-icons-theme))
 
 ;; changes to generic programming modes
 (add-hook 'prog-mode-hook
