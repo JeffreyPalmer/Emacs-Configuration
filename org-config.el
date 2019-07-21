@@ -223,3 +223,8 @@
 ;;                 (if (re-search-forward "^[ \t]*:END:" limit t)
 ;;                   (outline-flag-region start (point-at-eol) t)
 ;;                   (user-error msg))))))))))
+
+
+;; Local Variables:
+;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
+;; End:

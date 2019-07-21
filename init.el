@@ -78,13 +78,13 @@
 (global-prettify-symbols-mode 1)
 
 ;; other general settings
-(setq apropos-do-all t
-      default-tab-width 4
-      fci-rule-color "#e9e2cb"
-      fill-column 80
+(setq-default apropos-do-all t
+              default-tab-width 4
+              fci-rule-color "#e9e2cb"
+              linum-format " %7i ")
+(setq fill-column 80
       inhibit-startup-screen t
       kill-whole-line t
-      linum-format " %7i "
       require-final-newline t
       ring-bell-function 'ignore
       visible-bell nil)
@@ -519,3 +519,7 @@
 
 ;; start the emacs server
 (server-start)
+
+;; Local Variables:
+;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
+;; End:
