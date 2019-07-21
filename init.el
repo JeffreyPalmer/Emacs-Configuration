@@ -374,9 +374,10 @@
   :ensure spaceline)
 
 (use-package spaceline-all-the-icons
-  :after powerline
+  :after spaceline
   :config
   (setq spaceline-all-the-icons-separator-type 'arrow)
+  (spaceline-all-the-icons--setup-git-ahead)
   (spaceline-all-the-icons-theme))
 
 ;; changes to generic programming modes
@@ -385,6 +386,17 @@
             (make-local-variable 'column-number-mode)
             (column-number-mode t)
             (when window-system (hl-line-mode t))))
+
+(use-package git-gutter
+  :init
+  (global-git-gutter-mode t))
+
+(use-package fringe-helper)
+
+(use-package git-gutter-fringe
+  :requires (git-gutter fringe-helper)
+  :config
+  (setq git-gutter-fr:side 'right-fringe))
 
 ;; clojure support
 (use-package clojure-mode
