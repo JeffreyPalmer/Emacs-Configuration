@@ -85,6 +85,7 @@
 (setq fill-column 80
       inhibit-startup-screen t
       kill-whole-line t
+      uniquify-buffer-name-style 'reverse
       require-final-newline t
       ring-bell-function 'ignore
       visible-bell nil)
@@ -137,6 +138,11 @@
   (when (memq window-system '(mac ns))
     (exec-path-from-shell-initialize)))
 
+;; initialize ssh properly so that ssh-agent will work in magit
+(use-package keychain-environment
+  :config
+  (keychain-refresh-environment))
+
 (use-package eyebrowse
   :init
   (setq eyebrowse-keymap-prefix (kbd "C-c w"))
@@ -151,6 +157,9 @@
   (global-set-key [remap mark-sexp] #'easy-mark))
 
 (use-package projectile
+  :config
+  (projectile-mode +1)
+  (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
   :diminish projectile-mode)
 
 (use-package fic-mode
@@ -169,7 +178,6 @@
 	      (message) line-end))
     :modes (text-mode markdown-mode gfm-mode))
   (add-to-list 'flycheck-checkers 'proselint)
-  :init
   (global-flycheck-mode))
 
 (use-package highlight-parentheses)
@@ -202,12 +210,14 @@
   (ivy-mode 1))
 
 (use-package ivy-rich
+  :after ivy
   :config
   (ivy-rich-mode 1)
   (setq ivy-rich-path-style 'abbrev))
 
 (use-package counsel-projectile
-  :init
+  :after projectile
+  :config
   (counsel-projectile-mode))
 
 (use-package counsel
@@ -227,6 +237,7 @@
    ("C-c i m" . counsel-imenu)
    ("C-c i M" . ivy-imenu-anywhere)
    ("C-c d s" . describe-symbol)
+   ("C-c o" . counsel-org-agenda-headlines)
    :map ivy-minibuffer-map
    ("M-y" . ivy-next-line-and-call))
   :config
@@ -376,7 +387,12 @@
 (use-package spaceline-all-the-icons
   :after spaceline
   :config
-  (setq spaceline-all-the-icons-separator-type 'arrow)
+  (setq spaceline-all-the-icons-clock-always-visible t
+        spaceline-all-the-icons-hide-long-buffer-path t
+        spaceline-all-the-icons-icon-set-eyebrowse-slot 'square
+        spaceline-all-the-icons-icon-set-modified 'circle
+        spaceline-all-the-icons-separator-type 'arrow
+        spaceline-all-the-icons-separators-invert-direction nil)
   (spaceline-all-the-icons--setup-git-ahead)
   (spaceline-all-the-icons-theme))
 
@@ -388,13 +404,13 @@
             (when window-system (hl-line-mode t))))
 
 (use-package git-gutter
-  :init
+  :config
   (global-git-gutter-mode t))
 
 (use-package fringe-helper)
 
 (use-package git-gutter-fringe
-  :requires (git-gutter fringe-helper)
+  :after (git-gutter fringe-helper)
   :config
   (setq git-gutter-fr:side 'right-fringe))
 
@@ -405,9 +421,12 @@
 
 (use-package cider
   :pin melpa-stable
+  :after company
   :config
   (setq cider-repl-use-pretty-printing t)
   (add-hook 'cider-mode-hook #'eldoc-mode)
+  (add-hook 'cider-mode-hook #'company-mode)
+  (add-hook 'cider-repl-mode-hook #'company-mode)
   (add-hook 'cider-repl-mode-hook #'subword-mode)
   (add-hook 'cider-repl-mode-hook #'paredit-mode))
 
@@ -419,50 +438,50 @@
                      (cljr-add-keybindings-with-prefix "C-c C-m")))))
 
 ;; ruby-specific changes
-(use-package ruby-mode
-  :config
-  (add-hook 'ruby-mode-hook
-    (lambda ()
-    (set-fill-column 100)))
-  :bind (([(meta down)] . ruby-forward-sexp)
-         ([(meta up)]   . ruby-backward-sexp)
-         (("C-c C-e"    . ruby-send-region))))
+;; (use-package ruby-mode
+;;   :config
+;;   (add-hook 'ruby-mode-hook
+;;     (lambda ()
+;;     (set-fill-column 100)))
+;;   :bind (([(meta down)] . ruby-forward-sexp)
+;;          ([(meta up)]   . ruby-backward-sexp)
+;;          (("C-c C-e"    . ruby-send-region))))
 
-(use-package inf-ruby
-  :hook ((ruby-mode . #'inf-ruby-minor-mode)))
+;; (use-package inf-ruby
+;;   :hook ((ruby-mode . #'inf-ruby-minor-mode)))
 
-(use-package smartparens
-  :diminish smartparens-mode
-  :hook
-  ((ruby-mode-hook . #'smartparens-strict-mode))
-  :config
-  (require 'smartparens-config))
+;; (use-package smartparens
+;;   :diminish smartparens-mode
+;;   :hook
+;;   ((ruby-mode-hook . #'smartparens-strict-mode))
+;;   :config
+;;   (require 'smartparens-config))
 
-(use-package rubocop
-  :diminish rubocop-mode
-  :hook ruby-mode)
+;; (use-package rubocop
+;;   :diminish rubocop-mode
+;;   :hook ruby-mode)
 
-(use-package chruby)
+;; (use-package chruby)
 
-(use-package robe
-  :hook ruby-mode
-  :config
-  (advice-add 'inf-ruby-console-auto :before #'chruby-use-corresponding)
-  (eval-after-load 'company
-    '(push 'company-robe company-backends)))
+;; (use-package robe
+;;   :hook ruby-mode
+;;   :config
+;;   (advice-add 'inf-ruby-console-auto :before #'chruby-use-corresponding)
+;;   (eval-after-load 'company
+;;     '(push 'company-robe company-backends)))
 
-(use-package rspec-mode
-  :config
-  (setq rspec-use-rake-when-possible t
-        rspec-use-chruby t)
-  (rspec-install-snippets)
-  (defadvice rspec-compile (around rspec-compile-around)
-    "Use BASH shell for running the specs because of ZSH issues."
-    (let ((shell-file-name "/bin/bash"))
-      ad-do-it))
-  (ad-activate 'rspec-compile))
+;; (use-package rspec-mode
+;;   :config
+;;   (setq rspec-use-rake-when-possible t
+;;         rspec-use-chruby t)
+;;   (rspec-install-snippets)
+;;   (defadvice rspec-compile (around rspec-compile-around)
+;;     "Use BASH shell for running the specs because of ZSH issues."
+;;     (let ((shell-file-name "/bin/bash"))
+;;       ad-do-it))
+;;   (ad-activate 'rspec-compile))
 
-(use-package bundler)
+;; (use-package bundler)
 
 ;; Fira Code Ligature Support
 (mac-auto-operator-composition-mode)
