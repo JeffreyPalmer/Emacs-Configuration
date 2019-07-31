@@ -13,7 +13,7 @@ Getting started with a new checkout:
 ``` shell
 brew cask install font-fira-code
 brew tap railwaycat/emacsmacport
-brew install --with-modern-icon emacs-mac
+brew install --with-modern-icon emacs-mac --with-natural-title-bar
 ```
 
 In order to finish this setup, you will need to run the following
@@ -23,6 +23,13 @@ command inside of emacs to download and install some additional fonts:
 M-x all-the-icons-install-fonts
 ```
 
+Finally, ensure that [Emacs respects the title bar setting][4]:
+``` shell
+defaults write org.gnu.Emacs TransparentTitleBar DARK
+```
+
 [1]: https://github.com/jwiegley/use-package
 [2]: https://github.com/railwaycat/homebrew-emacsmacport
 [3]: https://github.com/tonsky/FiraCode
+[4]: https://github.com/railwaycat/homebrew-emacsmacport/wiki/Natural-Title-Bar
+
