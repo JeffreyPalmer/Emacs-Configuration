@@ -449,7 +449,7 @@
   :pin melpa-stable
   :after company
   :config
-  (setq cider-repl-use-pretty-printing t)
+  (setq cider-print-fn 'fipp)
   (add-hook 'cider-mode-hook #'eldoc-mode)
   (add-hook 'cider-mode-hook #'company-mode)
   (add-hook 'cider-repl-mode-hook #'company-mode)
