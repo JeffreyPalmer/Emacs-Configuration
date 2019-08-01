@@ -96,7 +96,10 @@
 ;; use ace-window to simplify window navigation
 (use-package ace-window
   :bind
-  (("M-o" . ace-window)))
+  (("M-o" . ace-window))
+  :config
+  (setq aw-keys '(?a ?r ?s ?t ?n ?e ?i ?o)
+        aw-ignore-current t))
 
 ;; elixir support
 (use-package alchemist)
@@ -212,15 +215,17 @@
 (use-package ivy-rich
   :after ivy
   :config
-  (ivy-rich-mode 1)
-  (setq ivy-rich-path-style 'abbrev))
+  (setq ivy-rich-path-style 'abbrev)
+  (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
+  (ivy-rich-mode 1))
 
 (use-package counsel-projectile
-  :after projectile
+  :after (projectile counsel)
   :config
   (counsel-projectile-mode))
 
 (use-package counsel
+  :after ivy
   :bind*
   (("M-x" . counsel-M-x)
    ("C-c d d" . counsel-descbinds)
@@ -287,6 +292,22 @@
 (use-package swiper
   :bind ("C-s" . swiper))
 
+;; further customization of ivy and company
+(use-package prescient
+  :after (ivy company)
+  :config
+  (prescient-persist-mode))
+
+(use-package ivy-prescient
+  :after prescient
+  :config
+  (ivy-prescient-mode))
+
+(use-package company-prescient
+  :after prescient
+  :config
+  (company-prescient-mode))
+
 (use-package magit
   :bind
   ("C-c C-g" . magit-status)
@@ -302,6 +323,11 @@
       (kill-buffer)
       (jump-to-register :magit-fullscreen))
     (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)))
+
+(use-package magit-todos
+  :after magit
+  :config
+  (magit-todos-mode))
 
 (use-package markdown-mode
   :mode
