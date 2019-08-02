@@ -440,6 +440,13 @@
   :config
   (setq git-gutter-fr:side 'right-fringe))
 
+;;; programming language support
+;; make sure that we have snippets installed
+(use-package yasnippet
+  :config
+  (yas-global-mode 1))
+(use-package yasnippet-snippets)
+
 ;; clojure support
 (use-package clojure-mode
   :config
@@ -462,52 +469,6 @@
                      (clj-refactor-mode 1)
                      (yas-minor-mode 1)
                      (cljr-add-keybindings-with-prefix "C-c C-m")))))
-
-;; ruby-specific changes
-;; (use-package ruby-mode
-;;   :config
-;;   (add-hook 'ruby-mode-hook
-;;     (lambda ()
-;;     (set-fill-column 100)))
-;;   :bind (([(meta down)] . ruby-forward-sexp)
-;;          ([(meta up)]   . ruby-backward-sexp)
-;;          (("C-c C-e"    . ruby-send-region))))
-
-;; (use-package inf-ruby
-;;   :hook ((ruby-mode . #'inf-ruby-minor-mode)))
-
-;; (use-package smartparens
-;;   :diminish smartparens-mode
-;;   :hook
-;;   ((ruby-mode-hook . #'smartparens-strict-mode))
-;;   :config
-;;   (require 'smartparens-config))
-
-;; (use-package rubocop
-;;   :diminish rubocop-mode
-;;   :hook ruby-mode)
-
-;; (use-package chruby)
-
-;; (use-package robe
-;;   :hook ruby-mode
-;;   :config
-;;   (advice-add 'inf-ruby-console-auto :before #'chruby-use-corresponding)
-;;   (eval-after-load 'company
-;;     '(push 'company-robe company-backends)))
-
-;; (use-package rspec-mode
-;;   :config
-;;   (setq rspec-use-rake-when-possible t
-;;         rspec-use-chruby t)
-;;   (rspec-install-snippets)
-;;   (defadvice rspec-compile (around rspec-compile-around)
-;;     "Use BASH shell for running the specs because of ZSH issues."
-;;     (let ((shell-file-name "/bin/bash"))
-;;       ad-do-it))
-;;   (ad-activate 'rspec-compile))
-
-;; (use-package bundler)
 
 ;; Fira Code Ligature Support
 (mac-auto-operator-composition-mode)
