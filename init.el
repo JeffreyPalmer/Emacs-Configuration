@@ -494,7 +494,7 @@
 ;;
 ;; org mode support
 ;;
-(load "~/.emacs.d/org-config.el")
+(load "~/.emacs.d/init-org.el")
 
 ;;
 ;; generic keybindings

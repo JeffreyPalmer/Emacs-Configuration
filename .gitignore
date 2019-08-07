@@ -1,6 +1,6 @@
 *
 !init.el
 !custom.el
-!org-config.el
+!init-org.el
 !.gitignore
 !README

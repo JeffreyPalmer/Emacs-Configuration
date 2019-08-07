@@ -31,7 +31,7 @@
                                  entry (file+olp+datetree "journal.org")
                                  "* %?")
                                 ("l" "A link, for reading later." entry (file "")
-                                 "* [[%:link][%:description]]\n%u\n%?"))
+                                 "* [[%:link][%:description]]\n%?"))
         ;; refile settings
         org-refile-targets '((nil :maxlevel . 9)
                              (org-agenda-files :maxlevel . 9))
@@ -80,15 +80,15 @@
           ("d" "Daily View"
            ((agenda "" nil)
             (todo "WAITING"
-                       ((org-agenda-overriding-header "Waiting")))
+                  ((org-agenda-overriding-header "Waiting")))
             (tags-todo "/TODAY"
                        ((org-agenda-overriding-header "Most Important Tasks for Today")))
             (tags-todo "active/NEXT"
                        ((org-agenda-overriding-header "Active Project Next Tasks")
                         (org-agenda-sorting-strategy '(todo-state-down category-keep))))
             (tags "REFILE"
-                       ((org-agenda-overriding-header "Inbox")
-                        (org-tags-match-list-sublevels nil)))
+                  ((org-agenda-overriding-header "Inbox")
+                   (org-tags-match-list-sublevels nil)))
             (tags-todo "-active+project/NEXT"
                        ((org-agenda-overriding-header "Other Project Next Tasks")
                         (org-agenda-sorting-strategy '(todo-state-down category-keep))))
@@ -100,17 +100,22 @@
                        ((org-agenda-overriding-header "Completed Tasks and Projects")))))
           ("n" "Non-Project Tasks"
            ((tags-todo "-project-active/!TODO|NEXT|TODAY"
-                  ((org-agenda-overriding-header "Non-Project Tasks")))))
+                       ((org-agenda-overriding-header "Non-Project Tasks")))))
           ("p" "Project Review"
            ((tags-todo "/PROJECT|ACTIVE"
-                  ((org-agenda-overriding-header "Stuck Projects")
-                   (org-agenda-skip-function '(org-agenda-skip-subtree-if 'todo '("NEXT" "TODAY")))))
+                       ((org-agenda-overriding-header "Stuck Projects")
+                        (org-agenda-skip-function '(org-agenda-skip-subtree-if 'todo '("NEXT" "TODAY")))))
             (tags-todo "/ACTIVE"
-                  ((org-agenda-overriding-header "Active Projects")
-                   (org-agenda-skip-function '(org-agenda-skip-subtree-if 'nottodo '("NEXT" "TODAY")))))
+                       ((org-agenda-overriding-header "Active Projects")
+                        (org-agenda-skip-function '(org-agenda-skip-subtree-if 'nottodo '("NEXT" "TODAY")))))
             (tags-todo "/PROJECT"
-                  ((org-agenda-overriding-header "Other Projects")
-                   (org-agenda-skip-function '(org-agenda-skip-subtree-if 'nottodo '("NEXT" "TODAY")))))))
+                       ((org-agenda-overriding-header "Other Projects")
+                        (org-agenda-skip-function '(org-agenda-skip-subtree-if 'nottodo '("NEXT" "TODAY")))))
+            (tags-todo "-CANCELLED/"
+                       ((org-agenda-overriding-header "Reviews Scheduled")
+                        (org-agenda-skip-function 'org-review-agenda-skip)
+                        (org-agenda-cmp-user-defined 'org-review-compare)
+                        (org-agenda-sorting-strategy '(user-defined-down))))))
           ("h" "Habits" tags-todo "STYLE=\"habit\""
            ((org-agenda-overriding-header "Habits")
             (org-agenda-sorting-strategy
@@ -143,19 +148,23 @@
   :diminish)
 
 (use-package org-pomodoro
-  :commands (org-pomodoro)
   :bind
   ("C-c p" . org-pomodoro)
   :config
   (setq alert-user-configuration '((((:category . "org-pomodoro")) osx-notifier nil))
         org-pomodoro-format "🍅~%s"))
 
+;; track when projects are reviewed and set next review dates
+(use-package org-review
+  :bind
+  (("C-c v" . org-review-insert-last-review)))
+
 ;; hide empty blocks in the agenda view
 (defun org-agenda-delete-empty-blocks ()
   "Remove empty agenda blocks.
-  A block is identified as empty if there are fewer than 2
-  non-empty lines in the block (excluding the line with
-  `org-agenda-block-separator' characters)."
+   A block is identified as empty if there are fewer than 2
+   non-empty lines in the block (excluding the line with
+   `org-agenda-block-separator' characters)."
   (when org-agenda-compact-blocks
     (user-error "Cannot delete empty compact blocks"))
   (setq buffer-read-only nil)
