@@ -17,6 +17,7 @@
         org-hide-leading-stars t
         org-insert-heading-respect-content t
         org-catch-invisible-edits 'show-and-error
+        org-use-speed-commands t
         ;; don't show scheduled TODO items
         org-agenda-todo-ignore-scheduled 'future
         ;; logging work
@@ -126,6 +127,7 @@
   (org-clock-persistence-insinuate)
   (add-hook 'org-mode-hook
             '(lambda ()
+
                ;; undefine C-c [ and C-c ]
                (org-defkey org-mode-map (kbd "C-c [") 'undefined)
                (org-defkey org-mode-map (kbd "C-c ]") 'undefined)

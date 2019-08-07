@@ -47,7 +47,7 @@
     ;; default font size (point * 10)
     (set-face-attribute 'default nil
                         :family "Fira Code"
-                        :height 141
+                        :height 151
                         :weight 'normal
                         :width 'normal)
     (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
@@ -88,7 +88,8 @@
       uniquify-buffer-name-style 'reverse
       require-final-newline t
       ring-bell-function 'ignore
-      visible-bell nil)
+      visible-bell nil
+      load-prefer-newer t)
 
 ;; Make sure that we start with sane defaults
 (use-package better-defaults)
@@ -118,6 +119,10 @@
   (setq auto-package-update-delete-old-versions t)
   :bind
   (("C-c u" . auto-package-update-now)))
+
+(use-package auto-compile
+  :config
+  (auto-compile-on-load-mode))
 
 (use-package avy
   :bind
