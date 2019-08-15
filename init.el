@@ -364,11 +364,6 @@
 
 (use-package olivetti)
 
-(use-package paredit
-  :diminish paredit-mode
-  :hook
-  ((clojure-mode clojurescript-mode emacs-lisp-mode lisp-mode lisp-interaction-mode) . #'enable-paredit-mode))
-
 (use-package restclient)
 
 (use-package smex)
@@ -452,6 +447,11 @@
   (yas-global-mode 1))
 (use-package yasnippet-snippets)
 
+;; keep code indented as it's edited
+(use-package aggressive-indent
+  :hook
+  ((clojure-mode clojurescript-mode emacs-lisp-mode lisp-mode lisp-interaction-mode) . #'aggressive-indent-mode))
+
 ;; clojure support
 (use-package clojure-mode
   :config
@@ -474,6 +474,16 @@
                      (clj-refactor-mode 1)
                      (yas-minor-mode 1)
                      (cljr-add-keybindings-with-prefix "C-c C-m")))))
+
+(use-package paredit
+  :diminish paredit-mode
+  :hook
+  ((clojure-mode clojurescript-mode emacs-lisp-mode lisp-mode lisp-interaction-mode) . #'enable-paredit-mode))
+
+
+;; F# support
+(use-package fsharp-mode)
+
 
 ;; Fira Code Ligature Support
 (mac-auto-operator-composition-mode)

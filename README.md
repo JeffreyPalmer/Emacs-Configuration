@@ -13,7 +13,7 @@ Getting started with a new checkout:
 ``` shell
 brew cask install font-fira-code
 brew tap railwaycat/emacsmacport
-brew install --with-modern-icon emacs-mac --with-natural-title-bar
+brew install --with-modern-icon --with-natural-title-bar emacs-mac
 ```
 
 In order to finish this setup, you will need to run the following
