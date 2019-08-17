@@ -20,6 +20,10 @@
  '(package-selected-packages
    (quote
     (magit-todos company-prescient ivy-prescient prescient ns-auto-titlebar ns-auto-titlebar-mode org-review olivetti color-theme-sanityinc-tomorrow org-checklist shackle org-bullets org-mode eyebrowse chruby cider clojure-mode smart-mode-line-powerline-theme smart-mode-line yasnippet yaml-mode which-key undo-tree smex restclient pretty-lambdada paredit markdown-mode magit highlight-parentheses idle-highlight-mode flx fic-mode feature-mode projectile company base16-theme avy auto-complete better-defaults use-package)))
+ '(safe-local-variable-values
+   (quote
+    ((cider-ns-refresh-after-fn . "integrant.repl/resume")
+     (cider-ns-refresh-before-fn . "integrant.repl/suspend"))))
  '(sentence-end-double-space nil)
  '(show-paren-mode t)
  '(tool-bar-mode nil))

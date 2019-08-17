@@ -42,7 +42,8 @@
   (set-mouse-color "DarkOrange")
   ;; default fonts
   (when (eq system-type 'darwin)
-    (setq mac-frame-tabbing nil)
+    (setq mac-frame-tabbing nil
+          use-dialog-box nil)
     ;; default Latin font (e.g. Consolas)
     ;; default font size (point * 10)
     (set-face-attribute 'default nil
