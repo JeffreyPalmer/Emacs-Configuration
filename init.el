@@ -456,7 +456,8 @@
 ;; clojure support
 (use-package clojure-mode
   :config
-  (add-hook 'clojure-mode-hook #'turn-on-eldoc-mode))
+  (add-hook 'clojure-mode-hook #'turn-on-eldoc-mode)
+  (add-hook 'clojure-mode-hook #'subword-mode))
 
 (use-package cider
   :pin melpa-stable
