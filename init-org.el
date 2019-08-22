@@ -7,6 +7,9 @@
          ("C-c c" . org-capture)
          ("C-c b" . org-switchb)
          ("<f12>" . org-agenda))
+  :hook
+  ((org-mode . variable-pitch-mode)
+   (org-mode . visual-line-mode))
   :config
   (setq org-directory "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org"
         org-agenda-files (list org-directory)
@@ -18,6 +21,7 @@
         org-insert-heading-respect-content t
         org-catch-invisible-edits 'show-and-error
         org-use-speed-commands t
+        ;; org-agenda-hide-tags-regexp TODO - figure out what this should be
         ;; don't show scheduled TODO items
         org-agenda-todo-ignore-scheduled 'future
         ;; logging work
@@ -127,7 +131,6 @@
   (org-clock-persistence-insinuate)
   (add-hook 'org-mode-hook
             '(lambda ()
-
                ;; undefine C-c [ and C-c ]
                (org-defkey org-mode-map (kbd "C-c [") 'undefined)
                (org-defkey org-mode-map (kbd "C-c ]") 'undefined)
@@ -135,7 +138,7 @@
                (org-defkey org-mode-map (kbd "C-c r") 'org-reveal))))
 
 (use-package org-bullets
-  :hook ((org-mode . (lambda () (org-bullets-mode 1)))))
+  :hook (org-mode . (lambda () (org-bullets-mode 1))))
 
 (use-package org-checklist
   :ensure org-plus-contrib)
@@ -196,7 +199,22 @@
   (setq buffer-read-only t))
 
 (add-hook 'org-agenda-finalize-hook #'org-agenda-delete-empty-blocks)
+;; org mode font configuration
 
+;; (custom-theme-set-faces
+;;  'user
+;;  '(org-block                 ((t (:inherit fixed-pitch))))
+;;  '(org-block-background      ((t (:inherit fixed-pitch))))
+;;  '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
+;;  '(org-indent                ((t (:inherit (org-hide fixed-pitch)))))
+;;  '(org-meta-line             ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+;;  '(org-property-value        ((t (:inherit fixed-pitch))) t)
+;;  '(org-special-keyword       ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+;;  '(org-table                 ((t (:inherit fixed-pitch))))
+;;  '(org-tag                   ((t (:inherit (shadow fixed-pitch) :height 0.9))))
+;;  '(org-verbatim              ((t (:inherit (shadow fixed-pitch)))))
+;;  `(org-document-title ((t (:height 2.0 :underline nil))))
+;;  `(org-level-1 ((t (:inherit outline-1 :height 1.2)))))
 
 ;; completely hide drawers
 ;; (defun org-cycle-hide-drawers (state)

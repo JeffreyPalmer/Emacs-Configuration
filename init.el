@@ -51,6 +51,7 @@
                         :height 151
                         :weight 'normal
                         :width 'normal)
+
     (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
     (add-to-list 'default-frame-alist '(ns-appearance . dark))))
 
@@ -144,6 +145,7 @@
 
 (use-package exec-path-from-shell
   :config
+  (setq exec-path-from-shell-check-startup-files nil)
   (when (memq window-system '(mac ns))
     (exec-path-from-shell-initialize)))
 
@@ -173,7 +175,7 @@
 
 (use-package fic-mode
   :diminish fic-mode
-  :hook prog-mode-hook)
+  :hook prog-mode)
 
 (use-package flycheck
   :pin melpa-stable
@@ -197,7 +199,7 @@
 
 (use-package idle-highlight-mode
   :diminish idle-highlight-mode
-  :hook prog-mode-hook)
+  :hook prog-mode)
 
 ;; Ivy/Counsel/Swiper Configuration
 (use-package ivy
@@ -347,9 +349,13 @@
 
 (use-package neotree
   :bind ("<f8>" . neotree-project-dir)
+  :hook
+  (neotree-mode . (lambda ()
+                    (variable-pitch-mode t)))
   :config
   (setq neo-smart-open t
-        projectile-switch-project-action 'neotree-projectile-action)
+        projectile-switch-project-action 'neotree-projectile-action
+        neo-theme 'arrow)
   (defun neotree-project-dir ()
     "Open NeoTree using the git root."
     (interactive)
@@ -446,29 +452,29 @@
 (use-package yasnippet
   :config
   (yas-global-mode 1))
+
 (use-package yasnippet-snippets)
 
 ;; keep code indented as it's edited
 (use-package aggressive-indent
   :hook
-  ((clojure-mode clojurescript-mode emacs-lisp-mode lisp-mode lisp-interaction-mode) . #'aggressive-indent-mode))
+  ((clojure-mode clojurescript-mode emacs-lisp-mode lisp-mode lisp-interaction-mode) . aggressive-indent-mode))
 
 ;; clojure support
 (use-package clojure-mode
-  :config
-  (add-hook 'clojure-mode-hook #'turn-on-eldoc-mode)
-  (add-hook 'clojure-mode-hook #'subword-mode))
+  :hook
+  ((clojure-mode . turn-on-eldoc-mode)
+   (clojure-mode . subword-mode)))
 
 (use-package cider
   :pin melpa-stable
   :after company
+  :hook
+  (((cider-mode cider-repl-mode) . company-mode)
+   (cider-mode . eldoc-mode)
+   (cider-repl-mode . subword-mode))
   :config
-  (setq cider-print-fn 'fipp)
-  (add-hook 'cider-mode-hook #'eldoc-mode)
-  (add-hook 'cider-mode-hook #'company-mode)
-  (add-hook 'cider-repl-mode-hook #'company-mode)
-  (add-hook 'cider-repl-mode-hook #'subword-mode)
-  (add-hook 'cider-repl-mode-hook #'paredit-mode))
+  (setq cider-print-fn 'fipp))
 
 (use-package clj-refactor
   :hook
@@ -480,12 +486,25 @@
 (use-package paredit
   :diminish paredit-mode
   :hook
-  ((clojure-mode clojurescript-mode emacs-lisp-mode lisp-mode lisp-interaction-mode) . #'enable-paredit-mode))
+  ((clojure-mode clojurescript-mode emacs-lisp-mode lisp-mode lisp-interaction-mode) . enable-paredit-mode))
 
+;; Python support
+;; (use-package elpy
+;;   :config
+;;   (elpy-enable))
+
+;; (with-eval-after-load 'python
+;;   (defun python-shell-completion-native-try ()
+;;     "Return non-nil if can trigger native completion."
+;;     (let ((python-shell-completion-native-enable t)
+;;           (python-shell-completion-native-output-timeout
+;;            python-shell-completion-native-try-output-timeout))
+;;       (python-shell-completion-native-get-completions
+;;        (get-buffer-process (current-buffer))
+;;        nil "_"))))
 
 ;; F# support
-(use-package fsharp-mode)
-
+;; (use-package fsharp-mode)
 
 ;; Fira Code Ligature Support
 (mac-auto-operator-composition-mode)
