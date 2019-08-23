@@ -48,7 +48,7 @@
     ;; default font size (point * 10)
     (set-face-attribute 'default nil
                         :family "Fira Code"
-                        :height 151
+                        :height 150
                         :weight 'normal
                         :width 'normal)
 
@@ -553,7 +553,15 @@
 (load custom-file)
 
 ;;; configure themes at the end to make sure we avoid the safe themes warning
-(use-package color-theme-sanityinc-tomorrow)
+;; (use-package color-theme-sanityinc-tomorrow)
+(use-package doom-themes
+  :config
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic t)
+  (load-theme 'doom-tomorrow-night t)
+  (doom-themes-visual-bell-config)
+  (doom-themes-neotree-config)
+  (doom-themes-org-config))
 
 ;;; EXPERIMENTAL
 ;; Keybindings for Mac Emacs
