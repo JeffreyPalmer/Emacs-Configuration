@@ -213,7 +213,7 @@
   (custom-theme-set-faces
    'user
    '(variable-pitch            ((t (:family "Source Sans Pro" :height 160 :weight light))))
-   '(fixed-pitch               ((t (:family "Source Code Pro" :slant normal :weight normal :height 1.0 :width normal))))
+   '(fixed-pitch               ((t (:family "Fira Code" :slant normal :weight normal :height 150 :width normal))))
    '(org-block                 ((t (:inherit fixed-pitch))))
    '(org-block-background      ((t (:inherit fixed-pitch))))
    '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))

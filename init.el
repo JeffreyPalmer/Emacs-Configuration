@@ -74,6 +74,8 @@
 
 ;; only use visual-line-mode in text files
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+(add-hook 'text-mode-hook '(lambda () (variable-pitch-mode t)))
+
 (set-cursor-color "goldenrod")
 
 ;; enable pretty symbols mode
@@ -341,7 +343,9 @@
   :mode
   (("README\\.md\\'" . gfm-mode)
    ("\\.md\\'" . markdown-mode)
-   ("\\.markdown\\'" . markdown-mode)))
+   ("\\.markdown\\'" . markdown-mode))
+  :config
+  (setq markdown-fontify-code-blocks-natively t))
 
 (use-package midnight
   :config
