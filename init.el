@@ -55,7 +55,7 @@
     (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
     (add-to-list 'default-frame-alist '(ns-appearance . dark))))
 
-(defvar best-gc-cons-threshold 4000000 "Best default gc threshold value. Should't be too big.")
+(defvar best-gc-cons-threshold 4000000 "Best default gc threshold value. Shouldn't be too big.")
 ;; don't GC during startup to save time
 (setq gc-cons-threshold most-positive-fixnum)
 
@@ -71,10 +71,6 @@
 
 ;; don't make me type, i know what i'm doing
 (defalias 'yes-or-no-p 'y-or-n-p)
-
-;; only use visual-line-mode in text files
-(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
-(add-hook 'text-mode-hook '(lambda () (variable-pitch-mode t)))
 
 (set-cursor-color "goldenrod")
 
@@ -94,6 +90,13 @@
       ring-bell-function 'ignore
       visible-bell nil
       load-prefer-newer t)
+
+;; only use visual-line-mode in text files
+(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+(add-hook 'text-mode-hook '(lambda () (variable-pitch-mode t)))
+
+;; don't use variable pitch for markup
+(add-hook 'sgml-mode-hook '(lambda () (variable-pitch-mode nil)))
 
 ;; Make sure that we start with sane defaults
 (use-package better-defaults)
@@ -411,7 +414,11 @@
   :diminish which-key-mode
   :config (which-key-mode))
 
-(use-package yaml-mode)
+(use-package yaml-mode
+  :hook
+  (yaml-mode . (run-hooks 'prog-mode-hooks))
+  :config
+  (put 'yaml-mode 'derived-mode-parent 'prog-mode))
 
 (use-package whitespace
   :config
@@ -492,6 +499,7 @@
   :hook
   ((clojure-mode clojurescript-mode emacs-lisp-mode lisp-mode lisp-interaction-mode) . enable-paredit-mode))
 
+
 ;; Python support
 ;; (use-package elpy
 ;;   :config
@@ -560,7 +568,7 @@
 ;; (use-package color-theme-sanityinc-tomorrow)
 (use-package doom-themes
   :config
-  (setq doom-themes-enable-bold t
+  (setq doom-themes-enable-bold nil
         doom-themes-enable-italic t)
   (load-theme 'doom-tomorrow-night t)
   (doom-themes-visual-bell-config)
