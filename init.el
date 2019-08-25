@@ -143,6 +143,19 @@
   :config
   (global-company-mode))
 
+(use-package company-posframe
+  :config
+  (company-posframe-mode 1))
+
+(use-package ivy-posframe
+  :config
+  (setq ivy-posframe-display-functions-alist
+        '((swiper          . nil)
+          (complete-symbol . ivy-posframe-display-at-point)
+          (counsel-M-x     . ivy-posframe-display-at-window-bottom-left)
+          (t               . ivy-posframe-display-at-window-center)))
+  (ivy-posframe-mode 1))
+
 (use-package discover-my-major
   :bind
   (("C-h C-m" . discover-my-major)

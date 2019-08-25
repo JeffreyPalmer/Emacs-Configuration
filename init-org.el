@@ -137,8 +137,8 @@
                ;; make sure that org-reveal is bound
                (org-defkey org-mode-map (kbd "C-c r") 'org-reveal))))
 
-(use-package org-bullets
-  :hook (org-mode . (lambda () (org-bullets-mode 1))))
+;; (use-package org-bullets
+;;   :hook (org-mode . (lambda () (org-bullets-mode 1))))
 
 (use-package org-checklist
   :ensure org-plus-contrib)
@@ -200,39 +200,28 @@
 
 (add-hook 'org-agenda-finalize-hook #'org-agenda-delete-empty-blocks)
 ;; org mode font configuration
-(let*
-    ((variable-tuple
-      (cond ((x-list-fonts "Avenir Next") '(:font "Avenir Next"))
-            ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
-            ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
-            ((x-list-fonts "Verdana")         '(:font "Verdana"))
-            ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
-            (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
-     (headline `(:inherit default :weight normal)))
-
-  (custom-theme-set-faces
-   'user
-   '(variable-pitch            ((t (:family "Source Sans Pro" :height 160 :weight light))))
-   '(fixed-pitch               ((t (:family "Fira Code" :slant normal :weight normal :height 150 :width normal))))
-   '(org-block                 ((t (:inherit fixed-pitch))))
-   '(org-block-background      ((t (:inherit fixed-pitch))))
-   '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
-   '(org-indent                ((t (:inherit (org-hide fixed-pitch)))))
-   '(org-meta-line             ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-   '(org-property-value        ((t (:inherit fixed-pitch))) t)
-   '(org-special-keyword       ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-   '(org-table                 ((t (:inherit fixed-pitch))))
-   '(org-tag                   ((t (:inherit (shadow fixed-pitch) :height 0.9))))
-   '(org-verbatim              ((t (:inherit (shadow fixed-pitch)))))
-   `(org-level-8               ((t (:inherit default))))
-   `(org-level-7               ((t (:inherit default))))
-   `(org-level-6               ((t (:inherit default))))
-   `(org-level-5               ((t (:inherit default))))
-   `(org-level-4               ((t (:inherit default))))
-   `(org-level-3               ((t (:inherit default :height 1.1))))
-   `(org-level-2               ((t (:inherit default :height 1.15))))
-   `(org-level-1               ((t (:inherit default :height 1.2))))
-   `(org-document-title        ((t (:inherit default :height 2.0 :underline nil))))))
+(custom-theme-set-faces
+ 'user
+ '(fixed-pitch               ((t (:family "Fira Code" :slant normal :weight normal :height 150 :width normal))))
+ '(org-block                 ((t (:inherit fixed-pitch))))
+ ;; '(org-block-background      ((t (:inherit fixed-pitch))))
+ '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
+ '(org-indent                ((t (:inherit (org-hide fixed-pitch)))))
+ '(org-meta-line             ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+ '(org-property-value        ((t (:inherit fixed-pitch))) t)
+ '(org-special-keyword       ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+ '(org-table                 ((t (:inherit fixed-pitch))))
+ '(org-tag                   ((t (:inherit shadow  :height 0.8))))
+ '(org-verbatim              ((t (:inherit (shadow fixed-pitch)))))
+ `(org-level-8               ((t (:inherit default))))
+ `(org-level-7               ((t (:inherit default))))
+ `(org-level-6               ((t (:inherit default))))
+ `(org-level-5               ((t (:inherit default))))
+ `(org-level-4               ((t (:inherit default))))
+ `(org-level-3               ((t (:inherit default :height 1.1))))
+ `(org-level-2               ((t (:inherit default :weight normal :height 1.15))))
+ `(org-level-1               ((t (:inherit default :weight normal :height 1.2))))
+ `(org-document-title        ((t (:inherit default :weight normal :height 2.0 :underline nil)))))
 
 ;; (custom-theme-set-faces
 
