@@ -512,6 +512,46 @@
   :hook
   ((clojure-mode clojurescript-mode emacs-lisp-mode lisp-mode lisp-interaction-mode) . enable-paredit-mode))
 
+;; ruby-specific changes
+(use-package ruby-mode
+  :bind (([(meta down)] . ruby-forward-sexp)
+         ([(meta up)]   . ruby-backward-sexp)
+         (("C-c C-e"    . ruby-send-region))))
+
+(use-package inf-ruby
+  :hook ((ruby-mode . inf-ruby-minor-mode)))
+
+(use-package smartparens
+  :diminish smartparens-mode
+  :hook
+  (ruby-mode . smartparens-strict-mode)
+  :config
+  (require 'smartparens-config)
+  ;; maybe remove this hook if i hate it
+  (remove-hook 'clojure-mode-hook #'smartparens-mode))
+
+(use-package rubocop
+  :diminish rubocop-mode
+  :hook ruby-mode)
+
+(use-package rbenv)
+
+(use-package robe
+  :hook ruby-mode
+  :config
+  (eval-after-load 'company
+    '(push 'company-robe company-backends)))
+
+(use-package rspec-mode
+  :config
+  (rspec-install-snippets)
+  (defadvice rspec-compile (around rspec-compile-around)
+    "Use BASH shell for running the specs because of ZSH issues."
+    (let ((shell-file-name "/bin/bash"))
+      ad-do-it))
+  (ad-activate 'rspec-compile))
+
+(use-package bundler)
 
 ;; Python support
 ;; (use-package elpy
@@ -527,6 +567,9 @@
 ;;       (python-shell-completion-native-get-completions
 ;;        (get-buffer-process (current-buffer))
 ;;        nil "_"))))
+;;
+;; (use-package pyenv-mode)
+;;
 
 ;; F# support
 ;; (use-package fsharp-mode)
