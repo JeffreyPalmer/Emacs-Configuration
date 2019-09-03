@@ -4,6 +4,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(blink-cursor-mode nil)
+ '(column-number-mode t)
  '(custom-enabled-themes (quote (sanityinc-tomorrow-night)))
  '(custom-safe-themes
    (quote
@@ -15,13 +16,12 @@
  '(flycheck-color-mode-line-face-to-color (quote mode-line-buffer-id))
  '(frame-background-mode (quote dark))
  '(fringe-mode nil nil (fringe))
+ '(lsp-fsharp-server-runtime (quote net-core))
  '(magit-revert-buffers t t)
  '(menu-bar-mode nil)
- '(neo-theme (quote icons))
- '(neo-window-width 25)
  '(package-selected-packages
    (quote
-    (doom-themes magit-todos company-prescient ivy-prescient prescient ns-auto-titlebar ns-auto-titlebar-mode org-review olivetti color-theme-sanityinc-tomorrow org-checklist shackle org-bullets org-mode eyebrowse chruby cider clojure-mode smart-mode-line-powerline-theme smart-mode-line yasnippet yaml-mode which-key undo-tree smex restclient pretty-lambdada paredit markdown-mode magit highlight-parentheses idle-highlight-mode flx fic-mode feature-mode projectile company base16-theme avy auto-complete better-defaults use-package)))
+    (minions doom-modeline lsp-mode doom-themes magit-todos company-prescient ivy-prescient prescient ns-auto-titlebar ns-auto-titlebar-mode org-review olivetti color-theme-sanityinc-tomorrow org-checklist shackle org-bullets org-mode eyebrowse chruby cider clojure-mode smart-mode-line-powerline-theme smart-mode-line yasnippet yaml-mode which-key undo-tree smex restclient pretty-lambdada paredit markdown-mode magit highlight-parentheses idle-highlight-mode flx fic-mode feature-mode projectile company base16-theme avy auto-complete better-defaults use-package)))
  '(safe-local-variable-values
    (quote
     ((cider-ns-refresh-after-fn . "integrant.repl/resume")
@@ -34,4 +34,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(variable-pitch ((t (:weight normal :height 1.1 :family "Source Sans Pro")))))
+ '(lsp-ui-sideline-code-action ((t (:foreground "lime green"))))
+ '(mode-line ((t (:background "#0f1011" :foreground "#ffffff" :box nil :weight normal :height 1.0 :family "Avenir Next"))))
+ '(variable-pitch ((t (:weight light :height 1.1 :family "Avenir Next")))))

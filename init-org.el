@@ -8,7 +8,7 @@
          ("C-c b" . org-switchb)
          ("<f12>" . org-agenda))
   :hook
-  ((org-mode . variable-pitch-mode)
+  ((org-mode . (lambda () (variable-pitch-mode t)))
    (org-mode . visual-line-mode))
   :config
   (setq org-directory "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org"
@@ -21,6 +21,8 @@
         org-insert-heading-respect-content t
         org-catch-invisible-edits 'show-and-error
         org-use-speed-commands t
+        ;; calculate completion statistics for multi-level projects
+        org-hierarchical-todo-statistics nil
         ;; org-agenda-hide-tags-regexp TODO - figure out what this should be
         ;; don't show scheduled TODO items
         org-agenda-todo-ignore-scheduled 'future
@@ -73,9 +75,10 @@
                                        ("MAYBE" ("active" . nil)))
         ;; agenda customization
         org-agenda-span 'day
-        org-stuck-projects (quote ("" nil nil ""))
+        org-stuck-projects '("/PROJECT|ACTIVE" ("NEXT" "TODAY") nil "")
         org-agenda-compact-blocks nil
         org-agenda-block-separator ?\-
+        org-agenda-dim-blocked-tasks nil
         org-agenda-custom-commands
         '(
           ;; a view that supports:
@@ -88,6 +91,8 @@
                   ((org-agenda-overriding-header "Waiting")))
             (tags-todo "/TODAY"
                        ((org-agenda-overriding-header "Most Important Tasks for Today")))
+            (todo "ACTIVE"
+                  ((org-agenda-overriding-header "Active Projects")))
             (tags-todo "active/NEXT"
                        ((org-agenda-overriding-header "Active Project Next Tasks")
                         (org-agenda-sorting-strategy '(todo-state-down category-keep))))
@@ -137,8 +142,9 @@
                ;; make sure that org-reveal is bound
                (org-defkey org-mode-map (kbd "C-c r") 'org-reveal))))
 
-;; (use-package org-bullets
-;;   :hook (org-mode . (lambda () (org-bullets-mode 1))))
+(use-package org-bullets
+  :hook (org-mode . (lambda () (org-bullets-mode 1)))
+  :custom (org-bullets-bullet-list '("◉" "○" "►" "•" "▸")))
 
 (use-package org-checklist
   :ensure org-plus-contrib)
@@ -202,11 +208,12 @@
 ;; org mode font configuration
 (custom-theme-set-faces
  'user
- '(fixed-pitch               ((t (:family "Fira Code" :slant normal :weight normal :height 150 :width normal))))
+ '(fixed-pitch               ((t (:family "Fira Code" :slant normal :weight normal :height 1.0 :width normal))))
  '(org-block                 ((t (:inherit fixed-pitch))))
  ;; '(org-block-background      ((t (:inherit fixed-pitch))))
  '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
  '(org-indent                ((t (:inherit (org-hide fixed-pitch)))))
+ '(org-link                  ((t (:inherit default))))
  '(org-meta-line             ((t (:inherit (font-lock-comment-face fixed-pitch)))))
  '(org-property-value        ((t (:inherit fixed-pitch))) t)
  '(org-special-keyword       ((t (:inherit (font-lock-comment-face fixed-pitch)))))

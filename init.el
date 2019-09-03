@@ -48,7 +48,7 @@
     ;; default font size (point * 10)
     (set-face-attribute 'default nil
                         :family "Fira Code"
-                        :height 150
+                        :height 151
                         :weight 'normal
                         :width 'normal)
 
@@ -149,11 +149,12 @@
 
 (use-package ivy-posframe
   :config
-  (setq ivy-posframe-display-functions-alist
+  (setq ivy-posframe-parameters '((left-fringe . 8) (right-fringe . 8))
+        ivy-posframe-display-functions-alist
         '((swiper          . nil)
           (complete-symbol . ivy-posframe-display-at-point)
-          (counsel-M-x     . ivy-posframe-display-at-window-bottom-left)
-          (t               . ivy-posframe-display-at-window-center)))
+          ;;(counsel-M-x     . ivy-posframe-display-at-frame-bottom-left)
+          (t               . ivy-posframe-display-at-frame-center)))
   (ivy-posframe-mode 1))
 
 (use-package discover-my-major
@@ -335,8 +336,6 @@
   (company-prescient-mode))
 
 (use-package magit
-  :bind
-  ("C-c C-g" . magit-status)
   :config
   (progn
     (defadvice magit-status (around magit-fullscreen activate)
@@ -367,27 +366,17 @@
   :config
   (midnight-delay-set 'midnight-delay "10:00am"))
 
-(use-package neotree
-  :bind ("<f8>" . neotree-project-dir)
-  :hook
-  (neotree-mode . (lambda ()
-                    (variable-pitch-mode t)))
+(use-package treemacs
+  :bind
+  ("<f8>" . treemacs)
   :config
-  (setq neo-smart-open t
-        projectile-switch-project-action 'neotree-projectile-action
-        neo-theme 'arrow)
-  (defun neotree-project-dir ()
-    "Open NeoTree using the git root."
-    (interactive)
-    (let ((project-dir (projectile-project-root))
-          (file-name (buffer-file-name)))
-      (neotree-toggle)
-      (if project-dir
-          (if (neo-global--window-exists-p)
-              (progn
-                (neotree-dir project-dir)
-                (neotree-find file-name)))
-        (message "Could not find git project root.")))))
+  (setq treemacs-width 25)
+  (define-key treemacs-mode-map [mouse-1] #'treemacs-single-click-expand-action))
+
+(use-package treemacs-projectile
+  :after (treemacs projectile))
+(use-package treemacs-magit
+  :after (treemacs magit))
 
 (use-package olivetti)
 
@@ -429,29 +418,28 @@
 
 (use-package yaml-mode
   :hook
-  (yaml-mode . (run-hooks 'prog-mode-hooks))
-  :config
-  (put 'yaml-mode 'derived-mode-parent 'prog-mode))
+  (yaml-mode . (lambda ()
+                 (variable-pitch-mode nil))))
 
 (use-package whitespace
   :config
   (setq whitespace-style '(face trailing newline))
   (global-whitespace-mode '(clojure-mode elisp-mode markdown-mode org-mode)))
 
-(use-package spaceline-config
-  :ensure spaceline)
+;; (use-package spaceline-config
+;;   :ensure spaceline)
 
-(use-package spaceline-all-the-icons
-  :after spaceline
-  :config
-  (setq spaceline-all-the-icons-clock-always-visible t
-        spaceline-all-the-icons-hide-long-buffer-path t
-        spaceline-all-the-icons-icon-set-eyebrowse-slot 'square
-        spaceline-all-the-icons-icon-set-modified 'circle
-        spaceline-all-the-icons-separator-type 'arrow
-        spaceline-all-the-icons-separators-invert-direction nil)
-  (spaceline-all-the-icons--setup-git-ahead)
-  (spaceline-all-the-icons-theme))
+;; (use-package spaceline-all-the-icons
+;;   :after spaceline
+;;   :config
+;;   (setq spaceline-all-the-icons-clock-always-visible t
+;;         spaceline-all-the-icons-hide-long-buffer-path t
+;;         spaceline-all-the-icons-icon-set-eyebrowse-slot 'solid
+;;         spaceline-all-the-icons-icon-set-modified 'chain
+;;         spaceline-all-the-icons-separator-type 'arrow
+;;         spaceline-all-the-icons-separators-invert-direction nil)
+;;   (spaceline-all-the-icons--setup-git-ahead)
+;;   (spaceline-all-the-icons-theme))
 
 ;; changes to generic programming modes
 (add-hook 'prog-mode-hook
@@ -522,13 +510,16 @@
   :hook ((ruby-mode . inf-ruby-minor-mode)))
 
 (use-package smartparens
-  :diminish smartparens-mode
-  :hook
-  (ruby-mode . smartparens-strict-mode)
+  ;; :diminish smartparens-mode
+  :custom
+  (sp-base-key-bindings 'paredit)
   :config
   (require 'smartparens-config)
   ;; maybe remove this hook if i hate it
-  (remove-hook 'clojure-mode-hook #'smartparens-mode))
+  ;; (remove-hook 'clojure-mode-hook #'smartparens-mode)
+  ;; (remove-hook 'clojurescript-mode #'smartparens-mode)
+  ;; (remove-hook 'emacs-lisp-mode #'smartparens-mode)
+  )
 
 (use-package rubocop
   :diminish rubocop-mode
@@ -553,6 +544,25 @@
 
 (use-package bundler)
 
+;; typescript support
+(use-package typescript-mode
+  :custom (js-indent-level 2)
+  :hook (typescript-mode . smartparens-mode))
+
+(use-package tide
+  :after (typescript-mode company flycheck)
+  :hook ((typescript-mode . tide-setup)
+         (typescript-mode . tide-hl-identifier-mode)
+         (before-save . tide-format-before-save))
+  :config
+  (setq company-tooltip-align-annotations t
+        tide-format-options '(:indentSize 2)))
+
+(use-package web-mode
+  :mode "\\.html?\\'"
+  :config (setq web-mode-enable-current-element-highlight t))
+
+
 ;; Python support
 ;; (use-package elpy
 ;;   :config
@@ -572,7 +582,17 @@
 ;;
 
 ;; F# support
-;; (use-package fsharp-mode)
+(use-package fsharp-mode)
+
+(use-package lsp-mode
+  :hook
+  ((fsharp-mode . lsp-deferred))
+  :commands (lsp lsp-deferred))
+
+(use-package lsp-ui :after lsp-mode :commands lsp-ui-mode)
+(use-package company-lsp :after lsp-mode :commands company-lsp)
+;; optionally if you want to use debugger
+;; (use-package dap-mode)
 
 ;; Fira Code Ligature Support
 (mac-auto-operator-composition-mode)
@@ -628,8 +648,18 @@
         doom-themes-enable-italic t)
   (load-theme 'doom-tomorrow-night t)
   (doom-themes-visual-bell-config)
-  (doom-themes-neotree-config)
+  ;;(doom-themes-neotree-config)
+  (doom-themes-treemacs-config)
   (doom-themes-org-config))
+
+(use-package doom-modeline
+  :hook (after-init . doom-modeline-mode)
+  :custom
+  ((doom-modeline-buffer-encoding nil)
+   (doom-modeline-buffer-file-name-style 'relative-from-project)))
+
+(use-package minions
+  :config (minions-mode 1))
 
 ;;; EXPERIMENTAL
 ;; Keybindings for Mac Emacs
