@@ -208,9 +208,10 @@
 ;; org mode font configuration
 (custom-theme-set-faces
  'user
+ '(variable-pitch            ((t (:family "Avenir Next" :slant normal :weight light :height 1.1 :width normal))))
  '(fixed-pitch               ((t (:family "Fira Code" :slant normal :weight normal :height 1.0 :width normal))))
+ '(mode-line                 ((t (:box nil :weight normal :height 1.0 :family "Avenir Next"))))
  '(org-block                 ((t (:inherit fixed-pitch))))
- ;; '(org-block-background      ((t (:inherit fixed-pitch))))
  '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
  '(org-indent                ((t (:inherit (org-hide fixed-pitch)))))
  '(org-link                  ((t (:inherit default))))
@@ -229,60 +230,6 @@
  `(org-level-2               ((t (:inherit default :weight normal :height 1.15))))
  `(org-level-1               ((t (:inherit default :weight normal :height 1.2))))
  `(org-document-title        ((t (:inherit default :weight normal :height 2.0 :underline nil)))))
-
-;; (custom-theme-set-faces
-
-;;  'user
-;;  '(org-block                 ((t (:inherit fixed-pitch))))
-;;  '(org-block-background      ((t (:inherit fixed-pitch))))
-;;  '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
-;;  '(org-indent                ((t (:inherit (org-hide fixed-pitch)))))
-;;  '(org-meta-line             ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-;;  '(org-property-value        ((t (:inherit fixed-pitch))) t)
-;;  '(org-special-keyword       ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-;;  '(org-table                 ((t (:inherit fixed-pitch))))
-;;  '(org-tag                   ((t (:inherit (shadow fixed-pitch) :height 0.9))))
-;;  '(org-verbatim              ((t (:inherit (shadow fixed-pitch)))))
-;;  `(org-document-title ((t (:height 2.0 :underline nil))))
-;;  `(org-level-1 ((t (:inherit outline-1 :height 1.2)))))
-
-;; completely hide drawers
-;; (defun org-cycle-hide-drawers (state)
-;;   "Re-hide all drawers after a visibility state change."
-;;   (when (and (derived-mode-p 'org-mode)
-;;              (not (memq state '(overview folded contents))))
-;;     (save-excursion
-;;       (let* ((globalp (memq state '(contents all)))
-;;              (beg (if globalp
-;;                     (point-min)
-;;                     (point)))
-;;              (end (if globalp
-;;                     (point-max)
-;;                     (if (eq state 'children)
-;;                       (save-excursion
-;;                         (outline-next-heading)
-;;                         (point))
-;;                       (org-end-of-subtree t)))))
-;;         (goto-char beg)
-;;         (while (re-search-forward org-drawer-regexp end t)
-;;           (save-excursion
-;;             (beginning-of-line 1)
-;;             (when (looking-at org-drawer-regexp)
-;;               (let* ((start (1- (match-beginning 0)))
-;;                      (limit
-;;                        (save-excursion
-;;                          (outline-next-heading)
-;;                            (point)))
-;;                      (msg (format
-;;                             (concat
-;;                               "org-cycle-hide-drawers:  "
-;;                               "`:END:`"
-;;                               " line missing at position %s")
-;;                             (1+ start))))
-;;                 (if (re-search-forward "^[ \t]*:END:" limit t)
-;;                   (outline-flag-region start (point-at-eol) t)
-;;                   (user-error msg))))))))))
-
 
 ;; Local Variables:
 ;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)

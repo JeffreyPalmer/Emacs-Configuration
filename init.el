@@ -79,7 +79,7 @@
 
 ;; other general settings
 (setq-default apropos-do-all t
-              default-tab-width 4
+              tab-width 4
               fci-rule-color "#e9e2cb"
               linum-format " %7i ")
 (setq fill-column 80
@@ -349,11 +349,6 @@
       (jump-to-register :magit-fullscreen))
     (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)))
 
-(use-package magit-todos
-  :after magit
-  :config
-  (magit-todos-mode))
-
 (use-package markdown-mode
   :mode
   (("README\\.md\\'" . gfm-mode)
@@ -366,12 +361,16 @@
   :config
   (midnight-delay-set 'midnight-delay "10:00am"))
 
+(use-package minions
+  :config (minions-mode 1))
+
 (use-package treemacs
   :bind
   ("<f8>" . treemacs)
   :config
-  (setq treemacs-width 25)
-  (define-key treemacs-mode-map [mouse-1] #'treemacs-single-click-expand-action))
+  (setq treemacs-width 35)
+  (define-key treemacs-mode-map [mouse-1] #'treemacs-single-click-expand-action)
+  (treemacs-define-RET-action 'file-node-open #'treemacs-visit-node-in-most-recently-used-window))
 
 (use-package treemacs-projectile
   :after (treemacs projectile))
@@ -418,8 +417,9 @@
 
 (use-package yaml-mode
   :hook
-  (yaml-mode . (lambda ()
-                 (variable-pitch-mode nil))))
+  ((yaml-mode . smartparens-mode)
+   (yaml-mode . (lambda ()
+                  (variable-pitch-mode nil)))))
 
 (use-package whitespace
   :config
@@ -488,17 +488,17 @@
   :config
   (setq cider-print-fn 'fipp))
 
-(use-package clj-refactor
-  :hook
-  ((clojure-mode . (lambda ()
-                     (clj-refactor-mode 1)
-                     (yas-minor-mode 1)
-                     (cljr-add-keybindings-with-prefix "C-c C-m")))))
+;; (use-package clj-refactor
+;;   :hook
+;;   ((clojure-mode . (lambda ()
+;;                      (clj-refactor-mode 1)
+;;                      (yas-minor-mode 1)
+;;                      (cljr-add-keybindings-with-prefix "C-c C-m")))))
 
 (use-package paredit
   :diminish paredit-mode
   :hook
-  ((clojure-mode clojurescript-mode emacs-lisp-mode lisp-mode lisp-interaction-mode) . enable-paredit-mode))
+  ((clojure-mode clojurescript-mode emacs-lisp-mode cider-repl-mode lisp-mode lisp-interaction-mode) . enable-paredit-mode))
 
 ;; ruby-specific changes
 (use-package ruby-mode
@@ -510,7 +510,8 @@
   :hook ((ruby-mode . inf-ruby-minor-mode)))
 
 (use-package smartparens
-  ;; :diminish smartparens-mode
+  :hook
+  (json-mode . smartparens-mode)
   :custom
   (sp-base-key-bindings 'paredit)
   :config
@@ -546,7 +547,7 @@
 
 ;; typescript support
 (use-package typescript-mode
-  :custom (js-indent-level 2)
+  :custom (typescript-indent-level 2)
   :hook (typescript-mode . smartparens-mode))
 
 (use-package tide
@@ -641,7 +642,6 @@
 (load custom-file)
 
 ;;; configure themes at the end to make sure we avoid the safe themes warning
-;; (use-package color-theme-sanityinc-tomorrow)
 (use-package doom-themes
   :config
   (setq doom-themes-enable-bold nil
@@ -657,9 +657,6 @@
   :custom
   ((doom-modeline-buffer-encoding nil)
    (doom-modeline-buffer-file-name-style 'relative-from-project)))
-
-(use-package minions
-  :config (minions-mode 1))
 
 ;;; EXPERIMENTAL
 ;; Keybindings for Mac Emacs
