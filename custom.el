@@ -23,7 +23,6 @@
  '(magit-revert-buffers t t)
  '(menu-bar-mode nil)
  '(objed-cursor-color "#cc6666")
- '(org-bullets-bullet-list (quote ("◉" "○" "►" "•" "▸")))
  '(package-selected-packages
    (quote
     (discover-clj-refactor minions doom-modeline lsp-mode doom-themes magit-todos company-prescient ivy-prescient prescient ns-auto-titlebar ns-auto-titlebar-mode org-review olivetti color-theme-sanityinc-tomorrow org-checklist shackle org-bullets org-mode eyebrowse chruby cider clojure-mode smart-mode-line-powerline-theme smart-mode-line yasnippet yaml-mode which-key undo-tree smex restclient pretty-lambdada paredit markdown-mode magit highlight-parentheses idle-highlight-mode flx fic-mode feature-mode projectile company base16-theme avy auto-complete better-defaults use-package)))
@@ -59,32 +58,9 @@
     (cons 360 "#5c5e5e")))
  '(vc-annotate-very-old-color nil)
  '(window-divider-mode nil))
-;; (custom-set-faces
-;;  ;; custom-set-faces was added by Custom.
-;;  ;; If you edit it by hand, you could mess it up, so be careful.
-;;  ;; Your init file should contain only one such instance.
-;;  ;; If there is more than one, they won't work right.
-;;  '(default ((t (:inherit nil :stipple nil :background "#292D3E" :foreground "#EEFFFF" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 151 :width normal :foundry "nil" :family "Fira Code"))))
-;;  '(fixed-pitch ((t (:family "Fira Code" :slant normal :weight normal :height 1.0 :width normal))))
-;;  '(lsp-ui-sideline-code-action ((t (:foreground "lime green"))))
-;;  '(mode-line ((t (:box nil :weight normal :height 1.0 :family "Avenir Next"))))
-;;  '(org-block ((t (:inherit fixed-pitch))))
-;;  '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
-;;  '(org-document-title ((t (:inherit default :weight normal :height 2.0 :underline nil))))
-;;  '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
-;;  '(org-level-1 ((t (:inherit default :weight normal :height 1.2))))
-;;  '(org-level-2 ((t (:inherit default :weight normal :height 1.15))))
-;;  '(org-level-3 ((t (:inherit default :height 1.1))))
-;;  '(org-level-4 ((t (:inherit default))))
-;;  '(org-level-5 ((t (:inherit default))))
-;;  '(org-level-6 ((t (:inherit default))))
-;;  '(org-level-7 ((t (:inherit default))))
-;;  '(org-level-8 ((t (:inherit default))))
-;;  '(org-link ((t (:inherit default))))
-;;  '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-;;  '(org-property-value ((t (:inherit fixed-pitch))) t)
-;;  '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-;;  '(org-table ((t (:inherit fixed-pitch))))
-;;  '(org-tag ((t (:inherit shadow :height 0.8))))
-;;  '(org-verbatim ((t (:inherit (shadow fixed-pitch)))))
-;;  '(variable-pitch ((t (:weight light :height 1.1 :family "Avenir Next")))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(lsp-ui-sideline-code-action ((t (:foreground "sea green")))))

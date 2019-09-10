@@ -48,7 +48,7 @@
     ;; default font size (point * 10)
     (set-face-attribute 'default nil
                         :family "Fira Code"
-                        :height 151
+                        :height 141
                         :weight 'normal
                         :width 'normal)
 
@@ -89,6 +89,7 @@
       require-final-newline t
       ring-bell-function 'ignore
       visible-bell nil
+      gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"
       load-prefer-newer t)
 
 ;; only use visual-line-mode in text files
@@ -488,12 +489,12 @@
   :config
   (setq cider-print-fn 'fipp))
 
-;; (use-package clj-refactor
-;;   :hook
-;;   ((clojure-mode . (lambda ()
-;;                      (clj-refactor-mode 1)
-;;                      (yas-minor-mode 1)
-;;                      (cljr-add-keybindings-with-prefix "C-c C-m")))))
+(use-package clj-refactor
+  :hook
+  ((clojure-mode . (lambda ()
+                     (clj-refactor-mode 1)
+                     (yas-minor-mode 1)
+                     (cljr-add-keybindings-with-prefix "C-c C-m")))))
 
 (use-package paredit
   :diminish paredit-mode
@@ -550,14 +551,14 @@
   :custom (typescript-indent-level 2)
   :hook (typescript-mode . smartparens-mode))
 
-(use-package tide
-  :after (typescript-mode company flycheck)
-  :hook ((typescript-mode . tide-setup)
-         (typescript-mode . tide-hl-identifier-mode)
-         (before-save . tide-format-before-save))
-  :config
-  (setq company-tooltip-align-annotations t
-        tide-format-options '(:indentSize 2)))
+;; (use-package tide
+;;   :after (typescript-mode company flycheck)
+;;   :hook ((typescript-mode . tide-setup)
+;;          (typescript-mode . tide-hl-identifier-mode)
+;;          (before-save . tide-format-before-save))
+;;   :config
+;;   (setq company-tooltip-align-annotations t
+;;         tide-format-options '(:indentSize 2)))
 
 (use-package web-mode
   :mode "\\.html?\\'"
@@ -585,12 +586,25 @@
 ;; F# support
 (use-package fsharp-mode)
 
+;; C# support
+(use-package csharp-mode)
+
 (use-package lsp-mode
   :hook
-  ((fsharp-mode . lsp-deferred))
-  :commands (lsp lsp-deferred))
+  ((fsharp-mode . lsp))
+  :commands (lsp lsp-deferred)
+  :config
+  (setq inferior-fsharp-program "/usr/local/bin/dotnet fsi --readline-"))
 
-(use-package lsp-ui :after lsp-mode :commands lsp-ui-mode)
+(use-package lsp-ui :after lsp-mode :commands lsp-ui-mode
+  :config
+  (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+  (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
+  (setq lsp-ui-sideline-enable t
+        lsp-ui-flycheck-enable t
+        lsp-ui-imenu-enable t
+        lsp-ui-sideline-ignore-duplicate t))
+
 (use-package company-lsp :after lsp-mode :commands company-lsp)
 ;; optionally if you want to use debugger
 ;; (use-package dap-mode)
