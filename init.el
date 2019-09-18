@@ -48,7 +48,7 @@
     ;; default font size (point * 10)
     (set-face-attribute 'default nil
                         :family "Fira Code"
-                        :height 141
+                        :height 151
                         :weight 'normal
                         :width 'normal)
 
@@ -205,11 +205,16 @@
     :command ("proselint" source-inplace)
     :error-patterns
     ((warning line-start (file-name) ":" line ":" column ": "
-	      (id (one-or-more (not (any " "))))
-	      (message) line-end))
+              (id (one-or-more (not (any " "))))
+              (message) line-end))
     :modes (text-mode markdown-mode gfm-mode))
   (add-to-list 'flycheck-checkers 'proselint)
   (global-flycheck-mode))
+
+(use-package highlight-indent-guides
+  :hook (prog-mode . highlight-indent-guides-mode)
+  :config
+  (setq highlight-indent-guides-method 'character))
 
 (use-package highlight-parentheses)
 
@@ -365,18 +370,28 @@
 (use-package minions
   :config (minions-mode 1))
 
-(use-package treemacs
-  :bind
-  ("<f8>" . treemacs)
+(use-package neotree
+  :bind ("<f8>" . neotree-project-dir)
+  :hook
+  (neotree-mode . (lambda ()
+                    (variable-pitch-mode t)))
   :config
-  (setq treemacs-width 35)
-  (define-key treemacs-mode-map [mouse-1] #'treemacs-single-click-expand-action)
-  (treemacs-define-RET-action 'file-node-open #'treemacs-visit-node-in-most-recently-used-window))
-
-(use-package treemacs-projectile
-  :after (treemacs projectile))
-(use-package treemacs-magit
-  :after (treemacs magit))
+  (setq neo-smart-open t
+        projectile-switch-project-action 'neotree-projectile-action
+        neo-theme 'icons
+        neo-window-width 35)
+  (defun neotree-project-dir ()
+    "Open NeoTree using the git root."
+    (interactive)
+    (let ((project-dir (projectile-project-root))
+          (file-name (buffer-file-name)))
+      (neotree-toggle)
+      (if project-dir
+          (if (neo-global--window-exists-p)
+              (progn
+                (neotree-dir project-dir)
+                (neotree-find file-name)))
+        (message "Could not find git project root.")))))
 
 (use-package olivetti)
 
@@ -426,21 +441,6 @@
   :config
   (setq whitespace-style '(face trailing newline))
   (global-whitespace-mode '(clojure-mode elisp-mode markdown-mode org-mode)))
-
-;; (use-package spaceline-config
-;;   :ensure spaceline)
-
-;; (use-package spaceline-all-the-icons
-;;   :after spaceline
-;;   :config
-;;   (setq spaceline-all-the-icons-clock-always-visible t
-;;         spaceline-all-the-icons-hide-long-buffer-path t
-;;         spaceline-all-the-icons-icon-set-eyebrowse-slot 'solid
-;;         spaceline-all-the-icons-icon-set-modified 'chain
-;;         spaceline-all-the-icons-separator-type 'arrow
-;;         spaceline-all-the-icons-separators-invert-direction nil)
-;;   (spaceline-all-the-icons--setup-git-ahead)
-;;   (spaceline-all-the-icons-theme))
 
 ;; changes to generic programming modes
 (add-hook 'prog-mode-hook
@@ -564,37 +564,21 @@
   :mode "\\.html?\\'"
   :config (setq web-mode-enable-current-element-highlight t))
 
-
-;; Python support
-;; (use-package elpy
-;;   :config
-;;   (elpy-enable))
-
-;; (with-eval-after-load 'python
-;;   (defun python-shell-completion-native-try ()
-;;     "Return non-nil if can trigger native completion."
-;;     (let ((python-shell-completion-native-enable t)
-;;           (python-shell-completion-native-output-timeout
-;;            python-shell-completion-native-try-output-timeout))
-;;       (python-shell-completion-native-get-completions
-;;        (get-buffer-process (current-buffer))
-;;        nil "_"))))
-;;
-;; (use-package pyenv-mode)
-;;
-
 ;; F# support
-(use-package fsharp-mode)
+(use-package fsharp-mode
+  :hook (fsharp-mode . smartparens-mode))
 
 ;; C# support
-(use-package csharp-mode)
+(use-package csharp-mode
+  :hook (csharp-mode . smartparens-mode))
 
 (use-package lsp-mode
   :hook
-  ((fsharp-mode . lsp))
+  ((fsharp-mode . lsp-deferred))
   :commands (lsp lsp-deferred)
   :config
-  (setq inferior-fsharp-program "/usr/local/bin/dotnet fsi --readline-"))
+  (setq inferior-fsharp-program "/usr/local/bin/dotnet fsi --readline-"
+        lsp-prefer-flymake nil))
 
 (use-package lsp-ui :after lsp-mode :commands lsp-ui-mode
   :config
@@ -606,6 +590,7 @@
         lsp-ui-sideline-ignore-duplicate t))
 
 (use-package company-lsp :after lsp-mode :commands company-lsp)
+
 ;; optionally if you want to use debugger
 ;; (use-package dap-mode)
 
@@ -662,8 +647,7 @@
         doom-themes-enable-italic t)
   (load-theme 'doom-tomorrow-night t)
   (doom-themes-visual-bell-config)
-  ;;(doom-themes-neotree-config)
-  (doom-themes-treemacs-config)
+  (doom-themes-neotree-config)
   (doom-themes-org-config))
 
 (use-package doom-modeline
