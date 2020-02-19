@@ -53,12 +53,13 @@
                                 (redeadline  . "New deadline from %S on %t")
                                 (deldeadline . "Removed deadline, was %S on %t"))
         org-startup-indented t
-        org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "TODAY(y)" "WAITING(w@/!)" "|" "DONE(d!/!)")
+        org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "TODAY(y)" "IN_PROGRESS(i)" "WAITING(w@/!)" "|" "DONE(d!/!)")
                             (sequence "PROJECT(p)" "ACTIVE(a)" "|" "FINISHED(f!)" "CANCELLED(c@)")
                             (sequence "SOMEDAY(S!)" "MAYBE(m!)"))
         org-todo-keyword-faces '(("TODO" :foreground "DodgerBlue3")
                                  ("NEXT" :foreground "DodgerBlue2")
                                  ("TODAY" :foreground "SpringGreen2")
+                                 ("IN_PROGRESS" :foreground "SpringGreen2")
                                  ("DONE" :foreground "forest green")
                                  ("PROJECT" :foreground "cornflower blue")
                                  ("ACTIVE" :foreground "deep sky blue")
@@ -89,7 +90,7 @@
            ((agenda "" nil)
             (todo "WAITING"
                   ((org-agenda-overriding-header "Waiting")))
-            (tags-todo "/TODAY"
+            (tags-todo "/TODAY|IN_PROGRESS"
                        ((org-agenda-overriding-header "Most Important Tasks for Today")))
             (todo "ACTIVE"
                   ((org-agenda-overriding-header "Active Projects")))
