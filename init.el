@@ -662,6 +662,10 @@
   ;; Font size
   (global-set-key (kbd "C-+") 'text-scale-increase)
   (global-set-key (kbd "C--") 'text-scale-decrease)
+
+  ;; programming mode bindings
+  (define-key prog-mode-map (kbd "s-/") 'comment-line)
+
   ;; OS X fullscreen mode
   (global-set-key (kbd "M-RET") 'toggle-frame-fullscreen)
   ;; Shift+direction
@@ -711,3 +715,4 @@
 ;; Local Variables:
 ;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
 ;; End:
+(put 'downcase-region 'disabled nil)
