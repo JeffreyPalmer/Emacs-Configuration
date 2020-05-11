@@ -570,61 +570,64 @@
   :config (setq web-mode-enable-current-element-highlight t))
 
 ;; (use-package eglot
-;;   :commands eglot eglot-ensure
-;;   :hook (csharp-mode . eglot-ensure)
+;;   :commands eglot eglot-ensure eglot-rename eglot-format eglot-help-at-point
+;;   :hook (fsharp-mode . eglot-ensure)
 ;;   :bind
 ;;   (("C-c e r" . eglot-rename)
 ;;    ("C-c e f" . eglot-format)
 ;;    ("C-c e h" . eglot-help-at-point))
-;;   :config
-;;   (add-to-list 'eglot-server-programs
-;;                `(csharp-mode . ("/Users/jeff/.emacs.d/.cache/lsp/omnisharp-roslyn/v1.34.10/run" "-lsp"))))
+;;   ;; :config
+;;   ;; (add-to-list 'eglot-server-programs
+;;   ;;              `(csharp-mode . ("/Users/jeff/.emacs.d/.cache/lsp/omnisharp-roslyn/v1.34.10/run" "-lsp")))
+;;   )
 
-;; F# support
+;; ;; F# support
 ;; (use-package fsharp-mode
+;;   :after eglot
 ;;   :demand t
-;;   :hook (fsharp-mode . smartparens-mode))
+;;   :hook (fsharp-mode . smartparens-mode)
+;;   :config (require 'eglot-fsharp))
 
-;; C# support
-(use-package csharp-mode
-  :demand t
-  :mode "\\.cs\\'"
-  :hook ((csharp-mode . smartparens-mode)))
+;; ;; C# support
+;; (use-package csharp-mode
+;;   :demand t
+;;   :mode "\\.cs\\'"
+;;   :hook ((csharp-mode . smartparens-mode)))
 
-(use-package lsp-mode
-  :commands (lsp lsp-deferred)
-  :hook
-  (
-   ;;(fsharp-mode . lsp-deferred)
-   (csharp-mode . lsp-deferred)
-   (lsp-mode . lsp-enable-which-key-integration))
-  ;; :config
-  ;; (setq inferior-fsharp-program "/usr/local/share/dotnet/dotnet fsi --readline-"
-  ;;       lsp-prefer-flymake nil)
-  )
+;; (use-package lsp-mode
+;;   :commands (lsp lsp-deferred)
+;;   :hook
+;;   (
+;;    ;;(fsharp-mode . lsp-deferred)
+;;    (csharp-mode . lsp-deferred)
+;;    (lsp-mode . lsp-enable-which-key-integration))
+;;   ;; :config
+;;   ;; (setq inferior-fsharp-program "/usr/local/share/dotnet/dotnet fsi --readline-"
+;;   ;;       lsp-prefer-flymake nil)
+;;   )
 
-(use-package lsp-ui
-  :after lsp-mode
-  :commands lsp-ui-mode
-  :config
-  (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-  (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
-  (setq lsp-ui-sideline-enable t
-        lsp-ui-flycheck-enable t
-        lsp-ui-imenu-enable t
-        lsp-ui-sideline-ignore-duplicate t))
+;; (use-package lsp-ui
+;;   :after lsp-mode
+;;   :commands lsp-ui-mode
+;;   :config
+;;   (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
+;;   (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
+;;   (setq lsp-ui-sideline-enable t
+;;         lsp-ui-flycheck-enable t
+;;         lsp-ui-imenu-enable t
+;;         lsp-ui-sideline-ignore-duplicate t))
 
-(use-package company-lsp
-  :after (lsp-mode company)
-  :commands company-lsp)
-(use-package lsp-ivy
-  :after (lsp-mode ivy)
-  :commands lsp-ivy-workspace-symbol)
-(use-package lsp-treemacs
-  :after (lsp-mode treemacs)
-  :commands lsp-treemacs-errors-list)
+;; (use-package company-lsp
+;;   :after (lsp-mode company)
+;;   :commands company-lsp)
+;; (use-package lsp-ivy
+;;   :after (lsp-mode ivy)
+;;   :commands lsp-ivy-workspace-symbol)
+;; (use-package lsp-treemacs
+;;   :after (lsp-mode treemacs)
+;;   :commands lsp-treemacs-errors-list)
 
-;; optionally if you want to use debugger
+;; ;; optionally if you want to use debugger
 ;; (use-package dap-mode)
 
 ;; Fira Code Ligature Support

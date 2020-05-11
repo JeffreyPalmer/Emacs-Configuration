@@ -38,7 +38,7 @@
                                  entry (file+olp+datetree "journal.org")
                                  "* %?")
                                 ("l" "A link, for reading later." entry (file "")
-                                 "* [[%:link][%:description]]\n%?"))
+                                 "* [[%:link][%:description]]%?"))
         ;; refile settings
         org-refile-targets '((nil :maxlevel . 9)
                              (org-agenda-files :maxlevel . 9))
