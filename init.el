@@ -6,9 +6,9 @@
 (add-to-list 'package-archives
              '("melpa" . "https://melpa.org/packages/"))
 ;; make sure we have access to melpa-stable
-(add-to-list 'package-archives
-             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-;; support for org-mode contributions
+;; (add-to-list 'package-archives
+;;              '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+;; ;; support for org-mode contributions
 (add-to-list 'package-archives
              '("org" . "https://orgmode.org/elpa/") t)
 
@@ -199,7 +199,7 @@
   :hook prog-mode)
 
 (use-package flycheck
-  :pin melpa-stable
+  ;; :pin melpa-stable
   :config
   (flycheck-define-checker proselint
     "A linter for prose."
@@ -485,7 +485,7 @@
    (clojure-mode . subword-mode)))
 
 (use-package cider
-  :pin melpa-stable
+  ;; :pin melpa-stable
   :after company
   :hook
   (((cider-mode cider-repl-mode) . company-mode)

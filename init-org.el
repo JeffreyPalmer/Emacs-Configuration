@@ -103,8 +103,8 @@
             (tags-todo "-active+project/NEXT"
                        ((org-agenda-overriding-header "Other Project Next Tasks")
                         (org-agenda-sorting-strategy '(todo-state-down category-keep))))
-            (tags-todo "+active|+project/TODO"
-                       ((org-agenda-overriding-header "Other Project Tasks")
+            (tags-todo "+active/TODO"
+                       ((org-agenda-overriding-header "Active Project Tasks")
                         (org-agenda-sorting-strategy '(todo-state-down category-keep))))))
           ("D" "Review completed tasks"
            ((tags-todo "/DONE"
