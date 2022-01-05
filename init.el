@@ -4,13 +4,15 @@
 (require 'package)
 (setq package-enable-at-startup nil)
 (add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/"))
+             '("melpa" . "https://melpa.org/packages/") t)
 ;; make sure we have access to melpa-stable
 ;; (add-to-list 'package-archives
 ;;              '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 ;; ;; support for org-mode contributions
+;; (add-to-list 'package-archives
+;;              '("org" . "https://orgmode.org/elpa/") t)
 (add-to-list 'package-archives
-             '("org" . "https://orgmode.org/elpa/") t)
+             '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
 
 (package-initialize)
 
@@ -361,6 +363,7 @@
     (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)))
 
 (use-package markdown-mode
+  :commands (markdown-mode gfm-mode)
   :mode
   (("README\\.md\\'" . gfm-mode)
    ("\\.md\\'" . markdown-mode)
@@ -420,6 +423,8 @@
                   (let ((proc (get-buffer-process (current-buffer))))
                     (comint-send-string proc "\\set ECHO queries\n")))))
     (sql-set-product "postgres")))
+
+(use-package sql-clickhouse)
 
 (use-package undo-tree
   :bind

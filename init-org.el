@@ -1,7 +1,9 @@
 ;; org mode configuration is here because of its length
+(use-package org-contrib
+  :pin nongnu)
 (use-package org
-  :ensure org-plus-contrib
-  :pin org
+  ;; :ensure org-contrib
+  ;; :pin org
   :bind (("C-c l" . org-store-link)
          ("C-c a" . org-agenda)
          ("C-c c" . org-capture)
@@ -143,17 +145,21 @@
                ;; make sure that org-reveal is bound
                (org-defkey org-mode-map (kbd "C-c r") 'org-reveal))))
 
+;; (use-package org-edna
+;;   :config
+;;   (org-edna-mode))
+
 (use-package org-bullets
   :hook (org-mode . (lambda () (org-bullets-mode 1)))
   :custom (org-bullets-bullet-list '("◉" "○" "►" "•" "▸")))
 
-(use-package org-checklist
-  :ensure org-plus-contrib)
+;; (use-package org-checklist
+;;   :ensure org-plus-contrib)
 
-(use-package org-habit
-  :ensure org-plus-contrib
-  :config
-  (setq org-habit-graph-column 65))
+;; (use-package org-habit
+;;   :ensure org-plus-contrib
+;;   :config
+;;   (setq org-habit-graph-column 65))
 
 (use-package org-indent
   :ensure nil
