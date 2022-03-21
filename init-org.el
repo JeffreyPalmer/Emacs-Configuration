@@ -23,6 +23,8 @@
         org-insert-heading-respect-content t
         org-catch-invisible-edits 'show-and-error
         org-use-speed-commands t
+        ;; open org links in the same window
+        org-link-frame-setup '((file . find-file))
         ;; calculate completion statistics for multi-level projects
         org-hierarchical-todo-statistics nil
         ;; org-agenda-hide-tags-regexp TODO - figure out what this should be
@@ -153,8 +155,7 @@
   :hook (org-mode . (lambda () (org-bullets-mode 1)))
   :custom (org-bullets-bullet-list '("◉" "○" "►" "•" "▸")))
 
-;; (use-package org-checklist
-;;   :ensure org-plus-contrib)
+(require 'org-checklist)
 
 ;; (use-package org-habit
 ;;   :ensure org-plus-contrib
@@ -176,6 +177,28 @@
 (use-package org-review
   :bind
   (("C-c v" . org-review-insert-last-review)))
+
+(use-package org-roam
+  :ensure t
+  :init
+  (setq org-roam-v2-ack t)
+  :custom
+  (org-roam-directory "~/Documents/OrgRoam")
+  (org-roam-completion-everywhere t)
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n r" . org-roam-refile)
+         :map org-mode-map
+         ("C-M-i" . completion-at-point)
+         :map org-roam-dailies-map
+         ("Y" . org-roam-dailies-capture-yesterday)
+         ("T" . org-roam-dailies-capture-tomorrow))
+  :bind-keymap
+  ("C-c n d" . org-roam-dailies-map)
+  :config
+  (require 'org-roam-dailies)
+  (org-roam-db-autosync-mode))
 
 ;; hide empty blocks in the agenda view
 (defun org-agenda-delete-empty-blocks ()
