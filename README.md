@@ -1,3 +1,12 @@
+This is going to be a completely new configuration, using org-babel to
+document and compile the configuration.
+
+
+
+
+
+TODO: These instructions need to be updated, as well.
+
 This is just a github version of my emacs configuration, for my sanity. :)
 
 Uses [`use-package`][1] to manage package installation and
