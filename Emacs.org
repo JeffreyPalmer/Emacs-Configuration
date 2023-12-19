@@ -1,6 +1,5 @@
 #+PROPERTY: header-args:emacs-lisp :tangle /Users/jeff/.emacs.d/init.el
 
-TODO: Change the generated configuration file to be the actual emacs configuration directory??
 TODO: Look into using [[https://emacs.stackexchange.com/questions/36727/order-of-blocks-in-org-tangle][this]] to support block reordering, if necessary
 
 A bunch of the content in this file is inspired by/taken from the
@@ -58,18 +57,21 @@ First of all we need to disable package.el by default so that it's never loaded.
 Then straight.el needs to be bootstrapped. This bootstrapping code is provided directly by the [[https://github.com/radian-software/straight.el][straight.el]] project.
 
 #+begin_src emacs-lisp
-  (defvar bootstrap-version)
-  (let ((bootstrap-file
-         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-        (bootstrap-version 6))
-    (unless (file-exists-p bootstrap-file)
-      (with-current-buffer
-          (url-retrieve-synchronously
-           "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-           'silent 'inhibit-cookies)
-        (goto-char (point-max))
-        (eval-print-last-sexp)))
-    (load bootstrap-file nil 'nomessage))
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name
+        "straight/repos/straight.el/bootstrap.el"
+        (or (bound-and-true-p straight-base-dir)
+            user-emacs-directory)))
+      (bootstrap-version 7))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
   ;; Load the helper package for commands like `straight-x-clean-unused-repos`
   (require 'straight-x)
@@ -92,17 +94,18 @@ Then straight.el needs to be bootstrapped. This bootstrapping code is provided d
   (use-package no-littering)
 
   ;; Keep customization settings in a temporary file
-  ;; (setq custom-file
-  ;;       (if (boundp 'server-socket-dir)
-  ;;           (expand-file-name "custom.el" server-socket-dir)
-  ;;         (expand-file-name (format "emacs-custom-%s.el" (user-uid)) temporary-file-directory)))
-  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+  (setq custom-file
+        (if (boundp 'server-socket-dir)
+            (expand-file-name "custom.el" server-socket-dir)
+          (expand-file-name (format "emacs-custom-%s.el" (user-uid)) temporary-file-directory)))
+  ;; For debugging purposes only
+  ;; (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
   (load custom-file t)
 
 #+end_src
 
 * Allow periodic tasks to run during the day
-This allows things like buffer cleanup to happen during the day instead of at midnight, when the computer is typically not on.
+This allows things like buffer cleanup to happen during the day instead of at midnight, when the computer is not typically on.
 #+begin_src emacs-lisp
   (use-package midnight
     :config
@@ -145,22 +148,22 @@ This allows things like buffer cleanup to happen during the day instead of at mi
   (defalias 'yes-or-no-p 'y-or-n-p)
 
   ;; Name the frame
-  (set-frame-parameter nil 'name "Main")
+  ; (set-frame-parameter nil 'name "Main")
 
 #+end_src
 
 ** Font Configuration
 #+begin_src emacs-lisp
-  (set-face-attribute 'default nil :font "Jetbrains Mono" :height jpalmer/default-font-size :weight 'light)
+   (set-face-attribute 'default nil :font "Jetbrains Mono" :height jpalmer/default-font-size :weight 'light)
 
-  ;; Set the fixed pitch face
-  (set-face-attribute 'fixed-pitch nil :font "Jetbrains Mono" :height jpalmer/default-font-size :weight 'light)
+   ;; Set the fixed pitch face
+   (set-face-attribute 'fixed-pitch nil :font "Jetbrains Mono" :height jpalmer/default-font-size :weight 'light)
 
-  ;; Set the variable pitch face
-  (set-face-attribute 'variable-pitch nil :font "Avenir Next" :height jpalmer/default-variable-font-size :weight 'regular)
+   ;; Set the variable pitch face
+   (set-face-attribute 'variable-pitch nil :font "Fira Sans" :height jpalmer/default-variable-font-size :weight 'regular)
 
-  ;; Enable ligatures in emacs-mac
-  (mac-auto-operator-composition-mode)
+   ;; Enable ligatures in emacs-mac
+   (mac-auto-operator-composition-mode)
 
 #+end_src
 
@@ -176,9 +179,14 @@ Now install the doom themes
     :config
     (setq doom-themes-enable-bold nil
           doom-themes-enable-italic t
-          doom-themes-padded-modeline t)
-    (load-theme 'doom-tomorrow-night t))
+          doom-themes-padded-modeline nil) ; Adds a 4 pixel margin around the modeline
+    (load-theme 'doom-dark+ t)
+    (doom-themes-visual-bell-config)
+    (doom-themes-neotree-config)
+    (doom-themes-org-config))
 #+end_src
+
+I'm currently testing out some other options, but my previous go-to theme was "doom-tomorrow-night".
 
 ** Allow highlighting while idle
 
@@ -214,7 +222,6 @@ There are some keybinds that I absolutely hate when operating in a modern graphi
     (when (eq (key-binding (kbd "<C-tab>")) 'mac-next-tab-or-toggle-tab-bar)
       (global-unset-key (kbd "<C-tab>"))))
 #+end_src
-
 ** Emacs-Mac Keybinds
 #+begin_src emacs-lisp
   ;; Keybindings for Mac Emacs
@@ -235,18 +242,17 @@ There are some keybinds that I absolutely hate when operating in a modern graphi
   (use-package which-key
     :init (which-key-mode)
     :diminish which-key-mode
-    :config (setq which-key-idle-delay 1))
+    :config
+    (setq which-key-idle-delay 1))
 #+end_src
-
 ** Text Scaling
-
 I used to have code to do this, but it turns out that there are interactive screen scaling commands already in emacs, bound to <C-x C-+>, <C-x C-->, and <C-x C-0>. Plus, they're interactive in the same way that Hydra provides, so ultimately this configuration is not needed.
-
 ** Navigation
 [[https://github.com/abo-abo/avy][Avy]] makes it possible to jump to visible text using a char-based decision tree.
 #+begin_src emacs-lisp
   (use-package avy
-    :bind (("C-;" . avy-goto-char-2))
+    :bind (("C-;" . avy-goto-char-2)
+           ("M-g" . avy-goto-line))
     :config
     (avy-setup-default)
     (setq avy-keys '(?a ?r ?s ?t ?n ?e ?i ?o)))
@@ -263,14 +269,17 @@ I used to have code to do this, but it turns out that there are interactive scre
     (counsel-describe-variable-function #'helpful-variable)
     :bind
     ([remap describe-function] . counsel-describe-function)
-    ([remap describe-command] . helpful-command)
+    ([remap describe-symbol] . counsel-describe-symbol)
     ([remap describe-variable] . counsel-describe-variable)
+    ([remap describe-command] . helpful-command)
     ([remap describe-key] . helpful-key))
 
 #+end_src
 
 * Completion
 This configuration uses Ivy, Counsel, and Swiper.
+TODO: Break this into chunks?
+TODO: Try out vertico?
 #+begin_src emacs-lisp
 
   (use-package company
@@ -283,7 +292,7 @@ This configuration uses Ivy, Counsel, and Swiper.
 
   (use-package ivy-posframe
     :config
-    (setq ivy-posframe-parameters '((left-fringe . 8) (right-fringe . 8))
+    (setq  ivy-posframe-parameters '((left-fringe . 8) (right-fringe . 8))
           ivy-posframe-display-functions-alist
           '((swiper          . nil)
             (complete-symbol . ivy-posframe-display-at-point)
@@ -417,6 +426,7 @@ This configuration uses Ivy, Counsel, and Swiper.
     (setq eyebrowse-mode-line-separator " "
           eyebrowse-new-workspace t)
     (eyebrowse-mode t))
+
   ;; save the eyebrowse layout periodically
   ;; (use-package eyebrowse-restore
   ;;   :straight (eyebrowse-restore :type git :host github :repo "FrostyX/eyebrowse-restore")
@@ -459,7 +469,6 @@ Support directional and letter-based buffer navigation
 #+end_src
 
 * General Editing
-
 ** Hungry Delete
 This deletes all whitespace up to the last non-whitespace character when editing. It can be very handy.
 #+begin_src emacs-lisp
@@ -469,8 +478,6 @@ This deletes all whitespace up to the last non-whitespace character when editing
            ([remap delete-char] . smart-hungry-delete-forward-char))
     :init (smart-hungry-delete-add-default-hooks))
 #+end_src
-
-
 ** Whitespace Highlighting
 This highlights any odd whitespace in a buffer.
 #+begin_src emacs-lisp
@@ -480,7 +487,10 @@ This highlights any odd whitespace in a buffer.
     ;; This should probably be enabled everywhere?
     (global-whitespace-mode))
 #+end_src
-
+** Enabling per-file location saving
+#+begin_src emacs-lisp
+  (save-place-mode 1)
+#+end_src
 * Programming
 ** General Quality of Life Items
 *** Comment line keybind
@@ -525,7 +535,13 @@ This is required to ensure that SSH interaction with GitHub (for example) is sea
     (set-face-attribute 'show-paren-match-expression nil :background "#363e4a")
     (show-paren-mode 1))
 #+end_src
-
+*** Highlight indentation levels
+Show an indicator for the start of an indentation scope.
+#+begin_src emacs-lisp
+  (use-package highlight-indent-guides
+    :config (setq highlight-indent-guides-method 'bitmap)
+    :hook (prog-mode . highlight-indent-guides-mode))
+#+end_src
 *** Paredit for lisp languages
 #+begin_src emacs-lisp
   (use-package paredit
@@ -535,12 +551,17 @@ This is required to ensure that SSH interaction with GitHub (for example) is sea
 #+end_src
 
 *** Highlight FIXME, TODO, etc.
-#+begin_src emacs-lisp
+I tried another package ([[https://github.com/tarsius/hl-todo][hl-todo]]) but was unable to get it to work easily, so I'm sticking with fic-mode.
+#+begin_src emacs-lisp :tangle no
   (use-package fic-mode
     :diminish fic-mode
     :hook prog-mode)
 #+end_src
 
+Try using =hl-todo= one more time.
+#+begin_src emacs-lisp
+  (use-package hl-todo)
+#+end_src
 
 *** Project Support
 #+begin_src emacs-lisp
@@ -549,6 +570,11 @@ This is required to ensure that SSH interaction with GitHub (for example) is sea
     (projectile-mode +1)
     (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
     :diminish projectile-mode)
+#+end_src
+*** Highlight color names in buffers
+#+begin_src emacs-lisp
+  (use-package rainbow-mode
+    :hook (org-mode emacs-lisp-mode web-mode typescript-mode js2-mode))
 #+end_src
 ** Version Control
 *** Magit
@@ -567,7 +593,7 @@ This is required to ensure that SSH interaction with GitHub (for example) is sea
         (jump-to-register :magit-fullscreen))
       (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)))
 #+end_src
-*** Buffer Indicators
+*** Fringe Indicators
 #+begin_src emacs-lisp
   (use-package git-gutter
     :config
@@ -580,7 +606,184 @@ This is required to ensure that SSH interaction with GitHub (for example) is sea
     :config
     (setq git-gutter-fr:side 'right-fringe))
 #+end_src
+*** Languages
+**** Language Server Support
 
+This configuration is for LSP mode
+#+begin_src emacs-lisp :tangle no
+  (use-package lsp-mode
+    :commands lsp lsp-deferred
+    :hook ((typescript-mode js2-mode web-mode) . lsp-deferred)
+    ; :bind (:map lsp-mode-map ("TAB" . completion-at-point))
+    :custom (lsp-headerline-breadcrumb-enable nil)
+    )
+
+  ;; also install lsp-ui
+  (use-package lsp-ui
+    :hook (lsp-mode . lsp-ui-mode)
+    :config
+    (setq lsp-ui-sideline-enable t
+          lsp-ui-flycheck-enable t
+          lsp-ui-imenu-enable t
+          lsp-ui-sideline-ignore-duplicate t
+          lsp-ui-sideline-show-hover nil
+          lsp-ui-doc-position 'bottom)
+    (lsp-ui-doc-show))
+#+end_src
+
+This configuration is for eglot.
+#+begin_src emacs-lisp
+  (use-package eglot
+    :custom (eglot-autoshutdown t))
+
+  ;; Force eglot to use flycheck instead of flymake
+  (use-package flycheck-eglot
+    :after (flycheck eglot)
+    :straight (flycheck-eglot :type git :host nil :repo "https://gist.github.com/89d00717ac6c6fba1a72b165fd588f4c.git"))
+
+#+end_src
+
+Eglot doesn't automatically install language servers, so set up a
+script that will be generated to take care of that.
+#+begin_src shell :tangle ./install-language-servers.sh
+  #!/bin/sh
+  #
+  # Install required language servers based on Emacs.org
+  #
+  # This script is auto-generated - DO NOT EDIT
+  #
+#+end_src
+
+**** Typescript/Javascript
+#+begin_src emacs-lisp
+  (use-package typescript-mode
+    :mode "\\.ts\\'"
+    :config
+    (setq typescript-indent-level 2))
+
+  (defun jpalmer/set-js-indentation ()
+    (setq js-indent-level 2)
+    (setq-default tab-width 2))
+
+  (use-package js2-mode
+    :mode "\\.jsx?\\'"
+    :config
+    ;; Don't use built-in syntax checking
+    (setq js2-mode-show-strict-warnings nil)
+    (add-hook 'js2-mode-hook #'jpalmer/set-js-indentation)
+    (add-hook 'json-mode-hook #'jpalmer/set-js-indentation))
+
+  (use-package apheleia
+    :config
+    (apheleia-global-mode +1))
+
+  (use-package prettier-js
+    :config
+    (setq prettier-js-show-errors nil))
+
+#+end_src
+
+Also make sure that the ts/js language server is installed by adding it to the language server installation script:
+#+begin_src shell :tangle ./install-language-servers.sh
+  npm install -g typescript-language-server typescript
+#+end_src
+
+
+**** TODO: Svelte Mode
+**** TODO: Julia Mode
+**** Emacs Lisp
+#+begin_src emacs-lisp :tangle no
+  ;; FIXME: Put this back
+  (add-hook 'emacs-lisp-mode-hook #'flycheck-mode)
+#+end_src
+**** WebGL/GLSL
+
+#+begin_src emacs-lisp :tangle no
+  ;; FIXME: Put this back
+  (use-package glsl-mode
+    :mode "(\\.\\(glsl\\|vert\\|frag\\|geom\\)\\'")
+
+  ;; Add completion support for glsl
+  (use-package company-glsl
+    :config
+    (when (executable-find "glslangValidator")
+      (add-to-list 'company-backends 'company-glsl)))
+
+  ;; Add flycheck support for glsl
+  (use-package flycheck-glsl
+    :after flycheck
+    :straight (flycheck-glsl :type git :host github :repo "yrns/flycheck-glsl"
+                             :fork (:host github :repo "JeffreyPalmer/flycheck-glsl")))
+
+  ;; try another package, as the first one requires some rework
+  ;; (use-package flycheck-glsl
+  ;;   :after flycheck
+  ;;   :straight (flycheck-glsl :type git :host github :repo "Kaali/flycheck-glsl"))
+
+  ;; Using the code directly
+  ;; (with-eval-after-load 'flycheck
+  ;;   (flycheck-define-checker jpalmer/glsl-lang-validator
+  ;;     "A GLSL checker using glslangValidator.
+  ;;   See URL https://www.khronos.org/opengles/sdk/tools/Reference-Compiler/"
+  ;;     :command ("glslangValidator" source)
+  ;;     :error-patterns
+  ;;     ((error line-start "ERROR: " column ":" line ": " (message) line-end))
+  ;;     :modes glsl-mode)
+
+  ;;   (add-to-list 'flycheck-checkers 'jpalmer/glsl-lang-validator))
+#+end_src
+**** HTML
+#+begin_src emacs-lisp
+  (use-package web-mode
+    :mode "(\\.\\(html?\\|ejs\\|tsx\\|jsx\\)\\'"
+    :config
+    (setq-default web-mode-code-indent-offset 2)
+    (setq-default web-mode-markup-indent-offset 2)
+    (setq-default web-mode-attribute-indent-offset 2))
+
+  ;; Start the server with `httpd-start`
+  ;; Use `impatient-mode` in any buffer
+  (use-package impatient-mode)
+
+  (use-package skewer-mode)
+#+end_src
+*** Compilation
+Set up the compile package and ensure that compilation output automatically scrolls.
+#+begin_src emacs-lisp
+  (use-package compile
+    :custom
+    (compilation-sroll-output t))
+
+  (defun auto-recompile-buffer ()
+    (interactive)
+    (if (member #'recompile after-save-hook)
+        (remove-hook 'after-save-hook #'recompile t)
+      (add-hook 'after-save-hook #'recompile nil t)))
+#+end_src
+*** Syntax Checking with flycheck
+#+begin_src emacs-lisp :tangle no
+    (use-package flycheck
+      :defer t
+      :custom
+      ; (flycheck-highlighting-mode 'lines)
+      ; (flycheck-highlighting-style 'level-face)
+      (flycheck-indication-mode 'right-fringe)
+      ;; FIXME: This will probably need to be fixed
+      ; :hook (lsp-mode glsl-mode)
+      :config (global-flycheck-mode))
+
+    ;; I'm not sure that I like this, so disabling for now
+    (use-package flycheck-pos-tip
+      :disabled
+      :after flycheck
+      :config (flycheck-pos-tip-mode))
+#+end_src
+*** Snippets
+#+begin_src emacs-lisp
+  (use-package yasnippet
+    :hook (prog-mode . yas-minor-mode)
+    :config (yas-reload-all))
+#+end_src
 * Text Editing
 Enable automatic wrapping of long lines in text modes, only. This
 makes it easier to edit text files, but leaves code formatting up to
@@ -598,7 +801,17 @@ the developer.
      ("\\.md\\'" . markdown-mode)
      ("\\.markdown\\'" . markdown-mode))
     :config
-    (setq markdown-fontify-code-blocks-natively t))
+    (setq markdown-fontify-code-blocks-natively t)
+    (defun jpalmer/set-markdown-header-font-sizes ()
+      (dolist (face '((markdown-header-face-1 . 1.2)
+                      (markdown-header-face-2 . 1.1)
+                      (markdown-header-face-3 . 1.0)
+                      (markdown-header-face-4 . 1.0)
+                      (markdown-header-face-5 . 1.0)))
+        (set-face-attribute (car face) nil :weight 'normal :height (cdr face))))
+    (defun jpalmer/markdown-mode-hook ()
+      (jpalmer/set-markdown-header-font-sizes))
+    (add-hook 'markdown-mode-hook 'jpalmer/markdown-mode-hook))
 #+end_src
 
 * Org Mode
@@ -606,153 +819,155 @@ the developer.
 ** General Org Setup
 #+begin_src emacs-lisp
   (use-package org
-        ;; :ensure org-contrib
-        ;; :pin org
-        :bind (("C-c l" . org-store-link)
-               ("C-c a" . org-agenda)
-               ("C-c c" . org-capture)
-               ("C-c b" . org-switchb)
-               ("<f12>" . org-agenda))
-        :hook
-        ((org-mode . (lambda () (variable-pitch-mode t)))
-         (org-mode . visual-line-mode))
-        :config
-        (setq org-directory "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org"
-              org-agenda-files (list org-directory)
-              org-default-notes-file (concat org-directory "/inbox.org")
-              org-clock-persist 'history
-              org-enforce-todo-dependencies t
-              org-fontify-quote-and-verse-blocks t
-              org-src-tab-acts-natively t
-              org-src-fontify-natively t
-              org-hide-emphasis-markers t
-              org-hide-leading-stars t
-              org-insert-heading-respect-content t
-              org-catch-invisible-edits 'show-and-error
-              org-use-speed-commands t
-              ;; open org links in the same window
-              org-link-frame-setup '((file . find-file))
-              ;; calculate completion statistics for multi-level projects
-              org-hierarchical-todo-statistics nil
-              ;; org-agenda-hide-tags-regexp TODO - figure out what this should be
-              ;; don't show scheduled TODO items
-              org-agenda-todo-ignore-scheduled 'future
-              ;; logging work
-              org-log-done 'time
-              org-log-into-drawer "LOGBOOK"
-              ;; capture settings
-              org-capture-templates '(("t" "To Do" entry (file "")
-                                       "* TODO %?\n")
-                                      ("g" "Generic" entry (file "")
-                                       "* %?\n")
-                                      ("j" "Journal Entry"
-                                       entry (file+olp+datetree "journal.org")
-                                       "* %?")
-                                      ("l" "A link, for reading later." entry (file "")
-                                       "* [[%:link][%:description]]%?"))
-              ;; refile settings
-              org-refile-targets '((nil :maxlevel . 9)
-                                   (org-agenda-files :maxlevel . 9))
-              org-refile-use-outline-path 'file
-              org-outline-path-complete-in-steps nil
-              org-refile-allow-creating-parent-nodes 'confirm
-              org-log-note-headings '((done        . "CLOSING NOTE %t")
-                                      (note        . "Note taken on %t")
-                                      (state       . "State %-12s from %-12S %t")
-                                      (reschedule  . "Rescheduled from %S on %t")
-                                      (delschedule . "Not scheduled, was %S on %t")
-                                      (redeadline  . "New deadline from %S on %t")
-                                      (deldeadline . "Removed deadline, was %S on %t"))
-              org-startup-indented t
-              org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "TODAY(y)" "IN_PROGRESS(i)" "WAITING(w@/!)" "|" "DONE(d!/!)")
-                                  (sequence "PROJECT(p)" "ACTIVE(a)" "|" "FINISHED(f!)" "CANCELLED(c@)")
-                                  (sequence "SOMEDAY(S!)" "MAYBE(m!)"))
-              org-todo-keyword-faces '(("TODO" :foreground "DodgerBlue3")
-                                       ("NEXT" :foreground "DodgerBlue2")
-                                       ("TODAY" :foreground "SpringGreen2")
-                                       ("IN_PROGRESS" :foreground "SpringGreen2")
-                                       ("DONE" :foreground "forest green")
-                                       ("PROJECT" :foreground "cornflower blue")
-                                       ("ACTIVE" :foreground "deep sky blue")
-                                       ("FINISHED" :foreground "forest green")
-                                       ("CANCELLED" :foreground "goldenrod")
-                                       ("WAITING" :foreground "coral")
-                                       ("SOMEDAY" :foreground "purple")
-                                       ("MAYBE" :foreground "purple"))
-              org-todo-state-tags-triggers '(("PROJECT" ("project" . t) ("active" . nil))
-                                             ("" ("project" . nil) ("active" . nil))
-                                             ("ACTIVE" ("active" . t))
-                                             ("FINISHED" ("active" . nil))
-                                             ("SOMEDAY" ("active" . nil))
-                                             ("MAYBE" ("active" . nil)))
-              ;; agenda customization
-              org-agenda-span 'day
-              org-stuck-projects '("/PROJECT|ACTIVE" ("NEXT" "TODAY") nil "")
-              org-agenda-compact-blocks nil
-              org-agenda-block-separator ?\-
-              org-agenda-dim-blocked-tasks nil
-              org-agenda-custom-commands
-              '(
-                ;; a view that supports:
-                ;; - most important task of the day
-                ;; - secondary tasks
-                ;; - other tasks if i have time
-                ("d" "Daily View"
-                 ((agenda "" nil)
-                  (todo "WAITING"
-                        ((org-agenda-overriding-header "Waiting")))
-                  (tags-todo "/TODAY|IN_PROGRESS"
-                             ((org-agenda-overriding-header "Most Important Tasks for Today")))
-                  (todo "ACTIVE"
-                        ((org-agenda-overriding-header "Active Projects")))
-                  (tags-todo "active/NEXT"
-                             ((org-agenda-overriding-header "Active Project Next Tasks")
-                              (org-agenda-sorting-strategy '(todo-state-down category-keep))))
-                  (tags "REFILE"
-                        ((org-agenda-overriding-header "Inbox")
-                         (org-tags-match-list-sublevels nil)))
-                  (tags-todo "-active+project/NEXT"
-                             ((org-agenda-overriding-header "Other Project Next Tasks")
-                              (org-agenda-sorting-strategy '(todo-state-down category-keep))))
-                  (tags-todo "+active/TODO"
-                             ((org-agenda-overriding-header "Active Project Tasks")
-                              (org-agenda-sorting-strategy '(todo-state-down category-keep))))))
-                ("D" "Review completed tasks"
-                 ((tags-todo "/DONE"
-                             ((org-agenda-overriding-header "Completed Tasks and Projects")))))
-                ("n" "Non-Project Tasks"
-                 ((tags-todo "-project-active/!TODO|NEXT|TODAY"
-                             ((org-agenda-overriding-header "Non-Project Tasks")))))
-                ("p" "Project Review"
-                 ((tags-todo "/PROJECT|ACTIVE"
-                             ((org-agenda-overriding-header "Stuck Projects")
-                              (org-agenda-skip-function '(org-agenda-skip-subtree-if 'todo '("NEXT" "TODAY")))))
-                  (tags-todo "/ACTIVE"
-                             ((org-agenda-overriding-header "Active Projects")
-                              (org-agenda-skip-function '(org-agenda-skip-subtree-if 'nottodo '("NEXT" "TODAY")))))
-                  (tags-todo "/PROJECT"
-                             ((org-agenda-overriding-header "Other Projects")
-                              (org-agenda-skip-function '(org-agenda-skip-subtree-if 'nottodo '("NEXT" "TODAY")))))
-                  (tags-todo "-CANCELLED/"
-                             ((org-agenda-overriding-header "Reviews Scheduled")
-                              (org-agenda-skip-function 'org-review-agenda-skip)
-                              (org-agenda-cmp-user-defined 'org-review-compare)
-                              (org-agenda-sorting-strategy '(user-defined-down))))))
-                ("h" "Habits" tags-todo "STYLE=\"habit\""
-                 ((org-agenda-overriding-header "Habits")
-                  (org-agenda-sorting-strategy
-                   '(todo-state-down effort-up category-keep))))
-                ("i" "Inbox" tags "REFILE"
-                 ((org-agenda-overriding-header "Inbox")
-                  (org-tags-match-list-sublevels nil)))))
-        (org-clock-persistence-insinuate)
-        (add-hook 'org-mode-hook
-                  '(lambda ()
-                     ;; undefine C-c [ and C-c ]
-                     (org-defkey org-mode-map (kbd "C-c [") 'undefined)
-                     (org-defkey org-mode-map (kbd "C-c ]") 'undefined)
-                     ;; make sure that org-reveal is bound
-                     (org-defkey org-mode-map (kbd "C-c r") 'org-reveal))))
+    ;; :ensure org-contrib
+    ;; :pin gnu
+    :straight (:type built-in)
+    :bind (("C-c l" . org-store-link)
+           ("C-c a" . org-agenda)
+           ("C-c c" . org-capture)
+           ("C-c b" . org-switchb)
+           ("<f12>" . org-agenda))
+    :hook
+    ((org-mode . (lambda () (variable-pitch-mode t)))
+     (org-mode . visual-line-mode))
+    :config
+    (setq org-directory "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org"
+          org-agenda-files (list org-directory)
+          org-agenda-start-day nil
+          org-default-notes-file (concat org-directory "/inbox.org")
+          org-clock-persist 'history
+          org-enforce-todo-dependencies t
+          org-fontify-quote-and-verse-blocks t
+          org-src-tab-acts-natively t
+          org-src-fontify-natively t
+          org-hide-emphasis-markers t
+          org-hide-leading-stars t
+          org-insert-heading-respect-content t
+          org-catch-invisible-edits 'show-and-error
+          org-use-speed-commands t
+          ;; open org links in the same window
+          org-link-frame-setup '((file . find-file))
+          ;; calculate completion statistics for multi-level projects
+          org-hierarchical-todo-statistics nil
+          ;; org-agenda-hide-tags-regexp TODO - figure out what this should be
+          ;; don't show scheduled TODO items
+          org-agenda-todo-ignore-scheduled 'future
+          ;; logging work
+          org-log-done 'time
+          org-log-into-drawer "LOGBOOK"
+          ;; capture settings
+          org-capture-templates '(("t" "To Do" entry (file "")
+                                   "* TODO %?\n")
+                                  ("g" "Generic" entry (file "")
+                                   "* %?\n")
+                                  ("j" "Journal Entry"
+                                   entry (file+olp+datetree "journal.org")
+                                   "* %?")
+                                  ("l" "A link, for reading later." entry (file "")
+                                   "* [[%:link][%:description]]%?"))
+          ;; refile settings
+          org-refile-targets '((nil :maxlevel . 9)
+                               (org-agenda-files :maxlevel . 9))
+          org-refile-use-outline-path 'file
+          org-outline-path-complete-in-steps nil
+          org-refile-allow-creating-parent-nodes 'confirm
+          org-log-note-headings '((done        . "CLOSING NOTE %t")
+                                  (note        . "Note taken on %t")
+                                  (state       . "State %-12s from %-12S %t")
+                                  (reschedule  . "Rescheduled from %S on %t")
+                                  (delschedule . "Not scheduled, was %S on %t")
+                                  (redeadline  . "New deadline from %S on %t")
+                                  (deldeadline . "Removed deadline, was %S on %t"))
+          org-startup-indented t
+          org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "TODAY(y)" "IN_PROGRESS(i)" "WAITING(w@/!)" "|" "DONE(d!/!)")
+                              (sequence "PROJECT(p)" "ACTIVE(a)" "|" "FINISHED(f!)" "CANCELLED(c@)")
+                              (sequence "SOMEDAY(S!)" "MAYBE(m!)"))
+          org-todo-keyword-faces '(("TODO" :foreground "DodgerBlue3")
+                                   ("NEXT" :foreground "DodgerBlue2")
+                                   ("TODAY" :foreground "SpringGreen2")
+                                   ("IN_PROGRESS" :foreground "SpringGreen2")
+                                   ("DONE" :foreground "forest green")
+                                   ("PROJECT" :foreground "cornflower blue")
+                                   ("ACTIVE" :foreground "deep sky blue")
+                                   ("FINISHED" :foreground "forest green")
+                                   ("CANCELLED" :foreground "goldenrod")
+                                   ("WAITING" :foreground "coral")
+                                   ("SOMEDAY" :foreground "purple")
+                                   ("MAYBE" :foreground "purple"))
+          org-todo-state-tags-triggers '(("PROJECT" ("project" . t) ("active" . nil))
+                                         ("" ("project" . nil) ("active" . nil))
+                                         ("ACTIVE" ("active" . t))
+                                         ("FINISHED" ("active" . nil))
+                                         ("SOMEDAY" ("active" . nil))
+                                         ("MAYBE" ("active" . nil)))
+          ;; agenda customization
+          org-agenda-span 'day
+          org-stuck-projects '("/PROJECT|ACTIVE" ("NEXT" "TODAY") nil "")
+          org-agenda-compact-blocks nil
+          org-agenda-block-separator ?\-
+          org-agenda-dim-blocked-tasks nil
+          org-agenda-custom-commands
+          '(
+            ;; a view that supports:
+            ;; - most important task of the day
+            ;; - secondary tasks
+            ;; - other tasks if i have time
+            ("d" "Daily View"
+             ((agenda "" nil)
+              (todo "WAITING"
+                    ((org-agenda-overriding-header "Waiting")))
+              (tags-todo "/TODAY|IN_PROGRESS"
+                         ((org-agenda-overriding-header "Most Important Tasks for Today")))
+              (todo "ACTIVE"
+                    ((org-agenda-overriding-header "Active Projects")))
+              (tags-todo "active/NEXT"
+                         ((org-agenda-overriding-header "Active Project Next Tasks")
+                          (org-agenda-sorting-strategy '(todo-state-down category-keep))))
+              (tags "REFILE"
+                    ((org-agenda-overriding-header "Inbox")
+                     (org-tags-match-list-sublevels nil)))
+              (tags-todo "-active+project/NEXT"
+                         ((org-agenda-overriding-header "Other Project Next Tasks")
+                          (org-agenda-sorting-strategy '(todo-state-down category-keep))))
+              (tags-todo "+active/TODO"
+                         ((org-agenda-overriding-header "Active Project Tasks")
+                          (org-agenda-sorting-strategy '(todo-state-down category-keep))))))
+            ("D" "Review completed tasks"
+             ((tags-todo "/DONE"
+                         ((org-agenda-overriding-header "Completed Tasks and Projects")))))
+            ("n" "Non-Project Tasks"
+             ((tags-todo "-project-active/!TODO|NEXT|TODAY"
+                         ((org-agenda-overriding-header "Non-Project Tasks")))))
+            ("p" "Project Review"
+             ((tags-todo "/PROJECT|ACTIVE"
+                         ((org-agenda-overriding-header "Stuck Projects")
+                          (org-agenda-skip-function '(org-agenda-skip-subtree-if 'todo '("NEXT" "TODAY")))))
+              (tags-todo "/ACTIVE"
+                         ((org-agenda-overriding-header "Active Projects")
+                          (org-agenda-skip-function '(org-agenda-skip-subtree-if 'nottodo '("NEXT" "TODAY")))))
+              (tags-todo "/PROJECT"
+                         ((org-agenda-overriding-header "Other Projects")
+                          (org-agenda-skip-function '(org-agenda-skip-subtree-if 'nottodo '("NEXT" "TODAY")))))
+              (tags-todo "-CANCELLED/"
+                         ((org-agenda-overriding-header "Reviews Scheduled")
+                          (org-agenda-skip-function 'org-review-agenda-skip)
+                          (org-agenda-cmp-user-defined 'org-review-compare)
+                          (org-agenda-sorting-strategy '(user-defined-down))))))
+            ("h" "Habits" tags-todo "STYLE=\"habit\""
+             ((org-agenda-overriding-header "Habits")
+              (org-agenda-sorting-strategy
+               '(todo-state-down effort-up category-keep))))
+            ("i" "Inbox" tags "REFILE"
+             ((org-agenda-overriding-header "Inbox")
+              (org-tags-match-list-sublevels nil)))))
+    (org-clock-persistence-insinuate)
+    (add-hook 'org-mode-hook
+              '(lambda ()
+                 ;; undefine C-c [ and C-c ]
+                 (org-defkey org-mode-map (kbd "C-c [") 'undefined)
+                 (org-defkey org-mode-map (kbd "C-c ]") 'undefined)
+                 ;; make sure that org-reveal is bound
+                 (org-defkey org-mode-map (kbd "C-c r") 'org-reveal))))
 #+end_src
 
 ** Better Fonts
@@ -768,10 +983,9 @@ the developer.
 
 *** Font Adjustments
 #+begin_src emacs-lisp
-
   (with-eval-after-load 'org-faces
     ;; Increase the size of various headings
-    (set-face-attribute 'org-document-title nil :font "Avenir Next" :height 1.3)
+    (set-face-attribute 'org-document-title nil :font "Avenir Next" :weight 'bold :height 1.3)
     (dolist (face '((org-level-1 . 1.2)
                     (org-level-2 . 1.1)
                     (org-level-3 . 1.05)
@@ -869,6 +1083,7 @@ the developer.
 ** Other org miscellany
 #+begin_src emacs-lisp
   ; (require org-checklist)
+  ; (use-package org-checklist)
 
   (use-package org-pomodoro
     :bind
@@ -905,6 +1120,33 @@ the developer.
         (org-babel-tangle))))
   (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'jpalmer/org-babel-tangle-config)))
 
+#+end_src
+
+* Tree Navigation
+Set up a tree-based navigation system, just in case.
+#+begin_src emacs-lisp
+  (use-package neotree
+    :bind ("<f8>" . neotree-project-dir)
+    :hook
+    (neotree-mode . (lambda ()
+                      (variable-pitch-mode t)))
+    :config
+    (setq neo-smart-open t
+          projectile-switch-project-action 'neotree-projectile-action
+          neo-theme 'icons
+          neo-window-width 35)
+    (defun neotree-project-dir ()
+      "Open NeoTree using the git root."
+      (interactive)
+      (let ((project-dir (projectile-project-root))
+            (file-name (buffer-file-name)))
+        (neotree-toggle)
+        (if project-dir
+            (if (neo-global--window-exists-p)
+                (progn
+                  (neotree-dir project-dir)
+                  (neotree-find file-name)))
+          (message "Could not find git project root.")))))
 #+end_src
 
 * Wrap-Up Configuration
