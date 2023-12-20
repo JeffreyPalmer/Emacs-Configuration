@@ -2,13 +2,11 @@
 
 TODO: Look into using [[https://emacs.stackexchange.com/questions/36727/order-of-blocks-in-org-tangle][this]] to support block reordering, if necessary
 
-A bunch of the content in this file is inspired by/taken from the
-[[https://systemcrafters.net/emacs-from-scratch/][System Crafters]] site/channel.
+A bunch of the content in this file is inspired by/taken from the [[https://systemcrafters.net/emacs-from-scratch/][System Crafters]] site/channel.
 
 This file contains the complete, documented configuration for my Emacs.
 
-The goal of this work is to be able to generate a fixed, known-good
-configuration for emacs from this file.
+The goal of this work is to be able to generate a fixed, known-good configuration for emacs from this file.
 
 #+begin_src emacs-lisp
   (defvar jpalmer/default-font-size 130)
@@ -297,14 +295,17 @@ TODO: Try out vertico?
 What are some things that might trigger comple
 #+begin_src emacs-lisp
   (use-package corfu
-    :init
-    (global-corfu-mode)
-    (corfu-popupinfo-mode))
+      :init
+      (global-corfu-mode)
+      (corfu-popupinfo-mode)
+      (setq corfu-auto t
+            corfu-quit-no-match 'separator))
 
-  (use-package emacs
-    :init
-    (setq completion-cycle-threshold 3
-          tab-always-indent 'complete))
+    (use-package emacs
+      :init
+      (setq completion-cycle-threshold 3
+            tab-always-indent 'complete
+  ))
 #+end_src
 
 ** Ivy-Based Completion
@@ -854,13 +855,20 @@ This configuration is for LSP mode
   (use-package lsp-mode
     :after which-key
     :commands lsp lsp-deferred
+    :init
+    (defun jpalmer/lsp-mode-setup-completion ()
+      (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+            '(orderless)))
     :hook ( (typescript-ts-mode . lsp-deferred)
             (js2-ts-mode . lsp-deferred)
             (web-mode . lsp-deferred)
-            (lsp-mode . lsp-enable-which-key-integration))
-
+            (lsp-mode . lsp-enable-which-key-integration)
+            (lsp-completion-mode . jpalmer/lsp-mode-setup-completion))
     ; :bind (:map lsp-mode-map ("TAB" . completion-at-point))
-    :custom (lsp-headerline-breadcrumb-enable nil)
+    :custom
+    (lsp-headerline-breadcrumb-enable nil)
+    (lsp-completion-provider :none)       ; we use Corfu!
+
     )
 
   ;; also install lsp-ui
