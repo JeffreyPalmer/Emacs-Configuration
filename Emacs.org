@@ -40,12 +40,14 @@ and then use a hook to measure and report startup time.
 #+end_src
 
 * Native Compilation
+
 #+begin_src emacs-lisp
   ;; Silence native code compiler warnings, as they're pretty chatty
   (setq comp-async-report-warnings-errors nil
         ;; This was generated when I asked emacs to disable the display of these compilation errors
         warning-suppress-types '((comp) (comp)))
 #+end_src
+
 * Package Management
 ** straight.el
 First of all we need to disable package.el by default so that it's never loaded.
@@ -154,26 +156,24 @@ This allows things like buffer cleanup to happen during the day instead of at mi
 
 ** Font Configuration
 #+begin_src emacs-lisp
-   (set-face-attribute 'default nil :font "Jetbrains Mono" :height jpalmer/default-font-size :weight 'light)
+  (set-face-attribute 'default nil :font "Jetbrains Mono" :height jpalmer/default-font-size :weight 'light)
 
-   ;; Set the fixed pitch face
-   (set-face-attribute 'fixed-pitch nil :font "Jetbrains Mono" :height jpalmer/default-font-size :weight 'light)
+  ;; Set the fixed pitch face
+  (set-face-attribute 'fixed-pitch nil :font "Jetbrains Mono" :height jpalmer/default-font-size :weight 'light)
 
-   ;; Set the variable pitch face
-   (set-face-attribute 'variable-pitch nil :font "Fira Sans" :height jpalmer/default-variable-font-size :weight 'regular)
+  ;; Set the variable pitch face
+  (set-face-attribute 'variable-pitch nil :font "Fira Sans" :height jpalmer/default-variable-font-size :weight 'regular)
 
-   ;; Enable ligatures in emacs-mac
-   (mac-auto-operator-composition-mode)
+  ;; Customize the global cursor color
+  (set-face-attribute 'cursor nil :background "goldenrod")
+
+  ;; Enable ligatures in emacs-mac
+  (mac-auto-operator-composition-mode)
 
 #+end_src
 
 ** Theming
-First, make sure that the cursor color is something that's easily noticed.
-#+begin_src emacs-lisp
-  (set-cursor-color "goldenrod")
-#+end_src
-
-Now install the doom themes
+Install the doom themes
 #+begin_src emacs-lisp
   (use-package doom-themes
     :config
@@ -189,17 +189,14 @@ Now install the doom themes
 I'm currently testing out some other options, but my previous go-to theme was "doom-tomorrow-night".
 
 ** Allow highlighting while idle
-
 #+begin_src emacs-lisp
   (use-package idle-highlight-mode
     :diminish idle-highlight-mode
     :config (setq idle-highlight-idle-time 0.5)
     :hook ((prog-mode text-mode) . idle-highlight-mode))
 #+end_src
-
 ** Modeline Improvements
-
-*NOTE*: The first time this configuration is loaded, the mode line icons will need to be installed via `M-x all-the-icons-install-fonts`.
+NOTE: The first time this configuration is loaded, the mode line icons will need to be installed via =M-x all-the-icons-install-fonts=.
 #+begin_src emacs-lisp
   (use-package all-the-icons)
 
@@ -234,8 +231,8 @@ There are some keybinds that I absolutely hate when operating in a modern graphi
                   (lambda () (interactive) (delete-window)))
   (global-set-key [(super z)] 'undo)
 
-    (setq mac-command-modifier 'super
-          mac-option-modifier 'meta)
+  (setq mac-command-modifier 'super
+        mac-option-modifier 'meta)
 #+end_src
 ** Which Key Support
 #+begin_src emacs-lisp
@@ -246,42 +243,45 @@ There are some keybinds that I absolutely hate when operating in a modern graphi
     (setq which-key-idle-delay 1))
 #+end_src
 ** Text Scaling
-I used to have code to do this, but it turns out that there are interactive screen scaling commands already in emacs, bound to <C-x C-+>, <C-x C-->, and <C-x C-0>. Plus, they're interactive in the same way that Hydra provides, so ultimately this configuration is not needed.
+I used to have code to do this, but it turns out that there are interactive screen scaling commands already in emacs, bound to =C-x C-+=, =C-x C--=, and =C-x C-0=. Plus, they're interactive in the same way that Hydra provides, so ultimately this configuration is not needed.
 ** Navigation
-[[https://github.com/abo-abo/avy][Avy]] makes it possible to jump to visible text using a char-based decision tree.
+[[https://github.com/abo-abo/avy][Avy]] makes it possible to jump to visible text using a character-based decision tree.
 #+begin_src emacs-lisp
   (use-package avy
     :bind (("C-;" . avy-goto-char-2)
-           ("M-g" . avy-goto-line))
+           ("M-g M-g" . avy-goto-line))
     :config
     (avy-setup-default)
     (setq avy-keys '(?a ?r ?s ?t ?n ?e ?i ?o)))
 #+end_src
 * Helpful Help
 #+begin_src emacs-lisp
-
   ;; Try harder apropros
   (setq-default apropos-do-all t)
+#+end_src
 
+** Counsel-based help configuration
+#+begin_src emacs-lisp
+  ;; If counsel is enabled
   (use-package helpful
-    :custom
-    (counsel-describe-function-function #'helpful-callable)
-    (counsel-describe-variable-function #'helpful-variable)
+    ; :custom
+    ; (counsel-describe-function-function #'helpful-callable)
+    ; (counsel-describe-variable-function #'helpful-variable)
     :bind
-    ([remap describe-function] . counsel-describe-function)
-    ([remap describe-symbol] . counsel-describe-symbol)
-    ([remap describe-variable] . counsel-describe-variable)
+    ([remap describe-function] . helpful-callable)
+    ([remap describe-symbol] . helpful-symbol)
+    ([remap describe-variable] . helpful-variable)
     ([remap describe-command] . helpful-command)
     ([remap describe-key] . helpful-key))
 
 #+end_src
-
 * Completion
 This configuration uses Ivy, Counsel, and Swiper.
 TODO: Break this into chunks?
 TODO: Try out vertico?
-#+begin_src emacs-lisp
 
+** Company (in-buffer completion)
+#+begin_src emacs-lisp :tangle no
   (use-package company
     :diminish company-mode
     :config (global-company-mode))
@@ -289,6 +289,27 @@ TODO: Try out vertico?
   (use-package company-posframe
     :config
     (company-posframe-mode 1))
+#+end_src
+
+** Corfu (in-buffer completion)
+[[https://github.com/minad/corfu][Corfu]] is a new in-buffer completion approach from the person that created Vertico.
+
+What are some things that might trigger comple
+#+begin_src emacs-lisp
+  (use-package corfu
+    :init
+    (global-corfu-mode)
+    (corfu-popupinfo-mode))
+
+  (use-package emacs
+    :init
+    (setq completion-cycle-threshold 3
+          tab-always-indent 'complete))
+#+end_src
+
+** Ivy-Based Completion
+All of these configurations are to support [[https://github.com/abo-abo/swiper][swiper/ivy]]-based completion and associated functionality.
+#+begin_src emacs-lisp :tangle no
 
   (use-package ivy-posframe
     :config
@@ -416,6 +437,180 @@ TODO: Try out vertico?
     (company-prescient-mode))
 
 #+end_src
+** Vertico-Based Completion
+[[https://github.com/minad/vertico][Vertico]] is a new completion UI that integrates with the default emacs completion system.
+#+begin_src emacs-lisp
+  (use-package vertico
+    :init
+    (vertico-mode)
+    (vertico-multiform-mode)
+    (setq vertico-cycle t) )
+
+  ;; Enable savehist to save search history over time
+  (use-package savehist
+    :init
+    (savehist-mode))
+
+  ;; allows for substring search
+  (use-package orderless
+    :custom
+    (completion-styles '(orderless basic))
+    (completion-category-overrides '((file (styles basic partial-completion)))))
+#+end_src
+
+*** Consult
+[[https://github.com/minad/consult][Consult]] is a sister package to vertico and serves as the counsel equivalent to Ivy.
+#+begin_src emacs-lisp
+
+(defun jpalmer/consult-line-forward ()
+  "Search for a matching line forward."
+  (interactive)
+  (consult-line))
+
+(defun jpalmer/consult-line-backward ()
+  "Search for a matching line backward."
+  (interactive)
+  (advice-add 'consult--line-candidates :filter-return 'reverse)
+  (vertico-reverse-mode +1)
+  (unwind-protect (consult-line)
+    (vertico-reverse-mode -1)
+    (advice-remove 'consult--line-candidates 'reverse)))
+
+(with-eval-after-load 'consult
+  (consult-customize jpalmer/consult-line-backward
+                     :prompt "Go to line backward: ")
+  (consult-customize jpalmer/consult-line-forward
+                     :prompt "Go to line forward: "))
+
+(global-set-key (kbd "C-s") 'jpalmer/consult-line-forward)
+(global-set-key (kbd "C-r") 'jpalmer/consult-line-backward)
+
+;; Example configuration for Consult
+(use-package consult
+  ;; Replace bindings. Lazily loaded due by `use-package'.
+  :bind (;; C-c bindings in `mode-specific-map'
+         ("C-c M-x" . consult-mode-command)
+         ("C-c h" . consult-history)
+         ("C-c k" . consult-kmacro)
+         ("C-c m" . consult-man)
+         ("C-c i" . consult-info)
+         ([remap Info-search] . consult-info)
+         ;; C-x bindings in `ctl-x-map'
+         ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
+         ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
+         ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+         ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
+         ("C-x t b" . consult-buffer-other-tab)    ;; orig. switch-to-buffer-other-tab
+         ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
+         ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
+         ;; Custom M-# bindings for fast register access
+         ("M-#" . consult-register-load)
+         ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
+         ("C-M-#" . consult-register)
+         ;; Other custom bindings
+         ("M-y" . consult-yank-pop)                ;; orig. yank-pop
+         ;; M-g bindings in `goto-map'
+         ("M-g e" . consult-compile-error)
+         ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
+         ("M-g g" . consult-goto-line)             ;; orig. goto-line
+         ;("M-g M-g" . consult-goto-line)           ;; orig. goto-line
+         ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
+         ("M-g m" . consult-mark)
+         ("M-g k" . consult-global-mark)
+         ("M-g i" . consult-imenu)
+         ("M-g I" . consult-imenu-multi)
+         ;; M-s bindings in `search-map'
+         ("M-s d" . consult-find)                  ;; Alternative: consult-fd
+         ("M-s c" . consult-locate)
+         ("M-s g" . consult-grep)
+         ("M-s G" . consult-git-grep)
+         ("M-s r" . consult-ripgrep)
+         ("M-s l" . consult-line)
+         ("M-s L" . consult-line-multi)
+         ("M-s k" . consult-keep-lines)
+         ("M-s u" . consult-focus-lines)
+         ;; Isearch integration
+         ("M-s e" . consult-isearch-history)
+         :map isearch-mode-map
+         ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
+         ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
+         ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
+         ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
+         ;; Minibuffer history
+         :map minibuffer-local-map
+         ("M-s" . consult-history)                 ;; orig. next-matching-history-element
+         ("M-r" . consult-history))                ;; orig. previous-matching-history-element
+
+  ;; Enable automatic preview at point in the *Completions* buffer. This is
+  ;; relevant when you use the default completion UI.
+  :hook (completion-list-mode . consult-preview-at-point-mode)
+
+  ;; The :init configuration is always executed (Not lazy)
+  :init
+
+  ;; Optionally configure the register formatting. This improves the register
+  ;; preview for `consult-register', `consult-register-load',
+  ;; `consult-register-store' and the Emacs built-ins.
+  (setq register-preview-delay 0.5
+        register-preview-function #'consult-register-format)
+
+  ;; Optionally tweak the register preview window.
+  ;; This adds thin lines, sorting and hides the mode line of the window.
+  (advice-add #'register-preview :override #'consult-register-window)
+
+  ;; Use Consult to select xref locations with preview
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref)
+
+  ;; Configure other variables and modes in the :config section,
+  ;; after lazily loading the package.
+  :config
+
+  ;; Optionally configure preview. The default value
+  ;; is 'any, such that any key triggers the preview.
+  ;; (setq consult-preview-key 'any)
+  ;; (setq consult-preview-key "M-.")
+  ;; (setq consult-preview-key '("S-<down>" "S-<up>"))
+  ;; For some commands and buffer sources it is useful to configure the
+  ;; :preview-key on a per-command basis using the `consult-customize' macro.
+  (consult-customize
+   consult-theme :preview-key '(:debounce 0.2 any)
+   consult-ripgrep consult-git-grep consult-grep
+   consult-bookmark consult-recent-file consult-xref
+   consult--source-bookmark consult--source-file-register
+   consult--source-recent-file consult--source-project-recent-file
+   ;; :preview-key "M-."
+   :preview-key '(:debounce 0.4 any))
+
+  ;; Optionally configure the narrowing key.
+  ;; Both < and C-+ work reasonably well.
+  (setq consult-narrow-key "<") ;; "C-+"
+
+  ;; Optionally make narrowing help available in the minibuffer.
+  ;; You may want to use `embark-prefix-help-command' or which-key instead.
+  ;; (define-key consult-narrow-map (vconcat consult-narrow-key "?") #'consult-narrow-help)
+
+  ;; By default `consult-project-function' uses `project-root' from project.el.
+  ;; Optionally configure a different project root function.
+  ;;;; 1. project.el (the default)
+  ;; (setq consult-project-function #'consult--default-project--function)
+  ;;;; 2. vc.el (vc-root-dir)
+  ;; (setq consult-project-function (lambda (_) (vc-root-dir)))
+  ;;;; 3. locate-dominating-file
+  ;; (setq consult-project-function (lambda (_) (locate-dominating-file "." ".git")))
+  ;;;; 4. projectile.el (projectile-project-root)
+  ;; (autoload 'projectile-project-root "projectile")
+  ;; (setq consult-project-function (lambda (_) (projectile-project-root)))
+  ;;;; 5. No project support
+  ;; (setq consult-project-function nil)
+)
+#+end_src
+** Marginalia
+#+begin_src emacs-lisp
+  (use-package marginalia
+    :init
+    (marginalia-mode))
+#+end_src
 * Window Management
 ** Window layout management via Eyebrowse
 #+begin_src emacs-lisp
@@ -436,7 +631,7 @@ TODO: Try out vertico?
 ** Window Layout Persistence
 #+begin_src emacs-lisp
   (use-package desktop
-    :init (desktop-save-mode 1))
+    :config (desktop-save-mode +1))
 #+end_src
 
 ** Window Layout Undo/Redo via Winner Mode
@@ -471,7 +666,8 @@ Support directional and letter-based buffer navigation
 * General Editing
 ** Hungry Delete
 This deletes all whitespace up to the last non-whitespace character when editing. It can be very handy.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
+  ;; FIXME: Figure out whether or not I really want this enabled
   (use-package smart-hungry-delete
     :bind (([remap backward-delete-char-untabify] . smart-hungry-delete-backward-char)
            ([remap delete-backward-char] . smart-hungry-delete-backward-char)
@@ -560,7 +756,9 @@ I tried another package ([[https://github.com/tarsius/hl-todo][hl-todo]]) but wa
 
 Try using =hl-todo= one more time.
 #+begin_src emacs-lisp
-  (use-package hl-todo)
+    (use-package hl-todo
+      :config
+      (global-hl-todo-mode +1))
 #+end_src
 
 *** Project Support
@@ -568,8 +766,10 @@ Try using =hl-todo= one more time.
   (use-package projectile
     :config
     (projectile-mode +1)
-    (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
-    :diminish projectile-mode)
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+    ;; Not sure yet why I originally had this disabled
+    ; :diminish projectile-mode
+    )
 #+end_src
 *** Highlight color names in buffers
 #+begin_src emacs-lisp
@@ -606,14 +806,59 @@ Try using =hl-todo= one more time.
     :config
     (setq git-gutter-fr:side 'right-fringe))
 #+end_src
-*** Languages
-**** Language Server Support
-
-This configuration is for LSP mode
+** Languages
+*** Tree Sitter Language Definitions
+How to install the tree-sitter language definitions, from [[https://www.masteringemacs.org/article/how-to-get-started-tree-sitter][this article]].
 #+begin_src emacs-lisp :tangle no
+  (setq treesit-language-source-alist
+     '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+       (cmake "https://github.com/uyha/tree-sitter-cmake")
+       (css "https://github.com/tree-sitter/tree-sitter-css")
+       (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+       ; (go "https://github.com/tree-sitter/tree-sitter-go")
+       (html "https://github.com/tree-sitter/tree-sitter-html")
+       (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+       (json "https://github.com/tree-sitter/tree-sitter-json")
+       (make "https://github.com/alemuller/tree-sitter-make")
+       (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+       (python "https://github.com/tree-sitter/tree-sitter-python")
+       ; (toml "https://github.com/tree-sitter/tree-sitter-toml")
+       (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+       (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+       (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+
+  (setq major-mode-remap-alist
+        '((yaml-mode . yaml-ts-mode)
+          (bash-mode . bash-ts-mode)
+          (js2-mode . js-ts-mode)
+          (typescript-mode . typescript-ts-mode)
+          (json-mode . json-ts-mode)
+          (css-mode . css-ts-mode)
+          (python-mode . python-ts-mode)))
+#+end_src
+
+Try using [[https://github.com/renzmann/treesit-auto][treesite-auto]] package to manage this stuff for me.
+#+begin_src emacs-lisp
+  (use-package treesit-auto
+    :custom
+    (treesit-auto-install 'prompt)
+    :config
+    (treesit-auto-add-to-auto-mode-alist 'all)
+    (global-treesit-auto-mode))
+#+end_src
+
+
+*** Language Server Support
+This configuration is for LSP mode
+#+begin_src emacs-lisp
   (use-package lsp-mode
+    :after which-key
     :commands lsp lsp-deferred
-    :hook ((typescript-mode js2-mode web-mode) . lsp-deferred)
+    :hook ( (typescript-ts-mode . lsp-deferred)
+            (js2-ts-mode . lsp-deferred)
+            (web-mode . lsp-deferred)
+            (lsp-mode . lsp-enable-which-key-integration))
+
     ; :bind (:map lsp-mode-map ("TAB" . completion-at-point))
     :custom (lsp-headerline-breadcrumb-enable nil)
     )
@@ -630,32 +875,8 @@ This configuration is for LSP mode
           lsp-ui-doc-position 'bottom)
     (lsp-ui-doc-show))
 #+end_src
-
-This configuration is for eglot.
-#+begin_src emacs-lisp
-  (use-package eglot
-    :custom (eglot-autoshutdown t))
-
-  ;; Force eglot to use flycheck instead of flymake
-  (use-package flycheck-eglot
-    :after (flycheck eglot)
-    :straight (flycheck-eglot :type git :host nil :repo "https://gist.github.com/89d00717ac6c6fba1a72b165fd588f4c.git"))
-
-#+end_src
-
-Eglot doesn't automatically install language servers, so set up a
-script that will be generated to take care of that.
-#+begin_src shell :tangle ./install-language-servers.sh
-  #!/bin/sh
-  #
-  # Install required language servers based on Emacs.org
-  #
-  # This script is auto-generated - DO NOT EDIT
-  #
-#+end_src
-
-**** Typescript/Javascript
-#+begin_src emacs-lisp
+*** Typescript/Javascript
+#+begin_src emacs-lisp :tangle no
   (use-package typescript-mode
     :mode "\\.ts\\'"
     :config
@@ -682,13 +903,6 @@ script that will be generated to take care of that.
     (setq prettier-js-show-errors nil))
 
 #+end_src
-
-Also make sure that the ts/js language server is installed by adding it to the language server installation script:
-#+begin_src shell :tangle ./install-language-servers.sh
-  npm install -g typescript-language-server typescript
-#+end_src
-
-
 **** TODO: Svelte Mode
 **** TODO: Julia Mode
 **** Emacs Lisp
@@ -698,16 +912,16 @@ Also make sure that the ts/js language server is installed by adding it to the l
 #+end_src
 **** WebGL/GLSL
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   ;; FIXME: Put this back
   (use-package glsl-mode
     :mode "(\\.\\(glsl\\|vert\\|frag\\|geom\\)\\'")
 
   ;; Add completion support for glsl
-  (use-package company-glsl
-    :config
-    (when (executable-find "glslangValidator")
-      (add-to-list 'company-backends 'company-glsl)))
+  ;(use-package company-glsl
+  ;  :config
+  ;  (when (executable-find "glslangValidator")
+  ;    (add-to-list 'company-backends 'company-glsl)))
 
   ;; Add flycheck support for glsl
   (use-package flycheck-glsl
@@ -747,7 +961,7 @@ Also make sure that the ts/js language server is installed by adding it to the l
 
   (use-package skewer-mode)
 #+end_src
-*** Compilation
+** Compilation
 Set up the compile package and ensure that compilation output automatically scrolls.
 #+begin_src emacs-lisp
   (use-package compile
@@ -760,25 +974,31 @@ Set up the compile package and ensure that compilation output automatically scro
         (remove-hook 'after-save-hook #'recompile t)
       (add-hook 'after-save-hook #'recompile nil t)))
 #+end_src
-*** Syntax Checking with flycheck
-#+begin_src emacs-lisp :tangle no
-    (use-package flycheck
-      :defer t
-      :custom
-      ; (flycheck-highlighting-mode 'lines)
-      ; (flycheck-highlighting-style 'level-face)
-      (flycheck-indication-mode 'right-fringe)
-      ;; FIXME: This will probably need to be fixed
-      ; :hook (lsp-mode glsl-mode)
-      :config (global-flycheck-mode))
+** Syntax Checking with flycheck
+#+begin_src emacs-lisp
+  (use-package flycheck
+    :defer t
+    :custom
+    ; (flycheck-highlighting-mode 'lines)
+    ; (flycheck-highlighting-style 'level-face)
+    (flycheck-indication-mode 'right-fringe)
+    ;; FIXME: This will probably need to be fixed
+    ; :hook (lsp-mode glsl-mode)
+    :config (global-flycheck-mode))
 
-    ;; I'm not sure that I like this, so disabling for now
-    (use-package flycheck-pos-tip
-      :disabled
-      :after flycheck
-      :config (flycheck-pos-tip-mode))
+  (use-package flycheck-hl-todo
+    :defer 5
+    :straight (:host github :repo "alvarogonzalezsotillo/flycheck-hl-todo")
+    :config
+    (flycheck-hl-todo-setup))
+
+  ;; I'm not sure that I like this, so disabling for now
+  (use-package flycheck-pos-tip
+    :disabled
+    :after flycheck
+    :config (flycheck-pos-tip-mode))
 #+end_src
-*** Snippets
+** Snippets
 #+begin_src emacs-lisp
   (use-package yasnippet
     :hook (prog-mode . yas-minor-mode)
@@ -815,7 +1035,6 @@ the developer.
 #+end_src
 
 * Org Mode
-
 ** General Org Setup
 #+begin_src emacs-lisp
   (use-package org
@@ -829,7 +1048,13 @@ the developer.
            ("<f12>" . org-agenda))
     :hook
     ((org-mode . (lambda () (variable-pitch-mode t)))
-     (org-mode . visual-line-mode))
+     (org-mode . visual-line-mode)
+     (org-mode . (lambda ()
+                   ;; undefine C-c [ and C-c ]
+                   (org-defkey org-mode-map (kbd "C-c [") 'undefined)
+                   (org-defkey org-mode-map (kbd "C-c ]") 'undefined)
+                   ;; make sure that org-reveal is bound
+                   (org-defkey org-mode-map (kbd "C-c r") 'org-reveal))))
     :config
     (setq org-directory "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org"
           org-agenda-files (list org-directory)
@@ -845,6 +1070,8 @@ the developer.
           org-insert-heading-respect-content t
           org-catch-invisible-edits 'show-and-error
           org-use-speed-commands t
+          ;; don't reorganize windows when opening the agenda
+          org-agenda-window-setup 'current-window
           ;; open org links in the same window
           org-link-frame-setup '((file . find-file))
           ;; calculate completion statistics for multi-level projects
@@ -960,14 +1187,7 @@ the developer.
             ("i" "Inbox" tags "REFILE"
              ((org-agenda-overriding-header "Inbox")
               (org-tags-match-list-sublevels nil)))))
-    (org-clock-persistence-insinuate)
-    (add-hook 'org-mode-hook
-              '(lambda ()
-                 ;; undefine C-c [ and C-c ]
-                 (org-defkey org-mode-map (kbd "C-c [") 'undefined)
-                 (org-defkey org-mode-map (kbd "C-c ]") 'undefined)
-                 ;; make sure that org-reveal is bound
-                 (org-defkey org-mode-map (kbd "C-c r") 'org-reveal))))
+    (org-clock-persistence-insinuate))
 #+end_src
 
 ** Better Fonts
@@ -985,7 +1205,7 @@ the developer.
 #+begin_src emacs-lisp
   (with-eval-after-load 'org-faces
     ;; Increase the size of various headings
-    (set-face-attribute 'org-document-title nil :font "Avenir Next" :weight 'bold :height 1.3)
+    (set-face-attribute 'org-document-title nil :font "Fira Sans" :weight 'bold :height 1.3)
     (dolist (face '((org-level-1 . 1.2)
                     (org-level-2 . 1.1)
                     (org-level-3 . 1.05)
@@ -994,13 +1214,13 @@ the developer.
                     (org-level-6 . 1.1)
                     (org-level-7 . 1.1)
                     (org-level-8 . 1.1)))
-      (set-face-attribute (car face) nil :font "Avenir Next" :weight 'medium :height (cdr face)))
+      (set-face-attribute (car face) nil :font "Fira Sans" :weight 'medium :height (cdr face)))
 
     ;; Make sure org-indent face is available
     (require 'org-indent)
 
     ;; Ensure that anything that should be fixed-pitch in Org files appears that way
-    (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+    (set-face-attribute 'org-block nil :foreground 'unspecified :inherit 'fixed-pitch)
     (set-face-attribute 'org-table nil  :inherit 'fixed-pitch)
     (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
     (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
@@ -1012,8 +1232,8 @@ the developer.
     (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
 
     ;; Get rid of the background on column views
-    (set-face-attribute 'org-column nil :background nil)
-    (set-face-attribute 'org-column-title nil :background nil))
+    (set-face-attribute 'org-column nil :background 'unspecified)
+    (set-face-attribute 'org-column-title nil :background 'unspecified))
 #+end_src
 
 ** Fixup agenda display of empty sections
@@ -1055,6 +1275,7 @@ the developer.
 #+end_src
 
 ** Org Roam
+
 #+begin_src emacs-lisp
   (use-package org-roam
     :ensure t
@@ -1079,26 +1300,32 @@ the developer.
     (org-roam-db-autosync-mode))
 #+end_src
 
-
 ** Other org miscellany
+*** Enable smart checklist updating (via org-contrib/org-checklist)
 #+begin_src emacs-lisp
-  ; (require org-checklist)
-  ; (use-package org-checklist)
-
-  (use-package org-pomodoro
-    :bind
-    ("C-c p" . org-pomodoro)
+  ;; Install any required org-contrib libraries
+  (use-package org-contrib
     :config
-    (setq alert-user-configuration '((((:category . "org-pomodoro")) osx-notifier nil))
-          org-pomodoro-format "🍅~%s"))
-
+    (require 'org-checklist))
+#+end_src
+*** Add support for project review via org-review
+#+begin_src emacs-lisp
   (use-package org-review
     :bind
     (("C-c v" . org-review-insert-last-review)))
 #+end_src
-
-
-** Tempo Mode for Structure Templates
+***  Also enable Pomodoro time tracking
+#+begin_src emacs-lisp
+  ;; FIXME: This is disabled for now
+  ;; Add support for pomodoro time tracking
+  (use-package org-pomodoro
+    :bind
+    ("s-p" . org-pomodoro)
+    :config
+    (setq alert-user-configuration '((((:category . "org-pomodoro")) osx-notifier nil))
+          org-pomodoro-format "🍅~%s"))
+#+end_src
+*** Tempo Mode for Structure Templates
 #+begin_src emacs-lisp
 
   ;; TODO: Enable this once org mode is fully set up
