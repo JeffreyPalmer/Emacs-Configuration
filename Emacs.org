@@ -697,13 +697,20 @@ Support directional and letter-based buffer navigation
 * General Editing
 ** Hungry Delete
 This deletes all whitespace up to the last non-whitespace character when editing. It can be very handy.
-#+begin_src emacs-lisp :tangle no
-  ;; FIXME: Figure out whether or not I really want this enabled
+#+begin_src emacs-lisp
+  ;; Disabled for now in favor of the not-so-smart hungry delete
   (use-package smart-hungry-delete
+    :disabled
     :bind (([remap backward-delete-char-untabify] . smart-hungry-delete-backward-char)
            ([remap delete-backward-char] . smart-hungry-delete-backward-char)
            ([remap delete-char] . smart-hungry-delete-forward-char))
     :init (smart-hungry-delete-add-default-hooks))
+
+  (use-package hungry-delete
+    :init
+    (setq hungry-delete-join-reluctantly t)
+    :config
+    (global-hungry-delete-mode))
 #+end_src
 ** Whitespace Highlighting
 This highlights any odd whitespace in a buffer.
