@@ -125,6 +125,7 @@ This allows things like buffer cleanup to happen during the day instead of at mi
 (server-start)
 #+end_src
 * Basic UI Configuration
+** Generic Settings
 #+begin_src emacs-lisp
 
   (scroll-bar-mode -1)                    ; Disable the visible scrollbar
@@ -160,7 +161,7 @@ This allows things like buffer cleanup to happen during the day instead of at mi
   (set-face-attribute 'fixed-pitch nil :font "Jetbrains Mono" :height jpalmer/default-font-size :weight 'light)
 
   ;; Set the variable pitch face
-  (set-face-attribute 'variable-pitch nil :font "Fira Sans" :height jpalmer/default-variable-font-size :weight 'regular)
+  (set-face-attribute 'variable-pitch nil :font "Fira Sans" :height jpalmer/default-variable-font-size :weight 'light)
 
   ;; Customize the global cursor color
   (set-face-attribute 'cursor nil :background "goldenrod")
@@ -171,13 +172,14 @@ This allows things like buffer cleanup to happen during the day instead of at mi
 #+end_src
 
 ** Theming
+*** Doom Themes
 Install the doom themes
 #+begin_src emacs-lisp
   (use-package doom-themes
     :config
     (setq doom-themes-enable-bold nil
           doom-themes-enable-italic t
-          doom-themes-padded-modeline nil) ; Adds a 4 pixel margin around the modeline
+          doom-themes-padded-modeline t) ; Adds a 4 pixel margin around the modeline
     (load-theme 'doom-dark+ t)
     (doom-themes-visual-bell-config)
     (doom-themes-neotree-config)
@@ -185,6 +187,34 @@ Install the doom themes
 #+end_src
 
 I'm currently testing out some other options, but my previous go-to theme was "doom-tomorrow-night".
+*** Modus Themes (disabled)
+Try out the Modus themes. These are currently not in use, but they have a lot of flexibility so they may be worth looking into later.
+#+begin_src emacs-lisp :tangle no
+  (use-package modus-themes
+    :init
+    (setq modus-themes-disable-other-themes t
+          ; modus-themes-mode-line '(borderless padded)
+          modus-themes-bold-constructs t
+          modus-themes-italic-constructs t
+          modus-themes-fringes 'subtle
+          modus-themes-tabs-accented t
+          modus-themes-paren-match '(bold)
+          modus-themes-prompts '(bold)
+          ; modus-themes-completions 'opinionated
+          modus-themes-mixed-fonts t
+          modus-themes-variable-pitch-ui nil
+          modus-themes-org-blocks 'gray-background
+          modus-themes-syntax '(faint)
+          modus-themes-scale-headings t
+          modus-themes-region '(bg-only)
+          modus-themes-headings
+          '((1 . (rainbow overline background 1.4))
+            (2 . (rainbow background 1.3))
+            (3 . (rainbow bold 1.2))
+            (t . (semilight 1.1))))
+    :config
+    (load-theme 'modus-vivendi-tinted t))
+#+end_src
 
 ** Allow highlighting while idle
 #+begin_src emacs-lisp
@@ -1213,16 +1243,16 @@ the developer.
 #+begin_src emacs-lisp
   (with-eval-after-load 'org-faces
     ;; Increase the size of various headings
-    (set-face-attribute 'org-document-title nil :font "Fira Sans" :weight 'bold :height 1.3)
-    (dolist (face '((org-level-1 . 1.2)
-                    (org-level-2 . 1.1)
-                    (org-level-3 . 1.05)
-                    (org-level-4 . 1.0)
+    (set-face-attribute 'org-document-title nil :font "Fira Sans" :weight 'light :height 1.4)
+    (dolist (face '((org-level-1 . 1.4)
+                    (org-level-2 . 1.3)
+                    (org-level-3 . 1.2)
+                    (org-level-4 . 1.1)
                     (org-level-5 . 1.1)
                     (org-level-6 . 1.1)
                     (org-level-7 . 1.1)
                     (org-level-8 . 1.1)))
-      (set-face-attribute (car face) nil :font "Fira Sans" :weight 'medium :height (cdr face)))
+      (set-face-attribute (car face) nil :font "Fira Sans" :weight 'light :height (cdr face)))
 
     ;; Make sure org-indent face is available
     (require 'org-indent)
