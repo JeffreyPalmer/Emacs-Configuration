@@ -9,6 +9,7 @@ This file contains the complete, documented configuration for my Emacs.
 The goal of this work is to be able to generate a fixed, known-good configuration for emacs from this file.
 
 #+begin_src emacs-lisp
+  (defvar jpalmer/default-font "Jetbrains Mono")
   (defvar jpalmer/default-font-size 130)
   (defvar jpalmer/default-variable-font-size 150)
 #+end_src
@@ -156,12 +157,11 @@ This allows things like buffer cleanup to happen during the day instead of at mi
 
 ** Font Configuration
 #+begin_src emacs-lisp
-  ; (set-face-attribute 'default nil :font "Jetbrains Mono" :height jpalmer/default-font-size :weight 'thin)
-  (set-face-attribute 'default nil :font "Fira Code" :height jpalmer/default-font-size :weight 'light)
+  ;; Set the default face
+  (set-face-attribute 'default nil :font jpalmer/default-font :height jpalmer/default-font-size :weight 'thin)
 
   ;; Set the fixed pitch face
-  ; (set-face-attribute 'fixed-pitch nil :font "Jetbrains Mono" :height jpalmer/default-font-size :weight 'thin)
-  (set-face-attribute 'fixed-pitch nil :font "Fira Code" :height jpalmer/default-font-size :weight 'light)
+  (set-face-attribute 'fixed-pitch nil :font jpalmer/default-font :height jpalmer/default-font-size :weight 'thin)
 
   ;; Set the variable pitch face
   (set-face-attribute 'variable-pitch nil :font "Fira Sans" :height jpalmer/default-variable-font-size :weight 'light)
@@ -644,30 +644,17 @@ All of these configurations are to support [[https://github.com/abo-abo/swiper][
     (marginalia-mode))
 #+end_src
 * Window Management
-** Window layout management via Eyebrowse
-#+begin_src emacs-lisp :tangle no
-  (use-package eyebrowse
-    :init
-    (setq eyebrowse-keymap-prefix (kbd "C-c w"))
-    :config
-    (setq eyebrowse-mode-line-separator " "
-          eyebrowse-new-workspace t)
-    (eyebrowse-mode t))
-
-  ;; save the eyebrowse layout periodically
-  ;; (use-package eyebrowse-restore
-  ;;   :straight (eyebrowse-restore :type git :host github :repo "FrostyX/eyebrowse-restore")
-  ;;   :config (eyebrowse-restore-mode))
-#+end_src
-** Window layout management via persp-mode
+** Window layout management via perspective.el
 This seems like it might work nicely with projectile mode? Let's try it out.
 #+begin_src emacs-lisp
   (use-package perspective
     :custom
     (persp-mode-prefix-key (kbd "C-c w"))
+    (persp-state-default-file (locate-user-emacs-file ".emacs.desktop"))
     :bind
     (("C-x k" . persp-kill-buffer*)
      ("C-x C-b" . persp-list-buffers))
+    :hook (kill-emacs . persp-state-save)
     :init
     (persp-mode))
 
@@ -684,12 +671,25 @@ This seems like it might work nicely with projectile mode? Let's try it out.
     (:map projectile-command-map ("p" . projectile-persp-switch-project)))
 #+end_src
 
-** Window Layout Persistence
+** Window layout management via Eyebrowse
 #+begin_src emacs-lisp :tangle no
+  (use-package eyebrowse
+    :init
+    (setq eyebrowse-keymap-prefix (kbd "C-c w"))
+    :config
+    (setq eyebrowse-mode-line-separator " "
+          eyebrowse-new-workspace t)
+    (eyebrowse-mode t))
+
+  ;; save the eyebrowse layout periodically
+  ;; (use-package eyebrowse-restore
+  ;;   :straight (eyebrowse-restore :type git :host github :repo "FrostyX/eyebrowse-restore")
+  ;;   :config (eyebrowse-restore-mode))
+
   (use-package desktop
     :config (desktop-save-mode +1))
-#+end_src
 
+#+end_src
 ** Window Layout Undo/Redo via Winner Mode
 Winner mode allows you to easily undo/redo window configuration changes by pressing <C-c left> or <C-c right>
 #+begin_src emacs-lisp
@@ -826,9 +826,13 @@ I used to use fic-mode but I'm now using hl-todo.
 
 Try using =hl-todo= one more time.
 #+begin_src emacs-lisp
-    (use-package hl-todo
-      :config
-      (global-hl-todo-mode +1))
+  (use-package hl-todo
+    ;; (global-hl-todo-mode +1)
+    ;; Only enable hl-todo-mode for programming buffers
+    :hook (prog-mode . hl-todo-mode))
+
+  ;; Also add consult-todo for nav support with consult
+  (use-package consult-todo)
 #+end_src
 
 *** Project Support
