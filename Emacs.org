@@ -10,7 +10,7 @@ The goal of this work is to be able to generate a fixed, known-good configuratio
 
 #+begin_src emacs-lisp
   (defvar jpalmer/default-font "Jetbrains Mono")
-  (defvar jpalmer/default-font-size 130)
+  (defvar jpalmer/default-font-size 120)
   (defvar jpalmer/default-variable-font-size 150)
 #+end_src
 
@@ -1016,7 +1016,8 @@ Try to configure the built-in typescript tree-sitter-based mode.
   (use-package flycheck-glsl
     :after flycheck
     :straight (flycheck-glsl :type git :host github :repo "yrns/flycheck-glsl"
-                             :fork (:host github :repo "JeffreyPalmer/flycheck-glsl")))
+                             :fork (:host github :repo "JeffreyPalmer/flycheck-glsl"))
+    :config (flycheck-glsl-setup))
 
   ;; try another package, as the first one requires some rework
   ;; (use-package flycheck-glsl
