@@ -1,111 +1,426 @@
 ;;
-;; Emacs Configuration
+;; DO NOT EDIT!
 ;;
-(require 'package)
-(setq package-enable-at-startup nil)
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/") t)
-;; make sure we have access to melpa-stable
-;; (add-to-list 'package-archives
-;;              '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-;; ;; support for org-mode contributions
-;; (add-to-list 'package-archives
-;;              '("org" . "https://orgmode.org/elpa/") t)
-(add-to-list 'package-archives
-             '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
+;; This file was auto-generated from Emacs.org
+;; Please edit that file and tangle it to generate both init.el and early-init.el
+;;
 
-(package-initialize)
+(defvar jpalmer/default-font "Jetbrains Mono")
+(defvar jpalmer/variable-font "Fira Sans")
+(defvar jpalmer/default-font-size 120)
+(defvar jpalmer/default-variable-font-size 150)
 
-;; Bootstrap use-package
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+(setq user-full-name "Jeffrey Palmer"
+      user-mail-address "jeffrey.palmer@acm.org")
 
-(eval-when-compile
-  (require 'use-package))
+;; The default is 800 kb. Measured in bytes
+(setq gc-cons-threshold (* 50 1024 1024))
 
-;; Always install missing packages
-(setq use-package-always-ensure t)
+;; Profile emacs startup
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "*** Emacs loaded in %s with %d garbage collections."
+                     (format "%.2f seconds"
+                             (float-time (time-subtract after-init-time before-init-time)))
+                     gcs-done)))
 
-(use-package diminish)
-(use-package bind-key)
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name
+        "straight/repos/straight.el/bootstrap.el"
+        (or (bound-and-true-p straight-base-dir)
+            user-emacs-directory)))
+      (bootstrap-version 7))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-;; generic setup
-;; i *hate* these keybindings outside of the command line
+;; Set up use-package/straight integration
+(straight-use-package '(use-package :type built-in))
+(setq straight-use-package-by-default t)
+
+
+;; Load the helper package for commands like `straight-x-clean-unused-repos`
+;; I don't think that I need this anymore, actually
+;; (require 'straight-x)
+
+;; Silence native code compiler warnings, as they're pretty chatty
+(setq comp-async-report-warnings-errors nil
+      ;; This was generated when I asked emacs to disable the display of these compilation errors
+      warning-suppress-types '((comp) (comp)))
+
+;; Use a different directory for runtime files
+; (setq user-emacs-directory (expand-file-name "~/.cache/emacs/")
+;      url-history-file (expand-file-name "url-history" user-emacs-directory))
+
+;; Use no-littering to automatically set common paths to the new user-emacs-directory
+(use-package no-littering)
+
+;; Keep customization settings in a temporary file
+(setq custom-file
+      (if (boundp 'server-socket-dir)
+          (expand-file-name "custom.el" server-socket-dir)
+        (expand-file-name (format "emacs-custom-%s.el" (user-uid)) temporary-file-directory)))
+;; For debugging purposes only
+;; (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(load custom-file t)
+
+(use-package midnight
+  :config
+  (midnight-delay-set 'midnight-delay "10:00am"))
+
+;; Revert Dired and other buffers
+(setq global-auto-revert-non-file-buffers t)
+
+;; Revert buffers when the underlying file has changed
+(global-auto-revert-mode 1)
+
+(server-start)
+
+(scroll-bar-mode -1)                    ; Disable the visible scrollbar
+(tool-bar-mode -1)                      ; Disable the toolbar
+(tooltip-mode -1)                       ; Disable tooltips
+(set-fringe-mode 10)                    ; Give some breathing room
+(menu-bar-mode -1)                      ; Disable the menu bar
+
+(column-number-mode)
+
+(setq-default indent-tabs-mode nil
+              tab-width 4)
+
+(setq inhibit-startup-message t
+      visible-bell t
+      fill-column 80
+      kill-whole-line t
+      require-final-newline t)
+
+;; Don't make me type, I know what I'm doing
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+;; Name the frame
+; (set-frame-parameter nil 'name "Main")
+
+;; Set the default face
+(set-face-attribute 'default nil :font jpalmer/default-font :height jpalmer/default-font-size :weight 'thin)
+
+;; Set the fixed pitch face
+(set-face-attribute 'fixed-pitch nil :font jpalmer/default-font :height jpalmer/default-font-size :weight 'thin)
+
+;; Set the variable pitch face
+(set-face-attribute 'variable-pitch nil :font jpalmer/variable-font :height jpalmer/default-variable-font-size :weight 'light)
+
+;; Customize the global cursor color
+(set-face-attribute 'cursor nil :background "goldenrod")
+
+;; Enable ligatures in emacs-mac
+(mac-auto-operator-composition-mode)
+
+(use-package emacs
+  :config
+  (require-theme 'modus-themes)
+  ;; Include any customization here
+  (setq modus-themes-disable-other-themes t
+        modus-themes-mode-line '(accented borderless (padding 4) (height 0.9))
+        modus-themes-bold-constructs nil
+        modus-themes-italic-constructs t
+        modus-themes-fringes 'subtle
+        ; modus-themes-tabs-accented t
+        modus-themes-paren-match '(bold intense)
+        modus-themes-prompts '(bold)
+        ; modus-themes-completions 'opinionated
+        modus-themes-mixed-fonts t
+        modus-themes-variable-pitch-ui t
+        modus-themes-org-blocks 'gray-background
+        modus-themes-syntax '(faint)
+        modus-themes-scale-headings t
+        modus-themes-region '(bg-only)
+        modus-themes-hl-line '(accented)
+        modus-themes-headings
+        '((1 . (regular 1.2))
+          (2 . (regular 1.1))
+          (3 . (regular 1.1))
+          (t . (light 1.1)))
+        modus-themes-org-agenda
+        '((header-block . (variable-pitch 1.2 semibold))
+          (header-date . (grayscale workaholic bold-today 1.1))
+          (event . (accented italic varied))
+          (scheduled . uniform)
+          (habit . traffic-light))
+        )
+
+  (load-theme 'modus-vivendi t))
+
+(use-package idle-highlight-mode
+  :diminish idle-highlight-mode
+  :config (setq idle-highlight-idle-time 0.5)
+  :hook ((prog-mode text-mode) . idle-highlight-mode))
+
+(use-package hl-line
+  :config
+  (global-hl-line-mode +1))
+
 (when window-system
-  (when (eq (key-binding (kbd "s-m")) 'iconify-frame)
-    (global-unset-key (kbd "s-m")))
   (when (eq (key-binding (kbd "C-x C-z")) 'suspend-frame)
     (global-unset-key (kbd "C-x C-z")))
   (when (eq (key-binding (kbd "C-z")) 'suspend-frame)
     (global-unset-key (kbd "C-z")))
   (when (eq (key-binding (kbd "<C-tab>")) 'mac-next-tab-or-toggle-tab-bar)
-    (global-unset-key (kbd "<C-tab>")))
-  (set-mouse-color "DarkOrange")
-  ;; default fonts
-  (when (eq system-type 'darwin)
-    (setq mac-frame-tabbing nil
-          use-dialog-box nil)
-    ;; default Latin font (e.g. Consolas)
-    ;; default font size (point * 10)
-    (set-face-attribute 'default nil
-                        ;; :family "Fira Code"
-                        :family "JetBrains Mono"
-                        :height 121
-                        :weight 'normal
-                        :width 'normal)
+    (global-unset-key (kbd "<C-tab>"))))
 
-    (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-    (add-to-list 'default-frame-alist '(ns-appearance . dark))))
+;; Keybindings for Mac Emacs
+(global-set-key [(super a)] 'mark-whole-buffer)
+(global-set-key [(super v)] 'yank)
+(global-set-key [(super c)] 'kill-ring-save)
+(global-set-key [(super s)] 'save-buffer)
+(global-set-key [(super l)] 'goto-line)
+(global-set-key [(super w)]
+                (lambda () (interactive) (delete-window)))
+(global-set-key [(super z)] 'undo)
 
-(defvar best-gc-cons-threshold 4000000 "Best default gc threshold value. Shouldn't be too big.")
-;; don't GC during startup to save time
-(setq gc-cons-threshold most-positive-fixnum)
+(setq mac-command-modifier 'super
+      mac-option-modifier 'meta)
 
-;; warn when opening files bigger than 100MB
-(setq large-file-warning-threshold 100000000)
+(use-package which-key
+  :init (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-delay 1))
 
-;; enable winner mode for restoring window configurations
+(use-package avy
+  :bind (("C-;" . avy-goto-char-2)
+         ("M-g M-g" . avy-goto-line))
+  :config
+  (avy-setup-default)
+  (setq avy-keys '(?a ?r ?s ?t ?n ?e ?i ?o)))
+
+;; Try harder apropros
+(setq-default apropos-do-all t)
+
+;; If counsel is enabled
+(use-package helpful
+  ; :custom
+  ; (counsel-describe-function-function #'helpful-callable)
+  ; (counsel-describe-variable-function #'helpful-variable)
+  :bind
+  ([remap describe-function] . helpful-callable)
+  ([remap describe-symbol] . helpful-symbol)
+  ([remap describe-variable] . helpful-variable)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-key] . helpful-key))
+
+(use-package corfu
+    :init
+    (global-corfu-mode)
+    (corfu-popupinfo-mode)
+    (setq corfu-auto t
+          corfu-quit-no-match 'separator))
+
+  (use-package emacs
+    :init
+    (setq completion-cycle-threshold 3
+          tab-always-indent 'complete
+))
+
+(use-package vertico
+  :init
+  (vertico-mode)
+  (vertico-multiform-mode)
+  (setq vertico-cycle t) )
+
+;; Enable savehist to save search history over time
+(use-package savehist
+  :init
+  (savehist-mode))
+
+;; allows for substring search
+(use-package orderless
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion)))))
+
+(defun jpalmer/consult-line-forward ()
+  "Search for a matching line forward."
+  (interactive)
+  (consult-line))
+
+(defun jpalmer/consult-line-backward ()
+  "Search for a matching line backward."
+  (interactive)
+  (advice-add 'consult--line-candidates :filter-return 'reverse)
+  (vertico-reverse-mode +1)
+  (unwind-protect (consult-line)
+    (vertico-reverse-mode -1)
+    (advice-remove 'consult--line-candidates 'reverse)))
+
+(with-eval-after-load 'consult
+  (consult-customize jpalmer/consult-line-backward
+                     :prompt "Go to line backward: ")
+  (consult-customize jpalmer/consult-line-forward
+                     :prompt "Go to line forward: "))
+
+(global-set-key (kbd "C-s") 'jpalmer/consult-line-forward)
+(global-set-key (kbd "C-r") 'jpalmer/consult-line-backward)
+
+(use-package consult-flycheck
+  :after (consult flycheck)
+  :bind ("M-g f" . consult-flycheck))
+
+  ;; Example configuration for Consult
+(use-package consult
+    ;; Replace bindings. Lazily loaded by `use-package'.
+    :bind (;; C-c bindings in `mode-specific-map'
+           ("C-c M-x" . consult-mode-command)
+           ("C-c h" . consult-history)
+           ("C-c k" . consult-kmacro)
+           ("C-c m" . consult-man)
+           ("C-c i" . consult-info)
+           ([remap Info-search] . consult-info)
+           ;; C-x bindings in `ctl-x-map'
+           ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
+           ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
+           ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+           ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
+           ("C-x t b" . consult-buffer-other-tab)    ;; orig. switch-to-buffer-other-tab
+           ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
+           ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
+           ;; Custom M-# bindings for fast register access
+           ("M-#" . consult-register-load)
+           ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
+           ("C-M-#" . consult-register)
+           ;; Other custom bindings
+           ("M-y" . consult-yank-pop)                ;; orig. yank-pop
+           ;; M-g bindings in `goto-map'
+           ("M-g e" . consult-compile-error)
+           ;;("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
+           ("M-g g" . consult-goto-line)             ;; orig. goto-line
+           ;("M-g M-g" . consult-goto-line)           ;; orig. goto-line
+           ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
+           ("M-g m" . consult-mark)
+           ("M-g k" . consult-global-mark)
+           ("M-g i" . consult-imenu)
+           ("M-g I" . consult-imenu-multi)
+           ;; M-s bindings in `search-map'
+           ("M-s d" . consult-find)                  ;; Alternative: consult-fd
+           ("M-s c" . consult-locate)
+           ("M-s g" . consult-grep)
+           ("M-s G" . consult-git-grep)
+           ("M-s r" . consult-ripgrep)
+           ("M-s l" . consult-line)
+           ("M-s L" . consult-line-multi)
+           ("M-s k" . consult-keep-lines)
+           ("M-s u" . consult-focus-lines)
+           ;; Isearch integration
+           ("M-s e" . consult-isearch-history)
+           :map isearch-mode-map
+           ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
+           ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
+           ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
+           ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
+           ;; Minibuffer history
+           :map minibuffer-local-map
+           ("M-s" . consult-history)                 ;; orig. next-matching-history-element
+           ("M-r" . consult-history))                ;; orig. previous-matching-history-element
+
+    ;; Enable automatic preview at point in the *Completions* buffer. This is
+    ;; relevant when you use the default completion UI.
+    :hook (completion-list-mode . consult-preview-at-point-mode)
+
+    ;; The :init configuration is always executed (Not lazy)
+    :init
+
+    ;; Optionally configure the register formatting. This improves the register
+    ;; preview for `consult-register', `consult-register-load',
+    ;; `consult-register-store' and the Emacs built-ins.
+    (setq register-preview-delay 0.5
+          register-preview-function #'consult-register-format)
+
+    ;; Optionally tweak the register preview window.
+    ;; This adds thin lines, sorting and hides the mode line of the window.
+    (advice-add #'register-preview :override #'consult-register-window)
+
+    ;; Use Consult to select xref locations with preview
+    (setq xref-show-xrefs-function #'consult-xref
+          xref-show-definitions-function #'consult-xref)
+
+    ;; Configure other variables and modes in the :config section,
+    ;; after lazily loading the package.
+    :config
+
+    ;; Optionally configure preview. The default value
+    ;; is 'any, such that any key triggers the preview.
+    ;; (setq consult-preview-key 'any)
+    ;; (setq consult-preview-key "M-.")
+    ;; (setq consult-preview-key '("S-<down>" "S-<up>"))
+    ;; For some commands and buffer sources it is useful to configure the
+    ;; :preview-key on a per-command basis using the `consult-customize' macro.
+    (consult-customize
+     consult-theme :preview-key '(:debounce 0.2 any)
+     consult-ripgrep consult-git-grep consult-grep
+     consult-bookmark consult-recent-file consult-xref
+     consult--source-bookmark consult--source-file-register
+     consult--source-recent-file consult--source-project-recent-file
+     ;; :preview-key "M-."
+     :preview-key '(:debounce 0.4 any))
+
+    ;; Optionally configure the narrowing key.
+    ;; Both < and C-+ work reasonably well.
+    (setq consult-narrow-key "<") ;; "C-+"
+
+    ;; Optionally make narrowing help available in the minibuffer.
+    ;; You may want to use `embark-prefix-help-command' or which-key instead.
+    ;; (define-key consult-narrow-map (vconcat consult-narrow-key "?") #'consult-narrow-help)
+
+    ;; By default `consult-project-function' uses `project-root' from project.el.
+    ;; Optionally configure a different project root function.
+    ;;;; 1. project.el (the default)
+    ;; (setq consult-project-function #'consult--default-project--function)
+    ;;;; 2. vc.el (vc-root-dir)
+    ;; (setq consult-project-function (lambda (_) (vc-root-dir)))
+    ;;;; 3. locate-dominating-file
+    ;; (setq consult-project-function (lambda (_) (locate-dominating-file "." ".git")))
+    ;;;; 4. projectile.el (projectile-project-root)
+    ;; (autoload 'projectile-project-root "projectile")
+    ;; (setq consult-project-function (lambda (_) (projectile-project-root)))
+    ;;;; 5. No project support
+    ;; (setq consult-project-function nil)
+  )
+
+(use-package marginalia
+  :init
+  (marginalia-mode))
+
+(use-package perspective
+  :custom
+  (persp-mode-prefix-key (kbd "C-c w"))
+  (persp-state-default-file (locate-user-emacs-file "var/.emacs.desktop"))
+  :bind
+  (("C-x k" . persp-kill-buffer*)
+   ("C-x C-b" . persp-list-buffers))
+  :hook (kill-emacs . persp-state-save)
+  :init
+  (persp-mode))
+
+;; Customize consult to support perspective buffer restrictions
+(with-eval-after-load 'consult
+  (consult-customize consult--source-buffer :hidden t :default nil)
+  (add-to-list 'consult-buffer-sources persp-consult-source))
+
+;; Also add support for creating new perspectives in projectile
+(use-package persp-projectile
+  :straight (:host github :repo "bbatsov/persp-projectile")
+  :after (projectile perspective)
+  :bind
+  (:map projectile-command-map ("p" . projectile-persp-switch-project)))
+
 (winner-mode 1)
 
-;; Generic user configuration
-(setq user-full-name "Jeffrey Palmer"
-      user-mail-address "jeffrey.palmer@acm.org")
-
-;; don't make me type, i know what i'm doing
-(defalias 'yes-or-no-p 'y-or-n-p)
-
-(set-cursor-color "goldenrod")
-
-;; enable pretty symbols mode
-(global-prettify-symbols-mode 1)
-
-;; other general settings
-(setq-default apropos-do-all t
-              tab-width 4
-              fci-rule-color "#e9e2cb"
-              linum-format " %7i ")
-(setq fill-column 80
-      inhibit-startup-screen t
-      kill-whole-line t
-      uniquify-buffer-name-style 'reverse
-      require-final-newline t
-      ring-bell-function 'ignore
-      visible-bell nil
-      gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"
-      load-prefer-newer t)
-
-;; only use visual-line-mode in text files
-(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
-(add-hook 'text-mode-hook '(lambda () (variable-pitch-mode t)))
-
-;; don't use variable pitch for markup
-(add-hook 'sgml-mode-hook '(lambda () (variable-pitch-mode nil)))
-
-;; Make sure that we start with sane defaults
-(use-package better-defaults)
-
-;; use ace-window to simplify window navigation
+;; This allows window navigation by pressing <Shift+Direction>
+(windmove-default-keybindings)
 (use-package ace-window
   :bind
   (("M-o" . ace-window))
@@ -113,240 +428,84 @@
   (setq aw-keys '(?a ?r ?s ?t ?n ?e ?i ?o)
         aw-ignore-current t))
 
-;; elixir support
-(use-package alchemist)
+(setq display-buffer-base-action
+    '(display-buffer-reuse-mode-window
+      display-buffer-reuse-window
+      display-buffer-same-window))
+;; If a popup does happen, don't resize windows to be equally sized
+(setq even-window-sizes nil)
 
-(use-package alert
+;; Disabled for now in favor of the not-so-smart hungry delete
+(use-package smart-hungry-delete
+  :disabled
+  :bind (([remap backward-delete-char-untabify] . smart-hungry-delete-backward-char)
+         ([remap delete-backward-char] . smart-hungry-delete-backward-char)
+         ([remap delete-char] . smart-hungry-delete-forward-char))
+  :init (smart-hungry-delete-add-default-hooks))
+
+(use-package hungry-delete
+  :init
+  (setq hungry-delete-join-reluctantly t)
   :config
-  (setq alert-default-style 'osx-notifier))
+  (global-hungry-delete-mode))
 
-;; install some fonts to provide convenient icons
-;; make sure to run M-x all-the-icons-install-fonts in a new setup
-(use-package all-the-icons)
-
-;; load and configure any required packages
-(use-package auto-package-update
+(use-package whitespace
   :config
-  (setq auto-package-update-delete-old-versions t)
-  :bind
-  (("C-c u" . auto-package-update-now)))
+  (setq whitespace-style '(face trailing newline))
+  ;; This should probably be enabled everywhere?
+  (global-whitespace-mode))
 
-(use-package auto-compile
-  :config
-  (auto-compile-on-load-mode))
+(save-place-mode 1)
 
-(use-package avy
-  :bind
-  (("C-;" . avy-goto-char-2))
-  :config
-  (avy-setup-default)
-  (setq avy-keys '(?a ?r ?s ?t ?n ?e ?i ?o)))
-
-(use-package company
-  :diminish company-mode
-  :config
-  (global-company-mode))
-
-(use-package company-posframe
-  :config
-  (company-posframe-mode 1))
-
-(use-package ivy-posframe
-  :config
-  (setq ivy-posframe-parameters '((left-fringe . 8) (right-fringe . 8))
-        ivy-posframe-display-functions-alist
-        '((swiper          . nil)
-          (complete-symbol . ivy-posframe-display-at-point)
-          ;;(counsel-M-x     . ivy-posframe-display-at-frame-bottom-left)
-          (t               . ivy-posframe-display-at-frame-center)))
-  (ivy-posframe-mode 1))
-
-(use-package discover-my-major
-  :bind
-  (("C-h C-m" . discover-my-major)
-   ("C-h M-m" . discover-my-mode)))
+(define-key prog-mode-map (kbd "s-/") 'comment-line)
 
 (use-package exec-path-from-shell
   :config
-  (setq exec-path-from-shell-check-startup-files nil)
+  ; (setq exec-path-from-shell-arguments nil)
   (when (memq window-system '(mac ns))
     (exec-path-from-shell-initialize)))
-
-;; initialize ssh properly so that ssh-agent will work in magit
-(use-package keychain-environment
-  :config
-  (keychain-refresh-environment))
-
-(use-package eyebrowse
-  :init
-  (setq eyebrowse-keymap-prefix (kbd "C-c w"))
-  :config
-  (setq eyebrowse-mode-line-separator " "
-        eyebrowse-new-workspace t)
-  (eyebrowse-mode t))
 
 (use-package easy-kill
   :config
   (global-set-key [remap kill-ring-save] #'easy-kill)
   (global-set-key [remap mark-sexp] #'easy-mark))
 
+; (use-package highlight-parentheses)
+;; Try this other option for now
+(use-package paren
+  :config
+  (set-face-attribute 'show-paren-match-expression nil :background "#363e4a")
+  (show-paren-mode 1))
+
+(use-package highlight-indent-guides
+  :config (setq highlight-indent-guides-method 'bitmap)
+  :hook (prog-mode . highlight-indent-guides-mode))
+
+(use-package paredit
+  :diminish paredit-mode
+  :hook
+  ((clojure-mode cider-repl-mode emacs-lisp-mode lisp-mode lisp-interaction-mode) . enable-paredit-mode))
+
+(global-subword-mode 1)
+
+(use-package hl-todo
+  ;; (global-hl-todo-mode +1)
+  ;; Only enable hl-todo-mode for programming buffers
+  :hook (prog-mode . hl-todo-mode))
+
+;; Also add consult-todo for nav support with consult
+(use-package consult-todo)
+
 (use-package projectile
   :config
   (projectile-mode +1)
-  (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
-  :diminish projectile-mode)
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+  ;; Not sure yet why I originally had this disabled
+  ; :diminish projectile-mode
+  )
 
-(use-package fic-mode
-  :diminish fic-mode
-  :hook prog-mode)
-
-(use-package flycheck
-  ;; :pin melpa-stable
-  :config
-  (flycheck-define-checker proselint
-    "A linter for prose."
-    :command ("proselint" source-inplace)
-    :error-patterns
-    ((warning line-start (file-name) ":" line ":" column ": "
-              (id (one-or-more (not (any " "))))
-              (message) line-end))
-    :modes (text-mode markdown-mode gfm-mode))
-  (add-to-list 'flycheck-checkers 'proselint)
-  (global-flycheck-mode))
-
-(use-package flycheck-pos-tip
-  :after flycheck
-  :config (flycheck-pos-tip-mode))
-
-(use-package highlight-indent-guides
-  :hook (prog-mode . highlight-indent-guides-mode)
-  :config
-  (setq highlight-indent-guides-method 'character))
-
-(use-package highlight-parentheses)
-
-(use-package hungry-delete
-  :config
-  (global-hungry-delete-mode))
-
-(use-package idle-highlight-mode
-  :diminish idle-highlight-mode
-  :hook prog-mode)
-
-;; Ivy/Counsel/Swiper Configuration
-(use-package ivy
-  :diminish ivy-mode
-  :bind
-  (:map ivy-mode-map ("C-'" . ivy-avy))
-  :config
-  (setq projectile-completion-system 'ivy
-        ivy-use-virtual-buffers t
-        ivy-height 13
-        ivy-display-style 'fancy
-        ivy-initial-inputs-alist nil
-        ivy-count-format "%d/%d "
-        ivy-virtual-abbreviate 'full ;; show the full virtual file paths
-        ivy-extra-directories '("./")
-        ivy-wrap t
-        ivy-re-builders-alist '((counsel-M-x . ivy--regex-fuzzy)
-                                (t . ivy--regex-plus)))
-  (ivy-mode 1))
-
-(use-package ivy-rich
-  :after (ivy counsel)
-  :config
-  (setq ivy-rich-path-style 'abbrev)
-  (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
-  (ivy-rich-mode 1))
-
-(use-package counsel-projectile
-  :after (projectile counsel)
-  :config
-  (counsel-projectile-mode))
-
-(use-package counsel
-  :after ivy
-  :bind*
-  (("M-x" . counsel-M-x)
-   ("C-c d d" . counsel-descbinds)
-   ("C-c s s" . counsel-ag)
-   ("C-c s d" . counsel-ag-projectile)
-   ("C-x C-f" . counsel-find-file)
-   ("C-x r f" . counsel-recentf)
-   ("C-c g g" . counsel-git)
-   ("C-c g G" . counsel-git-grep)
-   ("C-x l" . counsel-locate)
-   ("C-c g s" . counsel-grep-or-swiper)
-   ("C-M-y" . counsel-yank-pop)
-   ("C-c C-r" . ivy-resume)
-   ("C-c i m" . counsel-imenu)
-   ("C-c i M" . ivy-imenu-anywhere)
-   ("C-c d s" . describe-symbol)
-   ("C-c o" . counsel-org-agenda-headlines)
-   :map ivy-minibuffer-map
-   ("M-y" . ivy-next-line-and-call))
-  :config
-  (progn
-    (defun reloading (cmd)
-      (lambda (x)
-        (funcall cmd x)
-        (ivy--reset-state ivy-last)))
-    (defun given-file (cmd prompt)      ; needs lexical-binding
-      (lambda (source)
-        (let ((target
-               (let ((enable-recursive-minibuffers t))
-                 (read-file-name
-                  (format "%s %s to:" prompt source)))))
-          (funcall cmd source target 1))))
-    (defun confirm-delete-file (x)
-      (dired-delete-file x 'confirm-each-subdirectory))
-
-    (ivy-add-actions
-     'counsel-find-file
-     `(("c" ,(given-file #'copy-file "Copy") "copy")
-       ("d" ,(reloading #'confirm-delete-file) "delete")
-       ("m" ,(reloading (given-file #'rename-file "Move")) "move")))
-
-    (ivy-add-actions
-     'counsel-projectile-find-file
-     `(("c" ,(given-file #'copy-file "Copy") "copy")
-       ("d" ,(reloading #'confirm-delete-file) "delete")
-       ("m" ,(reloading (given-file #'rename-file "Move")) "move")
-       ("b" counsel-find-file-cd-bookmark-action "cd bookmark")))
-
-    ;; to make counsel-ag search the root projectile directory.
-    (defun counsel-ag-projectile ()
-      (interactive)
-      (counsel-ag nil (projectile-project-root)))
-
-    (setq counsel-find-file-at-point t)
-
-    ;; ignore . files or temporary files
-    (setq counsel-find-file-ignore-regexp
-          (concat
-           ;; File names beginning with # or .
-           "\\(?:\\`[#.]\\)"
-           ;; File names ending with # or ~
-           "\\|\\(?:\\`.+?[#~]\\'\\)"))))
-
-(use-package swiper
-  :bind ("C-s" . swiper))
-
-;; further customization of ivy and company
-(use-package prescient
-  :after (ivy company)
-  :config
-  (prescient-persist-mode))
-
-(use-package ivy-prescient
-  :after prescient
-  :config
-  (ivy-prescient-mode))
-
-(use-package company-prescient
-  :after prescient
-  :config
-  (company-prescient-mode))
+(use-package rainbow-mode
+  :hook (org-mode emacs-lisp-mode web-mode typescript-mode js2-mode))
 
 (use-package magit
   :config
@@ -362,6 +521,144 @@
       (jump-to-register :magit-fullscreen))
     (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)))
 
+(use-package git-gutter
+  :config
+  (global-git-gutter-mode t))
+
+(use-package fringe-helper)
+
+(use-package git-gutter-fringe
+  :after (git-gutter fringe-helper)
+  :config
+  (setq git-gutter-fr:side 'right-fringe))
+
+(use-package treesit-auto
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
+
+(use-package lsp-mode
+  :after which-key
+  :commands lsp lsp-deferred
+  :init
+  (defun jpalmer/lsp-mode-setup-completion ()
+    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+          '(orderless)))
+  :hook ( (typescript-ts-mode . lsp-deferred)
+          (js2-ts-mode . lsp-deferred)
+          (web-mode . lsp-deferred)
+          (lsp-mode . lsp-enable-which-key-integration)
+          (lsp-completion-mode . jpalmer/lsp-mode-setup-completion))
+  ; :bind (:map lsp-mode-map ("TAB" . completion-at-point))
+  :custom
+  (lsp-headerline-breadcrumb-enable nil)
+  (lsp-completion-provider :none)       ; we use Corfu!
+
+  )
+
+;; also install lsp-ui
+(use-package lsp-ui
+  :hook (lsp-mode . lsp-ui-mode)
+  :config
+  (setq lsp-ui-sideline-enable t
+        lsp-ui-flycheck-enable t
+        lsp-ui-imenu-enable t
+        lsp-ui-sideline-ignore-duplicate t
+        lsp-ui-sideline-show-hover nil
+        lsp-ui-doc-position 'bottom)
+  (lsp-ui-doc-show))
+
+(use-package typescript-ts-mode
+  :custom
+  ((typescript-ts-mode-indent-offset 4)))
+
+;; FIXME: Put this back
+(use-package glsl-mode
+  :mode "(\\.\\(glsl\\|vert\\|frag\\|geom\\)\\'")
+
+;; Add completion support for glsl
+;(use-package company-glsl
+;  :config
+;  (when (executable-find "glslangValidator")
+;    (add-to-list 'company-backends 'company-glsl)))
+
+;; Add flycheck support for glsl
+(use-package flycheck-glsl
+  :after flycheck
+  :straight (flycheck-glsl :type git :host github :repo "yrns/flycheck-glsl"
+                           :fork (:host github :repo "JeffreyPalmer/flycheck-glsl"))
+  :config (flycheck-glsl-setup))
+
+;; try another package, as the first one requires some rework
+;; (use-package flycheck-glsl
+;;   :after flycheck
+;;   :straight (flycheck-glsl :type git :host github :repo "Kaali/flycheck-glsl"))
+
+;; Using the code directly
+;; (with-eval-after-load 'flycheck
+;;   (flycheck-define-checker jpalmer/glsl-lang-validator
+;;     "A GLSL checker using glslangValidator.
+;;   See URL https://www.khronos.org/opengles/sdk/tools/Reference-Compiler/"
+;;     :command ("glslangValidator" source)
+;;     :error-patterns
+;;     ((error line-start "ERROR: " column ":" line ": " (message) line-end))
+;;     :modes glsl-mode)
+
+;;   (add-to-list 'flycheck-checkers 'jpalmer/glsl-lang-validator))
+
+(use-package web-mode
+  :mode "(\\.\\(html?\\|ejs\\|tsx\\|jsx\\)\\'"
+  :config
+  (setq-default web-mode-code-indent-offset 2)
+  (setq-default web-mode-markup-indent-offset 2)
+  (setq-default web-mode-attribute-indent-offset 2))
+
+;; Start the server with `httpd-start`
+;; Use `impatient-mode` in any buffer
+(use-package impatient-mode)
+
+(use-package skewer-mode)
+
+(use-package compile
+  :custom
+  (compilation-sroll-output t))
+
+(defun auto-recompile-buffer ()
+  (interactive)
+  (if (member #'recompile after-save-hook)
+      (remove-hook 'after-save-hook #'recompile t)
+    (add-hook 'after-save-hook #'recompile nil t)))
+
+(use-package flycheck
+  :defer t
+  :custom
+  ; (flycheck-highlighting-mode 'lines)
+  ; (flycheck-highlighting-style 'level-face)
+  (flycheck-indication-mode 'right-fringe)
+  ;; FIXME: This will probably need to be fixed
+  ; :hook (lsp-mode glsl-mode)
+  :config (global-flycheck-mode))
+
+(use-package flycheck-hl-todo
+  :defer 5
+  :straight (:host github :repo "alvarogonzalezsotillo/flycheck-hl-todo")
+  :config
+  (flycheck-hl-todo-setup))
+
+;; I'm not sure that I like this, so disabling for now
+(use-package flycheck-pos-tip
+  :disabled
+  :after flycheck
+  :config (flycheck-pos-tip-mode))
+
+(use-package yasnippet
+  :hook (prog-mode . yas-minor-mode)
+  :config (yas-reload-all))
+
+(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+
 (use-package markdown-mode
   :commands (markdown-mode gfm-mode)
   :mode
@@ -369,14 +666,263 @@
    ("\\.md\\'" . markdown-mode)
    ("\\.markdown\\'" . markdown-mode))
   :config
-  (setq markdown-fontify-code-blocks-natively t))
+  (setq markdown-fontify-code-blocks-natively t)
+  (defun jpalmer/set-markdown-header-font-sizes ()
+    (dolist (face '((markdown-header-face-1 . 1.2)
+                    (markdown-header-face-2 . 1.1)
+                    (markdown-header-face-3 . 1.0)
+                    (markdown-header-face-4 . 1.0)
+                    (markdown-header-face-5 . 1.0)))
+      (set-face-attribute (car face) nil :weight 'normal :height (cdr face))))
+  (defun jpalmer/markdown-mode-hook ()
+    (jpalmer/set-markdown-header-font-sizes))
+  (add-hook 'markdown-mode-hook 'jpalmer/markdown-mode-hook))
 
-(use-package midnight
+(use-package org
+  ;; :ensure org-contrib
+  ;; :pin gnu
+  :straight (:type built-in)
+  :bind (("C-c l" . org-store-link)
+         ("C-c a" . org-agenda)
+         ("C-c c" . org-capture)
+         ("C-c b" . org-switchb)
+         ("<f12>" . org-agenda))
+  :hook
+  ((org-mode . (lambda () (variable-pitch-mode t)))
+   (org-mode . visual-line-mode)
+   (org-mode . (lambda ()
+                 ;; undefine C-c [ and C-c ]
+                 (org-defkey org-mode-map (kbd "C-c [") 'undefined)
+                 (org-defkey org-mode-map (kbd "C-c ]") 'undefined)
+                 ;; make sure that org-reveal is bound
+                 (org-defkey org-mode-map (kbd "C-c r") 'org-reveal))))
   :config
-  (midnight-delay-set 'midnight-delay "10:00am"))
+  (setq org-directory "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org"
+        org-agenda-files (list org-directory)
+        org-agenda-start-day nil
+        org-default-notes-file (concat org-directory "/inbox.org")
+        org-clock-persist 'history
+        org-enforce-todo-dependencies t
+        org-fontify-quote-and-verse-blocks t
+        org-src-tab-acts-natively t
+        org-src-fontify-natively t
+        org-hide-emphasis-markers t
+        org-hide-leading-stars t
+        org-insert-heading-respect-content t
+        org-catch-invisible-edits 'show-and-error
+        org-use-speed-commands t
+        ;; don't reorganize windows when opening the agenda
+        org-agenda-window-setup 'current-window
+        ;; open org links in the same window
+        org-link-frame-setup '((file . find-file))
+        ;; calculate completion statistics for multi-level projects
+        org-hierarchical-todo-statistics nil
+        ;; org-agenda-hide-tags-regexp TODO - figure out what this should be
+        ;; don't show scheduled TODO items
+        org-agenda-todo-ignore-scheduled 'future
+        ;; logging work
+        org-log-done 'time
+        org-log-into-drawer "LOGBOOK"
+        ;; capture settings
+        org-capture-templates '(("t" "To Do" entry (file "")
+                                 "* TODO %?\n")
+                                ("g" "Generic" entry (file "")
+                                 "* %?\n")
+                                ("j" "Journal Entry"
+                                 entry (file+olp+datetree "journal.org")
+                                 "* %?")
+                                ("l" "A link, for reading later." entry (file "")
+                                 "* [[%:link][%:description]]%?"))
+        ;; refile settings
+        org-refile-targets '((nil :maxlevel . 9)
+                             (org-agenda-files :maxlevel . 9))
+        org-refile-use-outline-path 'file
+        org-outline-path-complete-in-steps nil
+        org-refile-allow-creating-parent-nodes 'confirm
+        org-log-note-headings '((done        . "CLOSING NOTE %t")
+                                (note        . "Note taken on %t")
+                                (state       . "State %-12s from %-12S %t")
+                                (reschedule  . "Rescheduled from %S on %t")
+                                (delschedule . "Not scheduled, was %S on %t")
+                                (redeadline  . "New deadline from %S on %t")
+                                (deldeadline . "Removed deadline, was %S on %t"))
+        org-startup-indented t
+        org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "TODAY(y)" "IN_PROGRESS(i)" "WAITING(w@/!)" "|" "DONE(d!/!)")
+                            (sequence "PROJECT(p)" "ACTIVE(a)" "|" "FINISHED(f!)" "CANCELLED(c@)")
+                            (sequence "SOMEDAY(S!)" "MAYBE(m!)"))
+        org-todo-keyword-faces '(("TODO" :foreground "DodgerBlue3")
+                                 ("NEXT" :foreground "DodgerBlue2")
+                                 ("TODAY" :foreground "SpringGreen2")
+                                 ("IN_PROGRESS" :foreground "SpringGreen2")
+                                 ("DONE" :foreground "forest green")
+                                 ("PROJECT" :foreground "cornflower blue")
+                                 ("ACTIVE" :foreground "deep sky blue")
+                                 ("FINISHED" :foreground "forest green")
+                                 ("CANCELLED" :foreground "goldenrod")
+                                 ("WAITING" :foreground "coral")
+                                 ("SOMEDAY" :foreground "purple")
+                                 ("MAYBE" :foreground "purple"))
+        org-todo-state-tags-triggers '(("PROJECT" ("project" . t) ("active" . nil))
+                                       ("" ("project" . nil) ("active" . nil))
+                                       ("ACTIVE" ("active" . t))
+                                       ("FINISHED" ("active" . nil))
+                                       ("SOMEDAY" ("active" . nil))
+                                       ("MAYBE" ("active" . nil)))
+        ;; agenda customization
+        org-agenda-span 'day
+        org-stuck-projects '("/PROJECT|ACTIVE" ("NEXT" "TODAY") nil "")
+        org-agenda-compact-blocks nil
+        org-agenda-block-separator ?\-
+        org-agenda-dim-blocked-tasks nil
+        org-agenda-custom-commands
+        '(
+          ;; a view that supports:
+          ;; - most important task of the day
+          ;; - secondary tasks
+          ;; - other tasks if i have time
+          ("d" "Daily View"
+           ((agenda "" nil)
+            (todo "WAITING"
+                  ((org-agenda-overriding-header "Waiting")))
+            (tags-todo "/TODAY|IN_PROGRESS"
+                       ((org-agenda-overriding-header "Most Important Tasks for Today")))
+            (todo "ACTIVE"
+                  ((org-agenda-overriding-header "Active Projects")))
+            (tags-todo "active/NEXT"
+                       ((org-agenda-overriding-header "Active Project Next Tasks")
+                        (org-agenda-sorting-strategy '(todo-state-down category-keep))))
+            (tags "REFILE"
+                  ((org-agenda-overriding-header "Inbox")
+                   (org-tags-match-list-sublevels nil)))
+            (tags-todo "-active+project/NEXT"
+                       ((org-agenda-overriding-header "Other Project Next Tasks")
+                        (org-agenda-sorting-strategy '(todo-state-down category-keep))))
+            (tags-todo "+active/TODO"
+                       ((org-agenda-overriding-header "Active Project Tasks")
+                        (org-agenda-sorting-strategy '(todo-state-down category-keep))))))
+          ("D" "Review completed tasks"
+           ((tags-todo "/DONE"
+                       ((org-agenda-overriding-header "Completed Tasks and Projects")))))
+          ("n" "Non-Project Tasks"
+           ((tags-todo "-project-active/!TODO|NEXT|TODAY"
+                       ((org-agenda-overriding-header "Non-Project Tasks")))))
+          ("p" "Project Review"
+           ((tags-todo "/PROJECT|ACTIVE"
+                       ((org-agenda-overriding-header "Stuck Projects")
+                        (org-agenda-skip-function '(org-agenda-skip-subtree-if 'todo '("NEXT" "TODAY")))))
+            (tags-todo "/ACTIVE"
+                       ((org-agenda-overriding-header "Active Projects")
+                        (org-agenda-skip-function '(org-agenda-skip-subtree-if 'nottodo '("NEXT" "TODAY")))))
+            (tags-todo "/PROJECT"
+                       ((org-agenda-overriding-header "Other Projects")
+                        (org-agenda-skip-function '(org-agenda-skip-subtree-if 'nottodo '("NEXT" "TODAY")))))
+            (tags-todo "-CANCELLED/"
+                       ((org-agenda-overriding-header "Reviews Scheduled")
+                        (org-agenda-skip-function 'org-review-agenda-skip)
+                        (org-agenda-cmp-user-defined 'org-review-compare)
+                        (org-agenda-sorting-strategy '(user-defined-down))))))
+          ("h" "Habits" tags-todo "STYLE=\"habit\""
+           ((org-agenda-overriding-header "Habits")
+            (org-agenda-sorting-strategy
+             '(todo-state-down effort-up category-keep))))
+          ("i" "Inbox" tags "REFILE"
+           ((org-agenda-overriding-header "Inbox")
+            (org-tags-match-list-sublevels nil)))))
+  (org-clock-persistence-insinuate))
 
-(use-package minions
-  :config (minions-mode 1))
+(use-package org-superstar
+  :after org
+  :hook (org-mode . org-superstar-mode)
+  :custom
+  (org-superstar-remove-leading-stars t)
+  (org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+(defun jpalmer/org-agenda-delete-empty-blocks ()
+    "Remove empty agenda blocks.
+     A block is identified as empty if there are fewer than 2
+     non-empty lines in the block (excluding the line with
+     `org-agenda-block-separator' characters)."
+    (when org-agenda-compact-blocks
+      (user-error "Cannot delete empty compact blocks"))
+    (setq buffer-read-only nil)
+    (save-excursion
+      (goto-char (point-min))
+      (let* ((blank-line-re "^\\s-*$")
+             (content-line-count (if (looking-at-p blank-line-re) 0 1))
+             (start-pos (point))
+             (block-re (format "%c\\{10,\\}" org-agenda-block-separator)))
+        (while (and (not (eobp)) (forward-line))
+          (cond
+           ((looking-at-p block-re)
+            (when (< content-line-count 2)
+              (delete-region start-pos (1+ (point-at-bol))))
+            (setq start-pos (point))
+            (forward-line)
+            (setq content-line-count (if (looking-at-p blank-line-re) 0 1)))
+           ((not (looking-at-p blank-line-re))
+            (setq content-line-count (1+ content-line-count)))))
+        (when (< content-line-count 2)
+          (delete-region start-pos (point-max)))
+        (goto-char (point-min))
+        ;; The above strategy can leave a separator line at the beginning
+        ;; of the buffer.
+        (when (looking-at-p block-re)
+          (delete-region (point) (1+ (point-at-eol))))))
+    (setq buffer-read-only t))
+(add-hook 'org-agenda-finalize-hook #'jpalmer/org-agenda-delete-empty-blocks)
+
+(use-package org-roam
+  :ensure t
+  :init
+  (setq org-roam-v2-ack t)
+  :custom
+  (org-roam-directory "~/Documents/OrgRoam")
+  (org-roam-completion-everywhere t)
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n r" . org-roam-refile)
+         :map org-mode-map
+         ("C-M-i" . completion-at-point)
+         :map org-roam-dailies-map
+         ("Y" . org-roam-dailies-capture-yesterday)
+         ("T" . org-roam-dailies-capture-tomorrow))
+  :bind-keymap
+  ("C-c n d" . org-roam-dailies-map)
+  :config
+  (require 'org-roam-dailies)
+  (org-roam-db-autosync-mode))
+
+;; Install any required org-contrib libraries
+(use-package org-contrib
+  :config
+  (require 'org-checklist))
+
+(use-package org-review
+  :bind
+  (("C-c v" . org-review-insert-last-review)))
+
+;; FIXME: This is disabled for now
+;; Add support for pomodoro time tracking
+(use-package org-pomodoro
+  :bind
+  ("s-p" . org-pomodoro)
+  :config
+  (setq alert-user-configuration '((((:category . "org-pomodoro")) osx-notifier nil))
+        org-pomodoro-format "🍅~%s"))
+
+;; TODO: Enable this once org mode is fully set up
+(require 'org-tempo)
+(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+
+(defun jpalmer/org-babel-tangle-config ()
+  (when (string-equal (buffer-file-name)
+                      (expand-file-name "./Emacs.org"))
+    ;; Dynamic scoping to the rescue
+    (let ((org-confirm-babel-evaluate nil))
+      (org-babel-tangle))))
+(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'jpalmer/org-babel-tangle-config)))
 
 (use-package neotree
   :bind ("<f8>" . neotree-project-dir)
@@ -401,326 +947,4 @@
                 (neotree-find file-name)))
         (message "Could not find git project root.")))))
 
-(use-package olivetti)
-
-(use-package restclient)
-
-(use-package smex)
-
-(use-package sql
-  :config
-  (progn
-    ;; fix for underscores in postgres prompts
-    (add-hook 'sql-interactive-mode-hook
-              (lambda ()
-                (toggle-truncate-lines t)
-                (setq sql-prompt-regexp "^[_[:alpha:]]*[=][#>] ")
-                (setq sql-prompt-cont-regexp "^[_[:alpha:]]*[-][#>] ")))
-    ;; output each query before executing it
-    (add-hook 'sql-login-hook
-              (lambda ()
-                (when (eq sql-product 'postgres)
-                  (let ((proc (get-buffer-process (current-buffer))))
-                    (comint-send-string proc "\\set ECHO queries\n")))))
-    (sql-set-product "postgres")))
-
-(use-package sql-clickhouse)
-
-(use-package undo-tree
-  :bind
-  ("C-z" . undo)
-  ("C-S-z" . undo-tree-redo)
-  :config
-  (setq undo-tree-history-directory-alist
-        `(("." . (concat user-emacs-directory "backups")))
-        undo-tree-visualizer-timestamps t
-        undo-tree-visualizer-diff t)
-  (global-undo-tree-mode))
-
-(use-package which-key
-  :diminish which-key-mode
-  :config (which-key-mode))
-
-(use-package yaml-mode
-  :hook
-  ((yaml-mode . smartparens-mode)
-   (yaml-mode . (lambda ()
-                  (variable-pitch-mode nil)))))
-
-(use-package whitespace
-  :config
-  (setq whitespace-style '(face trailing newline))
-  (global-whitespace-mode '(clojure-mode elisp-mode markdown-mode org-mode)))
-
-;; changes to generic programming modes
-(add-hook 'prog-mode-hook
-          (lambda ()
-            (make-local-variable 'column-number-mode)
-            (column-number-mode t)
-            (when window-system (hl-line-mode t))))
-
-(use-package git-gutter
-  :config
-  (global-git-gutter-mode t))
-
-(use-package fringe-helper)
-
-(use-package git-gutter-fringe
-  :after (git-gutter fringe-helper)
-  :config
-  (setq git-gutter-fr:side 'right-fringe))
-
-;;; programming language support
-;; make sure that we have snippets installed
-(use-package yasnippet
-  :config
-  (yas-global-mode 1))
-
-(use-package yasnippet-snippets)
-
-;; keep code indented as it's edited
-(use-package aggressive-indent
-  :hook
-  ((clojure-mode clojurescript-mode emacs-lisp-mode lisp-mode lisp-interaction-mode) . aggressive-indent-mode))
-
-;; clojure support
-(use-package clojure-mode
-  :hook
-  ((clojure-mode . turn-on-eldoc-mode)
-   (clojure-mode . subword-mode)))
-
-(use-package cider
-  ;; :pin melpa-stable
-  :after company
-  :hook
-  (((cider-mode cider-repl-mode) . company-mode)
-   (cider-mode . eldoc-mode)
-   (cider-repl-mode . subword-mode))
-  :config
-  (setq cider-print-fn 'fipp))
-
-(use-package clj-refactor
-  :hook
-  ((clojure-mode . (lambda ()
-                     (clj-refactor-mode 1)
-                     (yas-minor-mode 1)
-                     (cljr-add-keybindings-with-prefix "C-c C-m")))))
-
-(use-package paredit
-  :diminish paredit-mode
-  :hook
-  ((clojure-mode clojurescript-mode emacs-lisp-mode cider-repl-mode lisp-mode lisp-interaction-mode) . enable-paredit-mode))
-
-;; ruby-specific changes
-(use-package ruby-mode
-  :bind (([(meta down)] . ruby-forward-sexp)
-         ([(meta up)]   . ruby-backward-sexp)
-         (("C-c C-e"    . ruby-send-region))))
-
-(use-package inf-ruby
-  :hook ((ruby-mode . inf-ruby-minor-mode)))
-
-(use-package smartparens
-  :hook
-  (json-mode . smartparens-mode)
-  :custom
-  (sp-base-key-bindings 'paredit)
-  :config
-  (require 'smartparens-config)
-  ;; maybe remove this hook if i hate it
-  ;; (remove-hook 'clojure-mode-hook #'smartparens-mode)
-  ;; (remove-hook 'clojurescript-mode #'smartparens-mode)
-  ;; (remove-hook 'emacs-lisp-mode #'smartparens-mode)
-  )
-
-(use-package rubocop
-  :diminish rubocop-mode
-  :hook ruby-mode)
-
-(use-package rbenv)
-
-(use-package robe
-  :hook ruby-mode
-  :config
-  (eval-after-load 'company
-    '(push 'company-robe company-backends)))
-
-(use-package rspec-mode
-  :config
-  (rspec-install-snippets)
-  (defadvice rspec-compile (around rspec-compile-around)
-    "Use BASH shell for running the specs because of ZSH issues."
-    (let ((shell-file-name "/bin/bash"))
-      ad-do-it))
-  (ad-activate 'rspec-compile))
-
-(use-package bundler)
-
-;; typescript support
-(use-package typescript-mode
-  :custom (typescript-indent-level 2)
-  :hook (typescript-mode . smartparens-mode))
-
-;; (use-package tide
-;;   :after (typescript-mode company flycheck)
-;;   :hook ((typescript-mode . tide-setup)
-;;          (typescript-mode . tide-hl-identifier-mode)
-;;          (before-save . tide-format-before-save))
-;;   :config
-;;   (setq company-tooltip-align-annotations t
-;;         tide-format-options '(:indentSize 2)))
-
-(use-package web-mode
-  :mode "\\.html?\\'"
-  :config (setq web-mode-enable-current-element-highlight t))
-
-;; (use-package eglot
-;;   :commands eglot eglot-ensure eglot-rename eglot-format eglot-help-at-point
-;;   :hook (fsharp-mode . eglot-ensure)
-;;   :bind
-;;   (("C-c e r" . eglot-rename)
-;;    ("C-c e f" . eglot-format)
-;;    ("C-c e h" . eglot-help-at-point))
-;;   ;; :config
-;;   ;; (add-to-list 'eglot-server-programs
-;;   ;;              `(csharp-mode . ("/Users/jeff/.emacs.d/.cache/lsp/omnisharp-roslyn/v1.34.10/run" "-lsp")))
-;;   )
-
-;; ;; F# support
-;; (use-package fsharp-mode
-;;   :after eglot
-;;   :demand t
-;;   :hook (fsharp-mode . smartparens-mode)
-;;   :config (require 'eglot-fsharp))
-
-;; ;; C# support
-;; (use-package csharp-mode
-;;   :demand t
-;;   :mode "\\.cs\\'"
-;;   :hook ((csharp-mode . smartparens-mode)))
-
-;; (use-package lsp-mode
-;;   :commands (lsp lsp-deferred)
-;;   :hook
-;;   (
-;;    ;;(fsharp-mode . lsp-deferred)
-;;    (csharp-mode . lsp-deferred)
-;;    (lsp-mode . lsp-enable-which-key-integration))
-;;   ;; :config
-;;   ;; (setq inferior-fsharp-program "/usr/local/share/dotnet/dotnet fsi --readline-"
-;;   ;;       lsp-prefer-flymake nil)
-;;   )
-
-;; (use-package lsp-ui
-;;   :after lsp-mode
-;;   :commands lsp-ui-mode
-;;   :config
-;;   (define-key lsp-ui-mode-map [remap xref-find-definitions] #'lsp-ui-peek-find-definitions)
-;;   (define-key lsp-ui-mode-map [remap xref-find-references] #'lsp-ui-peek-find-references)
-;;   (setq lsp-ui-sideline-enable t
-;;         lsp-ui-flycheck-enable t
-;;         lsp-ui-imenu-enable t
-;;         lsp-ui-sideline-ignore-duplicate t))
-
-;; (use-package company-lsp
-;;   :after (lsp-mode company)
-;;   :commands company-lsp)
-;; (use-package lsp-ivy
-;;   :after (lsp-mode ivy)
-;;   :commands lsp-ivy-workspace-symbol)
-;; (use-package lsp-treemacs
-;;   :after (lsp-mode treemacs)
-;;   :commands lsp-treemacs-errors-list)
-
-;; ;; optionally if you want to use debugger
-;; (use-package dap-mode)
-
-;; Fira Code Ligature Support
-(mac-auto-operator-composition-mode)
-
-;; sort helpers for words and symbols
-(defun sort-words (reverse beg end)
-  "Sort words in region alphabetically, in REVERSE if negative.
-    Prefixed with negative \\[universal-argument], sorts in reverse.
-
-    The variable `sort-fold-case' determines whether alphabetic case
-    affects the sort order.
-
-    See `sort-regexp-fields'."
-  (interactive "*P\nr")
-  (sort-regexp-fields reverse "\\w+" "\\&" beg end))
-
-(defun sort-symbols (reverse beg end)
-  "Sort symbols in region alphabetically, in REVERSE if negative.
-    See `sort-words'."
-  (interactive "*P\nr")
-  (sort-regexp-fields reverse "\\(\\sw\\|\\s_\\)+" "\\&" beg end))
-
-;;
-;; org mode support
-;;
-(load "~/.emacs.d/init-org.el")
-
-;;
-;; generic keybindings
-;;
-(progn
-  ;; i use this constantly - probably a bug
-  ;; (global-set-key (kbd "C-x g") 'rgrep)
-  ;; Font size
-  (global-set-key (kbd "C-+") 'text-scale-increase)
-  (global-set-key (kbd "C--") 'text-scale-decrease)
-
-  ;; programming mode bindings
-  (define-key prog-mode-map (kbd "s-/") 'comment-line)
-
-  ;; OS X fullscreen mode
-  (global-set-key (kbd "M-RET") 'toggle-frame-fullscreen)
-  ;; Shift+direction
-  (windmove-default-keybindings)
-  ;; M-S-6 is awkward
-  (global-set-key (kbd "C-c q") 'join-line))
-
-;; keep those custom variables out of here!
-(setq custom-file "~/.emacs.d/custom.el")
-(load custom-file)
-
-;;; configure themes at the end to make sure we avoid the safe themes warning
-(use-package doom-themes
-  :config
-  (setq doom-themes-enable-bold nil
-        doom-themes-enable-italic t)
-  (load-theme 'doom-tomorrow-night t)
-  (doom-themes-visual-bell-config)
-  (doom-themes-neotree-config)
-  (doom-themes-org-config))
-
-(use-package doom-modeline
-  :hook (after-init . doom-modeline-mode)
-  :custom
-  ((doom-modeline-buffer-encoding nil)
-   (doom-modeline-buffer-file-name-style 'relative-from-project)))
-
-;;; EXPERIMENTAL
-;; Keybindings for Mac Emacs
-(global-set-key [(super a)] 'mark-whole-buffer)
-(global-set-key [(super v)] 'yank)
-(global-set-key [(super c)] 'kill-ring-save)
-(global-set-key [(super s)] 'save-buffer)
-(global-set-key [(super l)] 'goto-line)
-(global-set-key [(super w)]
-                (lambda () (interactive) (delete-window)))
-(global-set-key [(super z)] 'undo)
-
-;; make sure modifier keybindings are sane
-(setq mac-command-modifier 'super)
-(setq mac-option-modifier 'meta)
-(setq gc-cons-threshold best-gc-cons-threshold)
-
-;; start the emacs server
-(server-start)
-
-;; Local Variables:
-;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
-;; End:
-(put 'downcase-region 'disabled nil)
+(setq gc-cons-threshold (* 2 1024 1024))

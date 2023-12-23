@@ -9,6 +9,13 @@ This file contains the complete, documented configuration for my Emacs.
 The goal of this work is to be able to generate a fixed, known-good configuration for emacs from this file.
 
 #+begin_src emacs-lisp
+  ;;
+  ;; DO NOT EDIT!
+  ;;
+  ;; This file was auto-generated from Emacs.org
+  ;; Please edit that file and tangle it to generate both init.el and early-init.el
+  ;;
+
   (defvar jpalmer/default-font "Jetbrains Mono")
   (defvar jpalmer/variable-font "Fira Sans")
   (defvar jpalmer/default-font-size 120)
