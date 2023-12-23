@@ -54,10 +54,6 @@
       ;; This was generated when I asked emacs to disable the display of these compilation errors
       warning-suppress-types '((comp) (comp)))
 
-;; Use a different directory for runtime files
-; (setq user-emacs-directory (expand-file-name "~/.cache/emacs/")
-;      url-history-file (expand-file-name "url-history" user-emacs-directory))
-
 ;; Use no-littering to automatically set common paths to the new user-emacs-directory
 (use-package no-littering)
 
@@ -494,7 +490,9 @@
   :hook (prog-mode . hl-todo-mode))
 
 ;; Also add consult-todo for nav support with consult
-(use-package consult-todo)
+(use-package consult-todo
+  :after consult
+  :bind ("M-g t" . consult-todo))
 
 (use-package projectile
   :config
@@ -555,7 +553,6 @@
   :custom
   (lsp-headerline-breadcrumb-enable nil)
   (lsp-completion-provider :none)       ; we use Corfu!
-
   )
 
 ;; also install lsp-ui
@@ -640,18 +637,6 @@
   ;; FIXME: This will probably need to be fixed
   ; :hook (lsp-mode glsl-mode)
   :config (global-flycheck-mode))
-
-(use-package flycheck-hl-todo
-  :defer 5
-  :straight (:host github :repo "alvarogonzalezsotillo/flycheck-hl-todo")
-  :config
-  (flycheck-hl-todo-setup))
-
-;; I'm not sure that I like this, so disabling for now
-(use-package flycheck-pos-tip
-  :disabled
-  :after flycheck
-  :config (flycheck-pos-tip-mode))
 
 (use-package yasnippet
   :hook (prog-mode . yas-minor-mode)

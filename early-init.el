@@ -1,3 +1,10 @@
+;;
+;; DO NOT EDIT!
+;;
+;; This file was auto-generated from Emacs.org
+;; Please edit that file and tangle it to generate both init.el and early-init.el
+;;
+
 (setq package-enable-at-startup nil)
 
 ;; Set the directory to look for native files

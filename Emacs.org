@@ -8,6 +8,7 @@ This file contains the complete, documented configuration for my Emacs.
 
 The goal of this work is to be able to generate a fixed, known-good configuration for emacs from this file.
 
+* Generated File Warnings
 #+begin_src emacs-lisp
   ;;
   ;; DO NOT EDIT!
@@ -15,7 +16,19 @@ The goal of this work is to be able to generate a fixed, known-good configuratio
   ;; This file was auto-generated from Emacs.org
   ;; Please edit that file and tangle it to generate both init.el and early-init.el
   ;;
+#+end_src
 
+#+begin_src emacs-lisp :tangle /Users/jeff/.config/emacs/early-init.el
+  ;;
+  ;; DO NOT EDIT!
+  ;;
+  ;; This file was auto-generated from Emacs.org
+  ;; Please edit that file and tangle it to generate both init.el and early-init.el
+  ;;
+#+end_src
+* Configuration Variables
+
+#+begin_src emacs-lisp
   (defvar jpalmer/default-font "Jetbrains Mono")
   (defvar jpalmer/variable-font "Fira Sans")
   (defvar jpalmer/default-font-size 120)
@@ -107,10 +120,6 @@ This is disabled for now while I investigate the native compilation issues I'm s
 * Keep runtime files out of .emacs.d
 
 #+begin_src emacs-lisp
-  ;; Use a different directory for runtime files
-  ; (setq user-emacs-directory (expand-file-name "~/.cache/emacs/")
-  ;      url-history-file (expand-file-name "url-history" user-emacs-directory))
-
   ;; Use no-littering to automatically set common paths to the new user-emacs-directory
   (use-package no-littering)
 
@@ -873,7 +882,9 @@ Try using =hl-todo= one more time.
     :hook (prog-mode . hl-todo-mode))
 
   ;; Also add consult-todo for nav support with consult
-  (use-package consult-todo)
+  (use-package consult-todo
+    :after consult
+    :bind ("M-g t" . consult-todo))
 #+end_src
 
 *** Project Support
@@ -923,36 +934,7 @@ Try using =hl-todo= one more time.
 #+end_src
 ** Languages
 *** Tree Sitter Language Definitions
-How to install the tree-sitter language definitions, from [[https://www.masteringemacs.org/article/how-to-get-started-tree-sitter][this article]].
-#+begin_src emacs-lisp :tangle no
-  (setq treesit-language-source-alist
-     '((bash "https://github.com/tree-sitter/tree-sitter-bash")
-       (cmake "https://github.com/uyha/tree-sitter-cmake")
-       (css "https://github.com/tree-sitter/tree-sitter-css")
-       (elisp "https://github.com/Wilfred/tree-sitter-elisp")
-       ; (go "https://github.com/tree-sitter/tree-sitter-go")
-       (html "https://github.com/tree-sitter/tree-sitter-html")
-       (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
-       (json "https://github.com/tree-sitter/tree-sitter-json")
-       (make "https://github.com/alemuller/tree-sitter-make")
-       (markdown "https://github.com/ikatyang/tree-sitter-markdown")
-       (python "https://github.com/tree-sitter/tree-sitter-python")
-       ; (toml "https://github.com/tree-sitter/tree-sitter-toml")
-       (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-       (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-       (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
-
-  (setq major-mode-remap-alist
-        '((yaml-mode . yaml-ts-mode)
-          (bash-mode . bash-ts-mode)
-          (js2-mode . js-ts-mode)
-          (typescript-mode . typescript-ts-mode)
-          (json-mode . json-ts-mode)
-          (css-mode . css-ts-mode)
-          (python-mode . python-ts-mode)))
-#+end_src
-
-Try using [[https://github.com/renzmann/treesit-auto][treesite-auto]] package to manage this stuff for me.
+Use [[https://github.com/renzmann/treesit-auto][treesite-auto]] to manage this stuff for me.
 #+begin_src emacs-lisp
   (use-package treesit-auto
     :custom
@@ -961,7 +943,6 @@ Try using [[https://github.com/renzmann/treesit-auto][treesite-auto]] package to
     (treesit-auto-add-to-auto-mode-alist 'all)
     (global-treesit-auto-mode))
 #+end_src
-
 
 *** Language Server Support
 This configuration is for LSP mode
@@ -982,7 +963,6 @@ This configuration is for LSP mode
     :custom
     (lsp-headerline-breadcrumb-enable nil)
     (lsp-completion-provider :none)       ; we use Corfu!
-
     )
 
   ;; also install lsp-ui
@@ -1116,18 +1096,6 @@ Set up the compile package and ensure that compilation output automatically scro
     ;; FIXME: This will probably need to be fixed
     ; :hook (lsp-mode glsl-mode)
     :config (global-flycheck-mode))
-
-  (use-package flycheck-hl-todo
-    :defer 5
-    :straight (:host github :repo "alvarogonzalezsotillo/flycheck-hl-todo")
-    :config
-    (flycheck-hl-todo-setup))
-
-  ;; I'm not sure that I like this, so disabling for now
-  (use-package flycheck-pos-tip
-    :disabled
-    :after flycheck
-    :config (flycheck-pos-tip-mode))
 #+end_src
 ** Snippets
 #+begin_src emacs-lisp
@@ -1136,9 +1104,8 @@ Set up the compile package and ensure that compilation output automatically scro
     :config (yas-reload-all))
 #+end_src
 * Text Editing
-Enable automatic wrapping of long lines in text modes, only. This
-makes it easier to edit text files, but leaves code formatting up to
-the developer.
+Enable automatic wrapping of long lines in text modes, only. This makes it easier to edit text files, but leaves code formatting up to the developer.
+
 #+begin_src emacs-lisp
   (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 #+end_src
