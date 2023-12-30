@@ -186,10 +186,10 @@ This allows things like buffer cleanup to happen during the day instead of at mi
 ** Font Configuration
 #+begin_src emacs-lisp
   ;; Set the default face
-  (set-face-attribute 'default nil :font jpalmer/default-font :height jpalmer/default-font-size :weight 'thin)
+  (set-face-attribute 'default nil :font jpalmer/default-font :height jpalmer/default-font-size :weight 'light)
 
   ;; Set the fixed pitch face
-  (set-face-attribute 'fixed-pitch nil :font jpalmer/default-font :height jpalmer/default-font-size :weight 'thin)
+  (set-face-attribute 'fixed-pitch nil :font jpalmer/default-font :height jpalmer/default-font-size :weight 'light)
 
   ;; Set the variable pitch face
   (set-face-attribute 'variable-pitch nil :font jpalmer/variable-font :height jpalmer/default-variable-font-size :weight 'light)
@@ -205,7 +205,7 @@ This allows things like buffer cleanup to happen during the day instead of at mi
 ** Theming
 *** Doom Themes
 Install the doom themes
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package doom-themes
     :config
     (setq doom-themes-enable-bold nil
@@ -218,11 +218,11 @@ Install the doom themes
 #+end_src
 
 I'm currently testing out some other options, but my previous go-to theme was "doom-tomorrow-night".
-*** Modus Themes (TESTING)
+*** Modus Themes (DISABLED)
 Try out the Modus themes.
 
 This configuration is for the built-in version of the modus themes:
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package emacs
     :config
     (require-theme 'modus-themes)
@@ -269,7 +269,7 @@ This configuration is for the built-in version of the modus themes:
 
 ** Modeline Improvements
 NOTE: The first time this configuration is loaded, the mode line icons will need to be installed via =M-x all-the-icons-install-fonts=.
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package all-the-icons)
 
   (use-package doom-modeline
@@ -1300,7 +1300,7 @@ Enable automatic wrapping of long lines in text modes, only. This makes it easie
 #+end_src
 
 *** Font Adjustments
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (with-eval-after-load 'org-faces
     ;; Increase the size of various headings
     (set-face-attribute 'org-document-title nil :font jpalmer/variable-font :weight 'light :height 1.3)
