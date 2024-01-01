@@ -954,7 +954,8 @@ This configuration is for LSP mode
     (defun jpalmer/lsp-mode-setup-completion ()
       (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
             '(orderless)))
-    :hook ( (typescript-ts-mode . lsp-deferred)
+    :hook (
+           ;;(typescript-ts-mode . lsp-deferred)
             (js2-ts-mode . lsp-deferred)
             (web-mode . lsp-deferred)
             (lsp-mode . lsp-enable-which-key-integration)
@@ -1009,18 +1010,43 @@ This configuration is for LSP mode
 Try to configure the built-in typescript tree-sitter-based mode.
 #+begin_src emacs-lisp
   (use-package typescript-ts-mode
+    :after lsp-mode
+    :hook lsp-deferred
     :custom
     ((typescript-ts-mode-indent-offset 4)))
 #+end_src
 
-**** TODO: Svelte Mode
-**** TODO: Julia Mode
-**** Emacs Lisp
+*** TODO: Svelte
+*** Julia
+#+begin_src emacs-lisp
+  (use-package lsp-julia
+    ;; :after lsp-mode
+    :hook
+    (julia-ts-mode . lsp-mode)
+    :config
+    (setq lsp-julia-default-environment "~/.julia/environments/v1.9"))
+
+  (use-package julia-ts-mode
+    ;; :after lsp-julia
+    :mode "\\.jl$"
+    :config
+    (add-to-list 'lsp-language-id-configuration '(julia-ts-mode . "julia"))
+    (lsp-register-client
+     (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-julia--rls-command)
+                 :major-modes '(julia-mode ess-julia-mode julia-ts-mode)
+                 :server-id 'julia-ls
+                 :multi-root t))
+    )
+
+  (use-package julia-repl
+    :hook (julia-ts-mode . julia-repl-mode))
+#+end_src
+*** Emacs Lisp
 #+begin_src emacs-lisp :tangle no
   ;; FIXME: Put this back
   (add-hook 'emacs-lisp-mode-hook #'flycheck-mode)
 #+end_src
-**** WebGL/GLSL
+*** WebGL/GLSL
 
 #+begin_src emacs-lisp
   ;; FIXME: Put this back
@@ -1057,7 +1083,7 @@ Try to configure the built-in typescript tree-sitter-based mode.
 
   ;;   (add-to-list 'flycheck-checkers 'jpalmer/glsl-lang-validator))
 #+end_src
-**** HTML
+*** HTML
 #+begin_src emacs-lisp
   (use-package web-mode
     :mode "(\\.\\(html?\\|ejs\\|tsx\\|jsx\\)\\'"
