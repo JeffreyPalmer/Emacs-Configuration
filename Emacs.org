@@ -955,11 +955,10 @@ This configuration is for LSP mode
       (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
             '(orderless)))
     :hook (
-           ;;(typescript-ts-mode . lsp-deferred)
-            (js2-ts-mode . lsp-deferred)
-            (web-mode . lsp-deferred)
-            (lsp-mode . lsp-enable-which-key-integration)
-            (lsp-completion-mode . jpalmer/lsp-mode-setup-completion))
+           (prog-mode . lsp-deferred)
+           ;; (web-mode . lsp-deferred)
+           (lsp-mode . lsp-enable-which-key-integration)
+           (lsp-completion-mode . jpalmer/lsp-mode-setup-completion))
     ; :bind (:map lsp-mode-map ("TAB" . completion-at-point))
     :custom
     (lsp-headerline-breadcrumb-enable nil)
@@ -975,6 +974,7 @@ This configuration is for LSP mode
           lsp-ui-imenu-enable t
           lsp-ui-sideline-ignore-duplicate t
           lsp-ui-sideline-show-hover nil
+          lsp-lens-enable t
           lsp-ui-doc-position 'bottom)
     (lsp-ui-doc-show))
 #+end_src
@@ -1010,8 +1010,6 @@ This configuration is for LSP mode
 Try to configure the built-in typescript tree-sitter-based mode.
 #+begin_src emacs-lisp
   (use-package typescript-ts-mode
-    :after lsp-mode
-    :hook lsp-deferred
     :custom
     ((typescript-ts-mode-indent-offset 4)))
 #+end_src
@@ -1021,8 +1019,6 @@ Try to configure the built-in typescript tree-sitter-based mode.
 #+begin_src emacs-lisp
   (use-package lsp-julia
     ;; :after lsp-mode
-    :hook
-    (julia-ts-mode . lsp-mode)
     :config
     (setq lsp-julia-default-environment "~/.julia/environments/v1.9"))
 
@@ -1087,6 +1083,7 @@ Try to configure the built-in typescript tree-sitter-based mode.
 #+begin_src emacs-lisp
   (use-package web-mode
     :mode "(\\.\\(html?\\|ejs\\|tsx\\|jsx\\)\\'"
+    :hook (web-mode . lsp-deferred)
     :config
     (setq-default web-mode-code-indent-offset 2)
     (setq-default web-mode-markup-indent-offset 2)
