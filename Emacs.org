@@ -374,17 +374,33 @@ This configuration now uses Vertico.
 What are some things that might trigger comple
 #+begin_src emacs-lisp
   (use-package corfu
+    :custom
+    (corfu-cycle t)
+    (corfu-preselect 'prompt)
+    :bind
+    (:map corfu-map
+          ("TAB" . corfu-next)
+          ([tab] . corfu-next)
+          ("S-TAB" . corfu-previous)
+          ([backtab] . corfu-previous))
+
       :init
       (global-corfu-mode)
       (corfu-popupinfo-mode)
       (setq corfu-auto t
             corfu-quit-no-match 'separator))
 
-    (use-package emacs
-      :init
-      (setq completion-cycle-threshold 3
-            tab-always-indent 'complete
-  ))
+  ;; Add support for next-icons in completions
+  (use-package nerd-icons-corfu
+    :after corfu
+    :config
+    (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+
+  (use-package emacs
+    :init
+    (setq completion-cycle-threshold 3
+          tab-always-indent 'complete))
+
 #+end_src
 
 ** Ivy-Based Completion
@@ -785,7 +801,8 @@ This deletes all whitespace up to the last non-whitespace character when editing
 
   (use-package hungry-delete
     :init
-    (setq hungry-delete-join-reluctantly t)
+    ;; This will leave a space between the previous text and the following text
+    ;; (setq hungry-delete-join-reluctantly t)
     :config
     (global-hungry-delete-mode))
 #+end_src
@@ -809,6 +826,12 @@ This highlights any odd whitespace in a buffer.
 (define-key prog-mode-map (kbd "s-/") 'comment-line)
 #+end_src
 
+*** Move lines up or down easily
+#+begin_src emacs-lisp
+  (use-package move-text
+    :config
+    (move-text-default-bindings))
+#+end_src
 *** Set PATH from shell
 For some reason emacs doesn't normally start with the PATH from the shell on MacOS. This corrects that behavior so it's easier to run installed programs.
 #+begin_src emacs-lisp
@@ -835,7 +858,13 @@ This is required to ensure that SSH interaction with GitHub (for example) is sea
     (global-set-key [remap mark-sexp] #'easy-mark))
 #+end_src
 
-*** Highlight Parentheses
+*** Paren Handling
+**** Always insert matching pairs
+#+begin_src emacs-lisp
+  ;; Enable global electric-pair mode
+  (electric-pair-mode)
+#+end_src
+**** Highlight Parentheses
 #+begin_src emacs-lisp
   ; (use-package highlight-parentheses)
   ;; Try this other option for now
@@ -844,19 +873,21 @@ This is required to ensure that SSH interaction with GitHub (for example) is sea
     (set-face-attribute 'show-paren-match-expression nil :background "#363e4a")
     (show-paren-mode 1))
 #+end_src
-*** Highlight indentation levels
-Show an indicator for the start of an indentation scope.
-#+begin_src emacs-lisp
-  (use-package highlight-indent-guides
-    :config (setq highlight-indent-guides-method 'bitmap)
-    :hook (prog-mode . highlight-indent-guides-mode))
-#+end_src
-*** Paredit for lisp languages
+**** Paredit for lisp languages
 #+begin_src emacs-lisp
   (use-package paredit
     :diminish paredit-mode
     :hook
     ((clojure-mode cider-repl-mode emacs-lisp-mode lisp-mode lisp-interaction-mode) . enable-paredit-mode))
+#+end_src
+*** Highlight indentation levels
+Show an indicator for the start of an indentation scope.
+#+begin_src emacs-lisp
+  (use-package highlight-indent-guides
+    :custom
+    (highlight-indent-guides-auto-character-face-perc 30)
+    :config (setq highlight-indent-guides-method 'bitmap)
+    :hook (prog-mode . highlight-indent-guides-mode))
 #+end_src
 *** Enable sub-word mode
 
@@ -950,19 +981,18 @@ This configuration is for LSP mode
   (use-package lsp-mode
     :after which-key
     :commands lsp lsp-deferred
+    :custom
+    (lsp-headerline-breadcrumb-enable nil)
+    (lsp-completion-provider :none)       ; we use Corfu!
     :init
     (defun jpalmer/lsp-mode-setup-completion ()
       (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
             '(orderless)))
-    :hook (
-           (prog-mode . lsp-deferred)
+    :hook ((prog-mode . lsp-deferred)
            ;; (web-mode . lsp-deferred)
            (lsp-mode . lsp-enable-which-key-integration)
            (lsp-completion-mode . jpalmer/lsp-mode-setup-completion))
     ; :bind (:map lsp-mode-map ("TAB" . completion-at-point))
-    :custom
-    (lsp-headerline-breadcrumb-enable nil)
-    (lsp-completion-provider :none)       ; we use Corfu!
     )
 
   ;; also install lsp-ui
@@ -1011,7 +1041,7 @@ Try to configure the built-in typescript tree-sitter-based mode.
 #+begin_src emacs-lisp
   (use-package typescript-ts-mode
     :custom
-    ((typescript-ts-mode-indent-offset 4)))
+    (typescript-ts-mode-indent-offset 4))
 #+end_src
 
 *** TODO: Svelte
