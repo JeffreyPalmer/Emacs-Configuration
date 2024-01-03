@@ -932,11 +932,20 @@ Try using =hl-todo= one more time.
     ; :diminish projectile-mode
     )
 #+end_src
+
+*** Search with RipGrep
+#+begin_src emacs-lisp
+  (use-package rg
+    :init
+    (rg-enable-default-bindings))
+#+end_src
+
 *** Highlight color names in buffers
 #+begin_src emacs-lisp
   (use-package rainbow-mode
     :hook (org-mode emacs-lisp-mode web-mode typescript-mode js2-mode))
 #+end_src
+
 ** Version Control
 *** Magit
 #+begin_src emacs-lisp
