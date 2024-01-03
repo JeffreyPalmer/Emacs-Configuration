@@ -862,7 +862,11 @@ This is required to ensure that SSH interaction with GitHub (for example) is sea
 **** Always insert matching pairs
 #+begin_src emacs-lisp
   ;; Enable global electric-pair mode
-  (electric-pair-mode)
+  (use-package emacs
+   :custom
+   (electric-pair-preserve-balance nil)
+   :config
+   (electric-pair-mode))
 #+end_src
 **** Highlight Parentheses
 #+begin_src emacs-lisp
