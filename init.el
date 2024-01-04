@@ -102,10 +102,10 @@
 ; (set-frame-parameter nil 'name "Main")
 
 ;; Set the default face
-(set-face-attribute 'default nil :font jpalmer/default-font :height jpalmer/default-font-size :weight 'thin)
+(set-face-attribute 'default nil :font jpalmer/default-font :height jpalmer/default-font-size :weight 'light)
 
 ;; Set the fixed pitch face
-(set-face-attribute 'fixed-pitch nil :font jpalmer/default-font :height jpalmer/default-font-size :weight 'thin)
+(set-face-attribute 'fixed-pitch nil :font jpalmer/default-font :height jpalmer/default-font-size :weight 'light)
 
 ;; Set the variable pitch face
 (set-face-attribute 'variable-pitch nil :font jpalmer/variable-font :height jpalmer/default-variable-font-size :weight 'light)
@@ -116,45 +116,28 @@
 ;; Enable ligatures in emacs-mac
 (mac-auto-operator-composition-mode)
 
-(use-package emacs
+(use-package doom-themes
   :config
-  (require-theme 'modus-themes)
-  ;; Include any customization here
-  (setq modus-themes-disable-other-themes t
-        modus-themes-mode-line '(accented borderless (padding 4) (height 0.9))
-        modus-themes-bold-constructs nil
-        modus-themes-italic-constructs t
-        modus-themes-fringes 'subtle
-        ; modus-themes-tabs-accented t
-        modus-themes-paren-match '(bold intense)
-        modus-themes-prompts '(bold)
-        ; modus-themes-completions 'opinionated
-        modus-themes-mixed-fonts t
-        modus-themes-variable-pitch-ui t
-        modus-themes-org-blocks 'gray-background
-        modus-themes-syntax '(faint)
-        modus-themes-scale-headings t
-        modus-themes-region '(bg-only)
-        modus-themes-hl-line '(accented)
-        modus-themes-headings
-        '((1 . (regular 1.2))
-          (2 . (regular 1.1))
-          (3 . (regular 1.1))
-          (t . (light 1.1)))
-        modus-themes-org-agenda
-        '((header-block . (variable-pitch 1.2 semibold))
-          (header-date . (grayscale workaholic bold-today 1.1))
-          (event . (accented italic varied))
-          (scheduled . uniform)
-          (habit . traffic-light))
-        )
-
-  (load-theme 'modus-vivendi t))
+  (setq doom-themes-enable-bold nil
+        doom-themes-enable-italic t
+        doom-themes-padded-modeline t) ; Adds a 4 pixel margin around the modeline
+  (load-theme 'doom-dark+ t)
+  (doom-themes-visual-bell-config)
+  (doom-themes-neotree-config)
+  (doom-themes-org-config))
 
 (use-package idle-highlight-mode
   :diminish idle-highlight-mode
   :config (setq idle-highlight-idle-time 0.5)
   :hook ((prog-mode text-mode) . idle-highlight-mode))
+
+(use-package all-the-icons)
+
+(use-package doom-modeline
+  :init (doom-modeline-mode 1)
+  :custom ((doom-modeline-buffer-encoding nil)
+           (doom-modeline-buffer-file-name-style 'relative-from-project)
+           (doom-modeline-height 15)))
 
 (use-package hl-line
   :config
@@ -210,17 +193,32 @@
   ([remap describe-key] . helpful-key))
 
 (use-package corfu
+  :custom
+  (corfu-cycle t)
+  (corfu-preselect 'prompt)
+  :bind
+  (:map corfu-map
+        ("TAB" . corfu-next)
+        ([tab] . corfu-next)
+        ("S-TAB" . corfu-previous)
+        ([backtab] . corfu-previous))
+
     :init
     (global-corfu-mode)
     (corfu-popupinfo-mode)
     (setq corfu-auto t
           corfu-quit-no-match 'separator))
 
-  (use-package emacs
-    :init
-    (setq completion-cycle-threshold 3
-          tab-always-indent 'complete
-))
+;; Add support for next-icons in completions
+(use-package nerd-icons-corfu
+  :after corfu
+  :config
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+
+(use-package emacs
+  :init
+  (setq completion-cycle-threshold 3
+        tab-always-indent 'complete))
 
 (use-package vertico
   :init
@@ -441,7 +439,8 @@
 
 (use-package hungry-delete
   :init
-  (setq hungry-delete-join-reluctantly t)
+  ;; This will leave a space between the previous text and the following text
+  ;; (setq hungry-delete-join-reluctantly t)
   :config
   (global-hungry-delete-mode))
 
@@ -455,6 +454,10 @@
 
 (define-key prog-mode-map (kbd "s-/") 'comment-line)
 
+(use-package move-text
+  :config
+  (move-text-default-bindings))
+
 (use-package exec-path-from-shell
   :config
   ; (setq exec-path-from-shell-arguments nil)
@@ -466,6 +469,13 @@
   (global-set-key [remap kill-ring-save] #'easy-kill)
   (global-set-key [remap mark-sexp] #'easy-mark))
 
+;; Enable global electric-pair mode
+(use-package emacs
+ :custom
+ (electric-pair-preserve-balance nil)
+ :config
+ (electric-pair-mode))
+
 ; (use-package highlight-parentheses)
 ;; Try this other option for now
 (use-package paren
@@ -473,14 +483,16 @@
   (set-face-attribute 'show-paren-match-expression nil :background "#363e4a")
   (show-paren-mode 1))
 
-(use-package highlight-indent-guides
-  :config (setq highlight-indent-guides-method 'bitmap)
-  :hook (prog-mode . highlight-indent-guides-mode))
-
 (use-package paredit
   :diminish paredit-mode
   :hook
   ((clojure-mode cider-repl-mode emacs-lisp-mode lisp-mode lisp-interaction-mode) . enable-paredit-mode))
+
+(use-package highlight-indent-guides
+  :custom
+  (highlight-indent-guides-auto-character-face-perc 30)
+  :config (setq highlight-indent-guides-method 'bitmap)
+  :hook (prog-mode . highlight-indent-guides-mode))
 
 (global-subword-mode 1)
 
@@ -501,6 +513,10 @@
   ;; Not sure yet why I originally had this disabled
   ; :diminish projectile-mode
   )
+
+(use-package rg
+  :init
+  (rg-enable-default-bindings))
 
 (use-package rainbow-mode
   :hook (org-mode emacs-lisp-mode web-mode typescript-mode js2-mode))
@@ -540,19 +556,18 @@
 (use-package lsp-mode
   :after which-key
   :commands lsp lsp-deferred
+  :custom
+  (lsp-headerline-breadcrumb-enable nil)
+  (lsp-completion-provider :none)       ; we use Corfu!
   :init
   (defun jpalmer/lsp-mode-setup-completion ()
     (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
           '(orderless)))
-  :hook ( (typescript-ts-mode . lsp-deferred)
-          (js2-ts-mode . lsp-deferred)
-          (web-mode . lsp-deferred)
-          (lsp-mode . lsp-enable-which-key-integration)
-          (lsp-completion-mode . jpalmer/lsp-mode-setup-completion))
+  :hook ((prog-mode . lsp-deferred)
+         ;; (web-mode . lsp-deferred)
+         (lsp-mode . lsp-enable-which-key-integration)
+         (lsp-completion-mode . jpalmer/lsp-mode-setup-completion))
   ; :bind (:map lsp-mode-map ("TAB" . completion-at-point))
-  :custom
-  (lsp-headerline-breadcrumb-enable nil)
-  (lsp-completion-provider :none)       ; we use Corfu!
   )
 
 ;; also install lsp-ui
@@ -564,12 +579,33 @@
         lsp-ui-imenu-enable t
         lsp-ui-sideline-ignore-duplicate t
         lsp-ui-sideline-show-hover nil
+        lsp-lens-enable t
         lsp-ui-doc-position 'bottom)
   (lsp-ui-doc-show))
 
 (use-package typescript-ts-mode
   :custom
-  ((typescript-ts-mode-indent-offset 4)))
+  (typescript-ts-mode-indent-offset 4))
+
+(use-package lsp-julia
+  ;; :after lsp-mode
+  :config
+  (setq lsp-julia-default-environment "~/.julia/environments/v1.9"))
+
+(use-package julia-ts-mode
+  ;; :after lsp-julia
+  :mode "\\.jl$"
+  :config
+  (add-to-list 'lsp-language-id-configuration '(julia-ts-mode . "julia"))
+  (lsp-register-client
+   (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-julia--rls-command)
+               :major-modes '(julia-mode ess-julia-mode julia-ts-mode)
+               :server-id 'julia-ls
+               :multi-root t))
+  )
+
+(use-package julia-repl
+  :hook (julia-ts-mode . julia-repl-mode))
 
 ;; FIXME: Put this back
 (use-package glsl-mode
@@ -607,6 +643,7 @@
 
 (use-package web-mode
   :mode "(\\.\\(html?\\|ejs\\|tsx\\|jsx\\)\\'"
+  :hook (web-mode . lsp-deferred)
   :config
   (setq-default web-mode-code-indent-offset 2)
   (setq-default web-mode-markup-indent-offset 2)
@@ -821,6 +858,38 @@
   :custom
   (org-superstar-remove-leading-stars t)
   (org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+(with-eval-after-load 'org-faces
+  ;; Increase the size of various headings
+  (set-face-attribute 'org-document-title nil :font jpalmer/variable-font :weight 'light :height 1.3)
+  (dolist (face '((org-level-1 . 1.25)
+                  (org-level-2 . 1.2)
+                  (org-level-3 . 1.15)
+                  (org-level-4 . 1.1)
+                  (org-level-5 . 1.1)
+                  (org-level-6 . 1.1)
+                  (org-level-7 . 1.1)
+                  (org-level-8 . 1.1)))
+    (set-face-attribute (car face) nil :font jpalmer/variable-font :weight 'light :height (cdr face)))
+
+  ;; Make sure org-indent face is available
+  (require 'org-indent)
+
+  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+  (set-face-attribute 'org-block nil :foreground 'unspecified :inherit 'fixed-pitch)
+  (set-face-attribute 'org-table nil  :inherit 'fixed-pitch)
+  (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+  ; (set-face-attribute 'org-link nil   :weight 'regular :inherit 'variable-pitch)
+  (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+
+  ;; Get rid of the background on column views
+  (set-face-attribute 'org-column nil :background 'unspecified)
+  (set-face-attribute 'org-column-title nil :background 'unspecified))
 
 (defun jpalmer/org-agenda-delete-empty-blocks ()
     "Remove empty agenda blocks.
