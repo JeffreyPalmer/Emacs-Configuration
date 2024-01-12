@@ -192,34 +192,6 @@
   ([remap describe-command] . helpful-command)
   ([remap describe-key] . helpful-key))
 
-(use-package corfu
-  :custom
-  (corfu-cycle t)
-  (corfu-preselect 'prompt)
-  :bind
-  (:map corfu-map
-        ("TAB" . corfu-next)
-        ([tab] . corfu-next)
-        ("S-TAB" . corfu-previous)
-        ([backtab] . corfu-previous))
-
-    :init
-    (global-corfu-mode)
-    (corfu-popupinfo-mode)
-    (setq corfu-auto t
-          corfu-quit-no-match 'separator))
-
-;; Add support for next-icons in completions
-(use-package nerd-icons-corfu
-  :after corfu
-  :config
-  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
-
-(use-package emacs
-  :init
-  (setq completion-cycle-threshold 3
-        tab-always-indent 'complete))
-
 (use-package vertico
   :init
   (vertico-mode)
@@ -293,7 +265,7 @@
            ;;("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
            ("M-g g" . consult-goto-line)             ;; orig. goto-line
            ;("M-g M-g" . consult-goto-line)           ;; orig. goto-line
-           ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
+           ("M-g o" . consult-org-heading)               ;; Alternative: consult-outline
            ("M-g m" . consult-mark)
            ("M-g k" . consult-global-mark)
            ("M-g i" . consult-imenu)
@@ -383,6 +355,34 @@
     ;;;; 5. No project support
     ;; (setq consult-project-function nil)
   )
+
+(use-package corfu
+  :custom
+  (corfu-cycle t)
+  (corfu-preselect 'prompt)
+  :bind
+  (:map corfu-map
+        ("TAB" . corfu-next)
+        ([tab] . corfu-next)
+        ("S-TAB" . corfu-previous)
+        ([backtab] . corfu-previous))
+
+    :init
+    (global-corfu-mode)
+    (corfu-popupinfo-mode)
+    (setq corfu-auto t
+          corfu-quit-no-match 'separator))
+
+;; Add support for next-icons in completions
+(use-package nerd-icons-corfu
+  :after corfu
+  :config
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+
+(use-package emacs
+  :init
+  (setq completion-cycle-threshold 3
+        tab-always-indent 'complete))
 
 (use-package marginalia
   :init
