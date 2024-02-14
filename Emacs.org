@@ -1549,6 +1549,20 @@ Set up a tree-based navigation system, just in case.
           (message "Could not find git project root.")))))
 #+end_src
 
+* LLM Support
+This enables the =gptel= package, which is used to allow emacs to interact with LLM servers.
+#+begin_src emacs-lisp
+  (use-package gptel
+   :custom
+   (gptel-backend (gptel-make-openai "koboldcpp"
+                      :stream t
+                      :protocol "http"
+                      :host "10.0.1.192:5000"
+                      :models '("mixtral-instruct")))
+   (gptel-default-mode 'org-mode)
+   (gptel-model "mixtral-instruct")
+   )
+#+end_src
 * Wrap-Up Configuration
 
 Reset garbage collection to a reasonable default.
