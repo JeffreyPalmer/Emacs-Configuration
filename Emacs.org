@@ -121,7 +121,9 @@ This is disabled for now while I investigate the native compilation issues I'm s
 
 #+begin_src emacs-lisp
   ;; Use no-littering to automatically set common paths to the new user-emacs-directory
-  (use-package no-littering)
+  (use-package no-littering
+    :config
+    (no-littering-theme-backups))
 
   ;; Keep customization settings in a temporary file
   (setq custom-file
@@ -568,6 +570,28 @@ This configuration now uses Vertico.
   (use-package marginalia
     :init
     (marginalia-mode))
+#+end_src
+
+** Embark
+#+begin_src emacs-lisp
+  (use-package embark
+    :bind
+    (("C-." . embark-act)
+     ("C-;" . embark-dwim)
+     ("C-h B" . embark-bindings))
+
+     :init
+     (setq prefix-help-command #'embark-prefix-help-command)
+
+     :config
+     (add-to-list 'display-buffer-alist
+                  '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                    nil
+                    (window-parameters (mode-line-format . none)))))
+
+  (use-package embark-consult
+    :hook
+    (embark-collect-mode . consult-preview-at-point-mode))
 #+end_src
 ** Ivy-Based Completion (DISABLED)
 All of these configurations are to support [[https://github.com/abo-abo/swiper][swiper/ivy]]-based completion and associated functionality.
