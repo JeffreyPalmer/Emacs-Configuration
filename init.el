@@ -55,7 +55,9 @@
       warning-suppress-types '((comp) (comp)))
 
 ;; Use no-littering to automatically set common paths to the new user-emacs-directory
-(use-package no-littering)
+(use-package no-littering
+  :config
+  (no-littering-theme-backups))
 
 ;; Keep customization settings in a temporary file
 (setq custom-file
@@ -264,8 +266,8 @@
            ("M-g e" . consult-compile-error)
            ;;("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
            ("M-g g" . consult-goto-line)             ;; orig. goto-line
-           ;("M-g M-g" . consult-goto-line)           ;; orig. goto-line
-           ("M-g o" . consult-org-heading)               ;; Alternative: consult-outline
+           ;;("M-g M-g" . consult-goto-line)           ;; orig. goto-line
+           ;;("M-g o" . consult-org-heading)               ;; Alternative: consult-outline
            ("M-g m" . consult-mark)
            ("M-g k" . consult-global-mark)
            ("M-g i" . consult-imenu)
@@ -387,6 +389,25 @@
 (use-package marginalia
   :init
   (marginalia-mode))
+
+(use-package embark
+  :bind
+  (("C-." . embark-act)
+   ("C-;" . embark-dwim)
+   ("C-h B" . embark-bindings))
+
+   :init
+   (setq prefix-help-command #'embark-prefix-help-command)
+
+   :config
+   (add-to-list 'display-buffer-alist
+                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                  nil
+                  (window-parameters (mode-line-format . none)))))
+
+(use-package embark-consult
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package perspective
   :custom
@@ -978,6 +999,14 @@
       (org-babel-tangle))))
 (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'jpalmer/org-babel-tangle-config)))
 
+(use-package org-ql
+  :straight (:host github
+             :repo "alphapapa/org-ql"
+             :files (:defaults (:exclude "helm-org-ql.el")))
+  :bind ("M-g o" . org-ql-find-in-agenda)) 
+
+;; Now add support for org-file searching using org-ql-find into consult
+
 (use-package neotree
   :bind ("<f8>" . neotree-project-dir)
   :hook
@@ -1000,5 +1029,16 @@
                 (neotree-dir project-dir)
                 (neotree-find file-name)))
         (message "Could not find git project root.")))))
+
+(use-package gptel
+ :custom
+ (gptel-backend (gptel-make-openai "koboldcpp"
+                    :stream t
+                    :protocol "http"
+                    :host "10.0.1.192:5000"
+                    :models '("mixtral-instruct")))
+ (gptel-default-mode 'org-mode)
+ (gptel-model "mixtral-instruct")
+ )
 
 (setq gc-cons-threshold (* 2 1024 1024))
