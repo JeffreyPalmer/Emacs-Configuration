@@ -1103,6 +1103,10 @@ Try to configure the built-in typescript tree-sitter-based mode.
   (use-package julia-repl
     :hook (julia-ts-mode . julia-repl-mode))
 #+end_src
+*** Rust
+#+begin_src emacs-lisp
+  (use-package rustic)
+#+end_src
 *** Emacs Lisp
 #+begin_src emacs-lisp :tangle no
   ;; FIXME: Put this back
