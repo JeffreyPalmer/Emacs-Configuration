@@ -1149,6 +1149,26 @@ Try to configure the built-in typescript tree-sitter-based mode.
 
   ;;   (add-to-list 'flycheck-checkers 'jpalmer/glsl-lang-validator))
 #+end_src
+*** WGSL
+WGSL is the shader language for WebGPU.
+
+For some reason this attempt at hooking into =treesit-auto= doesn't work. I ended up having to install the WGSL treesitter grammar by hand.
+
+#+begin_src emacs-lisp
+  (use-package wgsl-ts-mode
+    :after treesit-auto
+    :straight (:host github :repo "acowley/wgsl-ts-mode")
+    :mode "\\.wgsl\\'"
+    :config
+    (add-to-list 'treesit-auto-recipe-list
+                 (make-treesit-auto-recipe
+                  :lang 'wgsl
+                  :ts-mode 'wgsl-ts-mode
+                  :url "https://github.com/szebniok/tree-sitter-wgsl"
+                  :revision "master"
+                  :ext "\\.wgsl\\'"))
+    (treesit-auto-add-to-auto-mode-alist 'all))
+#+end_src
 *** HTML
 #+begin_src emacs-lisp
   (use-package web-mode
@@ -1545,7 +1565,7 @@ Enable automatic wrapping of long lines in text modes, only. This makes it easie
     :straight (:host github
                :repo "alphapapa/org-ql"
                :files (:defaults (:exclude "helm-org-ql.el")))
-    :bind ("M-g o" . org-ql-find-in-agenda)) 
+    :bind ("M-g o" . org-ql-find-in-agenda))
 
   ;; Now add support for org-file searching using org-ql-find into consult
 #+end_src
