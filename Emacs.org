@@ -1112,6 +1112,14 @@ Try to configure the built-in typescript tree-sitter-based mode.
   ;; FIXME: Put this back
   (add-hook 'emacs-lisp-mode-hook #'flycheck-mode)
 #+end_src
+*** Clojure
+#+begin_src emacs-lisp
+  ;; Install the base clojure mode
+  (use-package clojure-mode)
+
+  ;; Also include CIDER
+  (use-package cider)
+#+end_src
 *** WebGL/GLSL
 
 #+begin_src emacs-lisp
