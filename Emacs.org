@@ -1007,6 +1007,8 @@ Use [[https://github.com/renzmann/treesit-auto][treesite-auto]] to manage this s
     :custom
     (treesit-auto-install 'prompt)
     :config
+    (delete 'typescript treesit-auto-langs)
+    (delete 'javascript treesit-auto-langs)
     (treesit-auto-add-to-auto-mode-alist 'all)
     (global-treesit-auto-mode))
 #+end_src
@@ -1219,7 +1221,7 @@ Set up the compile package and ensure that compilation output automatically scro
     :config (global-flycheck-mode))
 #+end_src
 ** Snippets
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package yasnippet
     :hook (prog-mode . yas-minor-mode)
     :config (yas-reload-all))
