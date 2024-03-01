@@ -539,18 +539,18 @@ This configuration now uses Vertico.
     :custom
     (corfu-cycle t)
     (corfu-preselect 'prompt)
-    :bind
-    (:map corfu-map
-          ("TAB" . corfu-next)
-          ([tab] . corfu-next)
-          ("S-TAB" . corfu-previous)
-          ([backtab] . corfu-previous))
+    (corfu-auto t)
+    (corfu-quit-no-match 'separator)
+    ;; :bind
+    ;; (:map corfu-map
+    ;;       ("TAB" . corfu-next)
+    ;;       ([tab] . corfu-next)
+    ;;       ("S-TAB" . corfu-previous)
+    ;;       ([backtab] . corfu-previous))
 
-      :init
-      (global-corfu-mode)
-      (corfu-popupinfo-mode)
-      (setq corfu-auto t
-            corfu-quit-no-match 'separator))
+    :init
+    (global-corfu-mode)
+    (corfu-popupinfo-mode))
 
   ;; Add support for next-icons in completions
   (use-package nerd-icons-corfu
@@ -1002,13 +1002,16 @@ Try using =hl-todo= one more time.
 ** Languages
 *** Tree Sitter Language Definitions
 Use [[https://github.com/renzmann/treesit-auto][treesite-auto]] to manage this stuff for me.
-#+begin_src emacs-lisp
+
+Turns out, this stuff is not ready for prime time, at least not for my
+current needs. I'm disabling and will perhaps revisit in the next
+major release.
+
+#+begin_src emacs-lisp :tangle no
   (use-package treesit-auto
     :custom
     (treesit-auto-install 'prompt)
     :config
-    (delete 'typescript treesit-auto-langs)
-    (delete 'javascript treesit-auto-langs)
     (treesit-auto-add-to-auto-mode-alist 'all)
     (global-treesit-auto-mode))
 #+end_src
@@ -1051,6 +1054,10 @@ This configuration is for LSP mode
   (use-package typescript-mode
     :mode "\\.ts\\'"
     :config
+    ;; if we're using this configuration, don't activate treesitter
+    ; (delete 'typescript treesit-auto-langs)
+    ; (delete 'javascript treesit-auto-langs)
+
     (setq typescript-indent-level 2))
 
   (defun jpalmer/set-js-indentation ()
@@ -1073,13 +1080,14 @@ This configuration is for LSP mode
     :config
     (setq prettier-js-show-errors nil))
 
+
 #+end_src
 
 Try to configure the built-in typescript tree-sitter-based mode.
 #+begin_src emacs-lisp :tangle no
   (use-package typescript-ts-mode
     :custom
-    (typescript-ts-mode-indent-offset 4))
+    (typescript-ts-mode-indent-offset 2))
 #+end_src
 
 *** TODO: Svelte
@@ -1107,7 +1115,14 @@ Try to configure the built-in typescript tree-sitter-based mode.
 #+end_src
 *** Rust
 #+begin_src emacs-lisp
-  (use-package rustic)
+  (use-package rust-mode
+    :init
+    (setq rust-mode-treesitter-derive nil))
+
+  (use-package rustic
+    :after rust-mode
+    :custom
+    (rustic-analyzer-command '("rustup" "run" "stable" "rust-analyzer")))
 #+end_src
 *** Emacs Lisp
 #+begin_src emacs-lisp :tangle no
@@ -1162,22 +1177,28 @@ Try to configure the built-in typescript tree-sitter-based mode.
 *** WGSL
 WGSL is the shader language for WebGPU.
 
+This is a tree-sitter-based approach that is currently disabled.
 For some reason this attempt at hooking into =treesit-auto= doesn't work. I ended up having to install the WGSL treesitter grammar by hand.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package wgsl-ts-mode
-    :after treesit-auto
     :straight (:host github :repo "acowley/wgsl-ts-mode")
-    :mode "\\.wgsl\\'"
+    :mode "\\.wgsl\\'")
+
+#+end_src
+
+Try using a different WGSL mode that doesn't use treesitter.
+#+begin_src emacs-lisp
+  (use-package wgsl-mode
+    :after lsp-mode
     :config
-    (add-to-list 'treesit-auto-recipe-list
-                 (make-treesit-auto-recipe
-                  :lang 'wgsl
-                  :ts-mode 'wgsl-ts-mode
-                  :url "https://github.com/szebniok/tree-sitter-wgsl"
-                  :revision "master"
-                  :ext "\\.wgsl\\'"))
-    (treesit-auto-add-to-auto-mode-alist 'all))
+    ;; Register this mode with lsp
+    ; (add-to-list 'lsp-language-id-configuration '(wgsl-mode . "wgsl"))
+    ;(lsp-register-client
+    ; (make-lsp-client :new-connection (lsp-stdio-connection "wgsl_analyzer")
+    ;                  :activation-fn (lsp-activate-on "wgsl")
+    ;                  :server-id "wgsl-ls"))
+    )
 #+end_src
 *** HTML
 #+begin_src emacs-lisp
@@ -1221,7 +1242,7 @@ Set up the compile package and ensure that compilation output automatically scro
     :config (global-flycheck-mode))
 #+end_src
 ** Snippets
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package yasnippet
     :hook (prog-mode . yas-minor-mode)
     :config (yas-reload-all))
