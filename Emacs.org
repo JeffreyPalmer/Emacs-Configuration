@@ -1003,7 +1003,7 @@ Try using =hl-todo= one more time.
 *** Tree Sitter Language Definitions
 Use [[https://github.com/renzmann/treesit-auto][treesit-auto]] to manage this stuff for me.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package treesit-auto
     :custom
     (treesit-auto-install 'prompt)
@@ -1059,41 +1059,35 @@ This configuration is for LSP mode
 *** Typescript/Javascript
 
 The non-treesitter configuration.
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package typescript-mode
     :mode "\\.ts\\'"
     :config
-    ;; if we're using this configuration, don't activate treesitter
-    ; (delete 'typescript treesit-auto-langs)
-    ; (delete 'javascript treesit-auto-langs)
+    (setq typescript-indent-level 4))
 
-    (setq typescript-indent-level 2))
+  ;; (defun jpalmer/set-js-indentation ()
+  ;;   (setq js-indent-level 4)
+  ;;   (setq-default tab-width 4))
 
-  (defun jpalmer/set-js-indentation ()
-    (setq js-indent-level 2)
-    (setq-default tab-width 2))
+  ;; (use-package js2-mode
+  ;;   :mode "\\.jsx?\\'"
+  ;;   :config
+  ;;   ;; Don't use built-in syntax checking
+  ;;   (setq js2-mode-show-strict-warnings nil)
+  ;;   (add-hook 'js2-mode-hook #'jpalmer/set-js-indentation)
+  ;;   (add-hook 'json-mode-hook #'jpalmer/set-js-indentation))
 
-  (use-package js2-mode
-    :mode "\\.jsx?\\'"
-    :config
-    ;; Don't use built-in syntax checking
-    (setq js2-mode-show-strict-warnings nil)
-    (add-hook 'js2-mode-hook #'jpalmer/set-js-indentation)
-    (add-hook 'json-mode-hook #'jpalmer/set-js-indentation))
+  ;; (use-package apheleia
+  ;;  :config
+  ;;  (apheleia-global-mode +1))
 
-  (use-package apheleia
-    :config
-    (apheleia-global-mode +1))
-
-  (use-package prettier-js
-    :config
-    (setq prettier-js-show-errors nil))
-
-
+  ;; (use-package prettier-js
+  ;;   :config
+  ;;  (setq prettier-js-show-errors nil))
 #+end_src
 
 The treesitter-based configuration.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package typescript-ts-mode
     :custom
     (typescript-ts-mode-indent-offset 2))
@@ -1189,7 +1183,7 @@ WGSL is the shader language for WebGPU.
 This is a tree-sitter-based approach that is currently disabled.
 For some reason this attempt at hooking into =treesit-auto= doesn't work. I ended up having to install the WGSL treesitter grammar by hand.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package wgsl-ts-mode
     :straight (:host github :repo "acowley/wgsl-ts-mode")
     :mode "\\.wgsl\\'")
@@ -1197,7 +1191,7 @@ For some reason this attempt at hooking into =treesit-auto= doesn't work. I ende
 #+end_src
 
 Try using a different WGSL mode that doesn't use treesitter.
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package wgsl-mode
     :after lsp-mode
     :config
