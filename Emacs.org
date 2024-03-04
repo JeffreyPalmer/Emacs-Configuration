@@ -1001,17 +1001,24 @@ Try using =hl-todo= one more time.
 #+end_src
 ** Languages
 *** Tree Sitter Language Definitions
-Use [[https://github.com/renzmann/treesit-auto][treesite-auto]] to manage this stuff for me.
+Use [[https://github.com/renzmann/treesit-auto][treesit-auto]] to manage this stuff for me.
 
-Turns out, this stuff is not ready for prime time, at least not for my
-current needs. I'm disabling and will perhaps revisit in the next
-major release.
-
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package treesit-auto
     :custom
     (treesit-auto-install 'prompt)
+    (treesit-auto-langs '(javascript typescript tsx wgsl))
     :config
+    (setq wgsl-tsauto-config
+          (make-treesit-auto-recipe
+           :lang 'wgsl
+           :ts-mode 'wgsl-ts-mode
+           ;; :remap '(wgsl-mode)
+           :url "https://github.com/szebniok/tree-sitter-wgsl"
+           :revision "master"
+           :source-dir "src"
+           :ext "\\.wgsl\\'"))
+    (add-to-list 'treesit-auto-recipe-list wgsl-tsauto-config)
     (treesit-auto-add-to-auto-mode-alist 'all)
     (global-treesit-auto-mode))
 #+end_src
@@ -1050,7 +1057,9 @@ This configuration is for LSP mode
     (lsp-ui-doc-show))
 #+end_src
 *** Typescript/Javascript
-#+begin_src emacs-lisp
+
+The non-treesitter configuration.
+#+begin_src emacs-lisp :tangle no
   (use-package typescript-mode
     :mode "\\.ts\\'"
     :config
@@ -1083,8 +1092,8 @@ This configuration is for LSP mode
 
 #+end_src
 
-Try to configure the built-in typescript tree-sitter-based mode.
-#+begin_src emacs-lisp :tangle no
+The treesitter-based configuration.
+#+begin_src emacs-lisp
   (use-package typescript-ts-mode
     :custom
     (typescript-ts-mode-indent-offset 2))
@@ -1115,9 +1124,9 @@ Try to configure the built-in typescript tree-sitter-based mode.
 #+end_src
 *** Rust
 #+begin_src emacs-lisp
-  (use-package rust-mode
-    :init
-    (setq rust-mode-treesitter-derive nil))
+  ;; (use-package rust-mode
+  ;;   :init
+  ;;  (setq rust-mode-treesitter-derive nil))
 
   (use-package rustic
     :after rust-mode
@@ -1180,7 +1189,7 @@ WGSL is the shader language for WebGPU.
 This is a tree-sitter-based approach that is currently disabled.
 For some reason this attempt at hooking into =treesit-auto= doesn't work. I ended up having to install the WGSL treesitter grammar by hand.
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package wgsl-ts-mode
     :straight (:host github :repo "acowley/wgsl-ts-mode")
     :mode "\\.wgsl\\'")
@@ -1188,7 +1197,7 @@ For some reason this attempt at hooking into =treesit-auto= doesn't work. I ende
 #+end_src
 
 Try using a different WGSL mode that doesn't use treesitter.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package wgsl-mode
     :after lsp-mode
     :config
