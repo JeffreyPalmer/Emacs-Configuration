@@ -173,8 +173,8 @@
   (setq which-key-idle-delay 1))
 
 (use-package avy
-  :bind (("C-;" . avy-goto-char-2)
-         ("M-g M-g" . avy-goto-line))
+  :bind (("s-;" . avy-goto-char-2)
+         ("s-g" . avy-goto-line))
   :config
   (avy-setup-default)
   (setq avy-keys '(?a ?r ?s ?t ?n ?e ?i ?o)))
@@ -362,18 +362,18 @@
   :custom
   (corfu-cycle t)
   (corfu-preselect 'prompt)
-  :bind
-  (:map corfu-map
-        ("TAB" . corfu-next)
-        ([tab] . corfu-next)
-        ("S-TAB" . corfu-previous)
-        ([backtab] . corfu-previous))
+  (corfu-auto t)
+  (corfu-quit-no-match 'separator)
+  ;; :bind
+  ;; (:map corfu-map
+  ;;       ("TAB" . corfu-next)
+  ;;       ([tab] . corfu-next)
+  ;;       ("S-TAB" . corfu-previous)
+  ;;       ([backtab] . corfu-previous))
 
-    :init
-    (global-corfu-mode)
-    (corfu-popupinfo-mode)
-    (setq corfu-auto t
-          corfu-quit-no-match 'separator))
+  :init
+  (global-corfu-mode)
+  (corfu-popupinfo-mode))
 
 ;; Add support for next-icons in completions
 (use-package nerd-icons-corfu
@@ -567,13 +567,6 @@
   :config
   (setq git-gutter-fr:side 'right-fringe))
 
-(use-package treesit-auto
-  :custom
-  (treesit-auto-install 'prompt)
-  :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
-
 (use-package lsp-mode
   :after which-key
   :commands lsp lsp-deferred
@@ -604,9 +597,30 @@
         lsp-ui-doc-position 'bottom)
   (lsp-ui-doc-show))
 
-(use-package typescript-ts-mode
-  :custom
-  (typescript-ts-mode-indent-offset 4))
+(use-package typescript-mode
+  :mode "\\.ts\\'"
+  :config
+  (setq typescript-indent-level 4))
+
+;; (defun jpalmer/set-js-indentation ()
+;;   (setq js-indent-level 4)
+;;   (setq-default tab-width 4))
+
+;; (use-package js2-mode
+;;   :mode "\\.jsx?\\'"
+;;   :config
+;;   ;; Don't use built-in syntax checking
+;;   (setq js2-mode-show-strict-warnings nil)
+;;   (add-hook 'js2-mode-hook #'jpalmer/set-js-indentation)
+;;   (add-hook 'json-mode-hook #'jpalmer/set-js-indentation))
+
+;; (use-package apheleia
+;;  :config
+;;  (apheleia-global-mode +1))
+
+;; (use-package prettier-js
+;;   :config
+;;  (setq prettier-js-show-errors nil))
 
 (use-package lsp-julia
   ;; :after lsp-mode
@@ -627,6 +641,21 @@
 
 (use-package julia-repl
   :hook (julia-ts-mode . julia-repl-mode))
+
+;; (use-package rust-mode
+;;   :init
+;;  (setq rust-mode-treesitter-derive nil))
+
+(use-package rustic
+  :after rust-mode
+  :custom
+  (rustic-analyzer-command '("rustup" "run" "stable" "rust-analyzer")))
+
+;; Install the base clojure mode
+(use-package clojure-mode)
+
+;; Also include CIDER
+(use-package cider)
 
 ;; FIXME: Put this back
 (use-package glsl-mode
@@ -661,6 +690,17 @@
 ;;     :modes glsl-mode)
 
 ;;   (add-to-list 'flycheck-checkers 'jpalmer/glsl-lang-validator))
+
+(use-package wgsl-mode
+  :after lsp-mode
+  :config
+  ;; Register this mode with lsp
+  ; (add-to-list 'lsp-language-id-configuration '(wgsl-mode . "wgsl"))
+  ;(lsp-register-client
+  ; (make-lsp-client :new-connection (lsp-stdio-connection "wgsl_analyzer")
+  ;                  :activation-fn (lsp-activate-on "wgsl")
+  ;                  :server-id "wgsl-ls"))
+  )
 
 (use-package web-mode
   :mode "(\\.\\(html?\\|ejs\\|tsx\\|jsx\\)\\'"
@@ -1003,7 +1043,7 @@
   :straight (:host github
              :repo "alphapapa/org-ql"
              :files (:defaults (:exclude "helm-org-ql.el")))
-  :bind ("M-g o" . org-ql-find-in-agenda)) 
+  :bind ("M-g o" . org-ql-find-in-agenda))
 
 ;; Now add support for org-file searching using org-ql-find into consult
 

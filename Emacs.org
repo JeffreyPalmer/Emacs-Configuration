@@ -1000,7 +1000,7 @@ Try using =hl-todo= one more time.
     (setq git-gutter-fr:side 'right-fringe))
 #+end_src
 ** Languages
-*** Tree Sitter Language Definitions
+*** Tree Sitter Language Definitions [disabled]
 Use [[https://github.com/renzmann/treesit-auto][treesit-auto]] to manage this stuff for me.
 
 #+begin_src emacs-lisp :tangle no
@@ -1086,7 +1086,7 @@ The non-treesitter configuration.
   ;;  (setq prettier-js-show-errors nil))
 #+end_src
 
-The treesitter-based configuration.
+The treesitter-based configuration [disabled]
 #+begin_src emacs-lisp :tangle no
   (use-package typescript-ts-mode
     :custom
@@ -1127,7 +1127,7 @@ The treesitter-based configuration.
     :custom
     (rustic-analyzer-command '("rustup" "run" "stable" "rust-analyzer")))
 #+end_src
-*** Emacs Lisp
+*** Emacs Lisp [disabled]
 #+begin_src emacs-lisp :tangle no
   ;; FIXME: Put this back
   (add-hook 'emacs-lisp-mode-hook #'flycheck-mode)
