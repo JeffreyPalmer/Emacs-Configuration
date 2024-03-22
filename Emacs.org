@@ -945,7 +945,8 @@ Try using =hl-todo= one more time.
     :bind ("M-g t" . consult-todo))
 #+end_src
 
-*** Project Support
+*** Project Support (Projectile)
+TODO: Try out the new built-in support for projects using project.el. A bunch of stuff might have to change, so that's not really a high priority.
 #+begin_src emacs-lisp
   (use-package projectile
     :config
@@ -1126,6 +1127,13 @@ The treesitter-based configuration [disabled]
     :after rust-mode
     :custom
     (rustic-analyzer-command '("rustup" "run" "stable" "rust-analyzer")))
+#+end_src
+*** Python
+#+begin_src emacs-lisp
+  (use-package lsp-pyright
+    :hook (python-mode . (lambda ()
+                           (require 'lsp-pyright)
+                           (lsp))))
 #+end_src
 *** Emacs Lisp [disabled]
 #+begin_src emacs-lisp :tangle no
