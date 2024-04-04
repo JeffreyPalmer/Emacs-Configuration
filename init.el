@@ -651,6 +651,11 @@
   :custom
   (rustic-analyzer-command '("rustup" "run" "stable" "rust-analyzer")))
 
+(use-package lsp-pyright
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-pyright)
+                         (lsp))))
+
 ;; Install the base clojure mode
 (use-package clojure-mode)
 
