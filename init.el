@@ -574,6 +574,9 @@
   (lsp-headerline-breadcrumb-enable nil)
   (lsp-completion-provider :none)       ; we use Corfu!
   :init
+  ;; Improve IO performance for LSP, from the documentation here:
+  ;; https://emacs-lsp.github.io/lsp-mode/page/performance/#increase-the-amount-of-data-which-emacs-reads-from-the-process
+  (setq read-process-output-max (* 1024 1024)) ; 1mb
   (defun jpalmer/lsp-mode-setup-completion ()
     (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
           '(orderless)))
@@ -708,18 +711,23 @@
   )
 
 (use-package web-mode
-  :mode "(\\.\\(html?\\|ejs\\|tsx\\|jsx\\)\\'"
+  :mode "\\.html?\\'"
+  :mode "\\.svelte\\'"
   :hook (web-mode . lsp-deferred)
   :config
   (setq-default web-mode-code-indent-offset 2)
   (setq-default web-mode-markup-indent-offset 2)
   (setq-default web-mode-attribute-indent-offset 2))
 
+;;
+;; These two packages don't really seem necessary, so I'm taking them out for now
+;;
+
 ;; Start the server with `httpd-start`
 ;; Use `impatient-mode` in any buffer
-(use-package impatient-mode)
+;; (use-package impatient-mode)
 
-(use-package skewer-mode)
+;; (use-package skewer-mode)
 
 (use-package compile
   :custom
