@@ -970,6 +970,11 @@ TODO: Try out the new built-in support for projects using project.el. A bunch of
     :hook (org-mode emacs-lisp-mode web-mode typescript-mode js2-mode))
 #+end_src
 
+*** Use vterm for better shell performance
+#+begin_src emacs-lisp
+  (use-package vterm)
+#+end_src
+
 ** Version Control
 *** Magit
 #+begin_src emacs-lisp
@@ -1004,24 +1009,26 @@ TODO: Try out the new built-in support for projects using project.el. A bunch of
 *** Tree Sitter Language Definitions [disabled]
 Use [[https://github.com/renzmann/treesit-auto][treesit-auto]] to manage this stuff for me.
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package treesit-auto
     :custom
     (treesit-auto-install 'prompt)
-    (treesit-auto-langs '(javascript typescript tsx wgsl))
+    ;; Try allowing these to be automatically installed?
+    ;; (treesit-auto-langs '(javascript typescript))
     :config
-    (setq wgsl-tsauto-config
-          (make-treesit-auto-recipe
-           :lang 'wgsl
-           :ts-mode 'wgsl-ts-mode
-           ;; :remap '(wgsl-mode)
-           :url "https://github.com/szebniok/tree-sitter-wgsl"
-           :revision "master"
-           :source-dir "src"
-           :ext "\\.wgsl\\'"))
-    (add-to-list 'treesit-auto-recipe-list wgsl-tsauto-config)
+    ;;(setq wgsl-tsauto-config
+    ;;      (make-treesit-auto-recipe
+    ;;       :lang 'wgsl
+    ;;       :ts-mode 'wgsl-ts-mode
+    ;;       ;; :remap '(wgsl-mode)
+    ;;       :url "https://github.com/szebniok/tree-sitter-wgsl"
+    ;;       :revision "master"
+    ;;       :source-dir "src"
+    ;;       :ext "\\.wgsl\\'"))
+    ;;(add-to-list 'treesit-auto-recipe-list wgsl-tsauto-config)
     (treesit-auto-add-to-auto-mode-alist 'all)
     (global-treesit-auto-mode))
+
 #+end_src
 
 *** Language Server Support
@@ -1069,8 +1076,8 @@ Now, install and configure LSP mode.
 #+end_src
 *** Typescript/Javascript
 
-The non-treesitter configuration.
-#+begin_src emacs-lisp
+The non-treesitter configuration [disabled]
+#+begin_src emacs-lisp :tangle no
   (use-package typescript-mode
     :mode "\\.ts\\'"
     :config
@@ -1097,33 +1104,59 @@ The non-treesitter configuration.
   ;;  (setq prettier-js-show-errors nil))
 #+end_src
 
-The treesitter-based configuration [disabled]
-#+begin_src emacs-lisp :tangle no
+The treesitter-based configuration
+#+begin_src emacs-lisp
   (use-package typescript-ts-mode
+    :mode "\\.ts\\'"
+    :hook (typescript-ts-mode . lsp-deferred)
     :custom
     (typescript-ts-mode-indent-offset 2))
+  
+  ;; Work around an error in the current version of the typescript treesitter grammar
+  (defvar jpalmer/typescript-treesit-auto-recipe
+    (make-treesit-auto-recipe
+     :lang 'typescript
+     :ts-mode 'typescript-ts-mode
+     :remap 'typescript-mode
+     :url "https://github.com/tree-sitter/tree-sitter-typescript"
+     :revision "v0.20.3"
+     :source-dir "typescript/src"
+     :ext "\\.ts\\'")
+    "Recipe for treesitter typescript lib")
+  (add-to-list 'treesit-auto-recipe-list jpalmer/typescript-treesit-auto-recipe)
+
 #+end_src
 *** Julia
 #+begin_src emacs-lisp
-  (use-package lsp-julia
-    ;; :after lsp-mode
-    :config
-    (setq lsp-julia-default-environment "~/.julia/environments/v1.9"))
+    (use-package lsp-julia
+          ;; :after lsp-mode
+          :config
+          (setq lsp-julia-default-environment "~/.julia/environments/v1.9"
+                julia-repl-set-terminal-backend 'vterm))
 
-  (use-package julia-ts-mode
-    ;; :after lsp-julia
-    :mode "\\.jl$"
-    :config
-    (add-to-list 'lsp-language-id-configuration '(julia-ts-mode . "julia"))
-    (lsp-register-client
-     (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-julia--rls-command)
-                 :major-modes '(julia-mode ess-julia-mode julia-ts-mode)
-                 :server-id 'julia-ls
-                 :multi-root t))
-    )
+        ;; (use-package julia-ts-mode
+        ;;   ;; :after lsp-julia
+        ;;   :mode "\\.jl$"
+        ;;   :config
+        ;;   (add-to-list 'lsp-language-id-configuration '(julia-ts-mode . "julia"))
+        ;;   (lsp-register-client
+        ;;    (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-julia--rls-command)
+        ;;                :major-modes '(julia-mode ess-julia-mode julia-ts-mode)
+        ;;                :server-id 'julia-ls
+        ;;                :multi-root t))
+        ;;   )
 
-  (use-package julia-repl
-    :hook (julia-ts-mode . julia-repl-mode))
+    (use-package julia-mode
+      :after lsp-mode
+      :hook (julia-mode . lsp-deferred))
+
+    (use-package julia-repl
+      :hook (julia-mode . julia-repl-mode))
+
+    ;; Apparently the julia repl uses more colors, so add this to enable the display of more colors in a terminal
+    ;; (use-package eterm-256color
+    ;;  :hook (term-mode . eterm-256color))
+
 #+end_src
 *** Rust
 #+begin_src emacs-lisp
@@ -1199,15 +1232,33 @@ WGSL is the shader language for WebGPU.
 This is a tree-sitter-based approach that is currently disabled.
 For some reason this attempt at hooking into =treesit-auto= doesn't work. I ended up having to install the WGSL treesitter grammar by hand.
 
-#+begin_src emacs-lisp :tangle no
+This is apparently now built into LSP, so that should just work?
+
+#+begin_src emacs-lisp
   (use-package wgsl-ts-mode
     :straight (:host github :repo "acowley/wgsl-ts-mode")
+    :hook (wgsl-ts-mode . lsp-deferred)
     :mode "\\.wgsl\\'")
+
+  ;; Support for WGSL grammar
+  (defvar jpalmer/wgsl-treesit-auto-recipe
+    (make-treesit-auto-recipe
+     :lang 'wgsl
+     :ts-mode 'wgsl-ts-mode
+     :remap '(wgsl-mode)
+     :url "https://github.com/szebniok/tree-sitter-wgsl"
+     :revision "master"
+     :source-dir "src"
+     :ext "\\.wgsl\\'"))
+  (add-to-list 'treesit-auto-recipe-list jpalmer/wgsl-treesit-auto-recipe)
+
+  ;; Try to fix lsp mode's support for wgsl-ts-mode
+  (add-to-list 'lsp-language-id-configuration '(wgsl-ts-mode . "wgsl"))
 
 #+end_src
 
 Try using a different WGSL mode that doesn't use treesitter.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package wgsl-mode
     :after lsp-mode
     :config
@@ -1265,8 +1316,10 @@ Set up the compile package and ensure that compilation output automatically scro
     ; :hook (lsp-mode glsl-mode)
     :config (global-flycheck-mode))
 #+end_src
-** Snippets
-#+begin_src emacs-lisp
+** Snippets [disabled]
+
+I think these are being a little flaky but I don't have time to investigate at the moment
+#+begin_src emacs-lisp :tangle no
   (use-package yasnippet
     :hook (prog-mode . yas-minor-mode)
     :config (yas-reload-all))
