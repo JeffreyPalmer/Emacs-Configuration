@@ -1037,22 +1037,9 @@ Use [[https://github.com/renzmann/treesit-auto][treesit-auto]] to manage this st
   (use-package treesit-auto
     :custom
     (treesit-auto-install 'prompt)
-    ;; Try allowing these to be automatically installed?
-    ;; (treesit-auto-langs '(javascript typescript))
     :config
-    ;;(setq wgsl-tsauto-config
-    ;;      (make-treesit-auto-recipe
-    ;;       :lang 'wgsl
-    ;;       :ts-mode 'wgsl-ts-mode
-    ;;       ;; :remap '(wgsl-mode)
-    ;;       :url "https://github.com/szebniok/tree-sitter-wgsl"
-    ;;       :revision "master"
-    ;;       :source-dir "src"
-    ;;       :ext "\\.wgsl\\'"))
-    ;;(add-to-list 'treesit-auto-recipe-list wgsl-tsauto-config)
     (treesit-auto-add-to-auto-mode-alist 'all)
     (global-treesit-auto-mode))
-
 #+end_src
 
 *** Language Server Support
@@ -1135,8 +1122,19 @@ The treesitter-based configuration
     :hook (typescript-ts-mode . lsp-deferred)
     :custom
     (typescript-ts-mode-indent-offset 2))
-  
+
   ;; Work around an error in the current version of the typescript treesitter grammar
+  (defvar jpalmer/tsx-treesit-auto-recipe
+    (make-treesit-auto-recipe
+     :lang 'tsx
+     :ts-mode 'tsx-ts-mode
+     :remap 'typescript-tsx-mode
+     :url "https://github.com/tree-sitter/tree-sitter-typescript"
+     :revision "v0.20.3"
+     :source-dir "tsx/src"
+     :ext "\\.tsx\\'")
+    "Recipe for treesitter tsx lib")
+  (add-to-list 'treesit-auto-recipe-list jpalmer/tsx-treesit-auto-recipe)
   (defvar jpalmer/typescript-treesit-auto-recipe
     (make-treesit-auto-recipe
      :lang 'typescript
