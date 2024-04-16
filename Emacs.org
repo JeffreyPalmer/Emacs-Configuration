@@ -154,7 +154,9 @@ This allows things like buffer cleanup to happen during the day instead of at mi
 #+end_src
 * Server Mode
 #+begin_src emacs-lisp
-(server-start)
+  (unless (and (fboundp 'server-running-p)
+	       (server-running-p))
+    (server-start))
 #+end_src
 * Basic UI Configuration
 ** Generic Settings
@@ -187,7 +189,7 @@ This allows things like buffer cleanup to happen during the day instead of at mi
 
 Specify that I want my window frame without a title bar.
 #+begin_src emacs-lisp :tangle /Users/jeff/.config/emacs/early-init.el
-  (add-to-list 'default-frame-alist '(undecorated-round . t))
+  (add-to-list 'default-frame-alist '(undecorated . t))
 #+end_src
 
 ** Font Configuration
@@ -1436,7 +1438,10 @@ Enable automatic wrapping of long lines in text modes, only. This makes it easie
                                    entry (file+olp+datetree "journal.org")
                                    "* %?")
                                   ("l" "A link, for reading later." entry (file "")
-                                   "* [[%:link][%:description]]%?"))
+                                   "* [[%:link][%:description]]%?")
+                                  ;; Set up a default template
+                                  ("u" "Capture a firefox link" entry (file "")
+                                   "* %i%?"))
           ;; refile settings
           org-refile-targets '((nil :maxlevel . 9)
                                (org-agenda-files :maxlevel . 9))
@@ -1659,7 +1664,7 @@ Enable automatic wrapping of long lines in text modes, only. This makes it easie
     :bind
     (("C-c v" . org-review-insert-last-review)))
 #+end_src
-***  Also enable Pomodoro time tracking
+*** Also enable Pomodoro time tracking
 #+begin_src emacs-lisp
   ;; FIXME: This is disabled for now
   ;; Add support for pomodoro time tracking
@@ -1704,6 +1709,32 @@ Enable automatic wrapping of long lines in text modes, only. This makes it easie
   ;; Now add support for org-file searching using org-ql-find into consult
 #+end_src
 
+** Org-Capture
+Trying to get a working configuration of ~org-capture~ without using ~emacs-mac~.
+
+Okay, so this package uses AppleScript to control other applications
+to get URLs, etc. This is probably fine, and it allows the capture
+process to be controlled from inside of emacs, which is nice.
+
+I've also added a macOS Quick Action that grabs the current URL/title
+from the current Firefox window (even if Emacs is on another desktop),
+so this appears to be working nicely now.
+
+This setup is taken from [[https://macowners.club/posts/org-capture-from-everywhere-macos/][this article]].
+
+#+begin_src emacs-lisp
+  ;; org-mac-link adds some utilities that capture links from various mac applications
+  ;; Press C-c g to bring up an app menu
+  (use-package org-mac-link
+    :bind (:map org-mode-map ("C-c g" . org-mac-link-get-link)))
+
+  (defun jpalmer/url-firefox-capture-to-org ()
+    (interactive)
+    (org-capture-string (org-mac-link-firefox-get-frontmost-url) "u")
+    (ignore-errors)
+    (org-capture-finalize))
+
+#+end_src
 * Tree Navigation
 Set up a tree-based navigation system, just in case.
 #+begin_src emacs-lisp
