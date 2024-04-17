@@ -7,15 +7,15 @@ Uses [`use-package`][1] and [`straight`][4] to manage package installation and
 configuration. Emacs should bootstrap `use-package` and install all
 other packages automatically when starting up for the first time.
 
-Install the [emacs-plus][2], and make sure that the font
+Install the [emacs-mac][2], and make sure that the font
 [Jetbrains Mono][3] is installed (this can be installed via `homebrew` at
 this point).
 
 Getting started with a new checkout:
 ``` shell
 brew install font-jetbrains-mono
-brew tap d12frosted/emacs-plus
-brew install emacs-plus@29 --with-native-comp --with-modern-sjrmanning-iconbrew
+brew tap railwaycat/emacsmacport
+brew install railwaycat/emacsmacport/emacs-mac --with-natural-title-bar --with-native-compilation --with-sjrmanning-icon --with-tree-sitter
 ```
 
 Because my configuration is now a literate org file, I have checked in
@@ -35,6 +35,6 @@ M-x nerd-icons-install-fonts
 ```
 
 [1]: https://github.com/jwiegley/use-package
-[2]: https://github.com/d12frosted/homebrew-emacs-plus
+[2]: https://github.com/railwaycat/homebrew-emacsmacport
 [3]: https://www.jetbrains.com/lp/mono/
 [4]: https://github.com/radian-software/straight.el

@@ -33,6 +33,7 @@ The goal of this work is to be able to generate a fixed, known-good configuratio
   (defvar jpalmer/variable-font "Fira Sans")
   (defvar jpalmer/default-font-size 120)
   (defvar jpalmer/default-variable-font-size 150)
+  (defvar jpalmer/is-emacs-mac t)
 #+end_src
 
 * User Information
@@ -186,12 +187,6 @@ This allows things like buffer cleanup to happen during the day instead of at mi
   ; (set-frame-parameter nil 'name "Main")
 
 #+end_src
-
-Specify that I want my window frame without a title bar.
-#+begin_src emacs-lisp :tangle /Users/jeff/.config/emacs/early-init.el
-  (add-to-list 'default-frame-alist '(undecorated . t))
-#+end_src
-
 ** Font Configuration
 #+begin_src emacs-lisp
   ;; Set the default face
@@ -207,26 +202,28 @@ Specify that I want my window frame without a title bar.
   (set-face-attribute 'cursor nil :background "goldenrod")
 
   ;; Enable ligatures in emacs-mac
-  ;; (mac-auto-operator-composition-mode)
+  (if jpalmer/is-emacs-mac
+      ;; If we're on emacs-mac, use the built-in ligature support
+      (mac-auto-operator-composition-mode)
 
-  ;; Use the ligatures.el package if we're not on emacs-mac
-  (use-package ligature
-  :config
-  ;; Enable all JetBrains Mono ligatures in programming modes
-  (ligature-set-ligatures 'prog-mode '("-|" "-~" "---" "-<<" "-<" "--" "->" "->>" "-->" "///" "/=" "/=="
-                                      "/>" "//" "/*" "*>" "***" "*/" "<-" "<<-" "<=>" "<=" "<|" "<||"
-                                      "<|||" "<|>" "<:" "<>" "<-<" "<<<" "<==" "<<=" "<=<" "<==>" "<-|"
-                                      "<<" "<~>" "<=|" "<~~" "<~" "<$>" "<$" "<+>" "<+" "</>" "</" "<*"
-                                      "<*>" "<->" "<!--" ":>" ":<" ":::" "::" ":?" ":?>" ":=" "::=" "=>>"
-                                      "==>" "=/=" "=!=" "=>" "===" "=:=" "==" "!==" "!!" "!=" ">]" ">:"
-                                      ">>-" ">>=" ">=>" ">>>" ">-" ">=" "&&&" "&&" "|||>" "||>" "|>" "|]"
-                                      "|}" "|=>" "|->" "|=" "||-" "|-" "||=" "||" ".." ".?" ".=" ".-" "..<"
-                                      "..." "+++" "+>" "++" "[||]" "[<" "[|" "{|" "??" "?." "?=" "?:" "##"
-                                      "###" "####" "#[" "#{" "#=" "#!" "#:" "#_(" "#_" "#?" "#(" ";;" "_|_"
-                                      "__" "~~" "~~>" "~>" "~-" "~@" "$>" "^=" "]#"))
-  ;; Enables ligature checks globally in all buffers. You can also do it
-  ;; per mode with `ligature-mode'.
-  (global-ligature-mode t))
+    ;; Otherwise use the ligatures.el package
+    (use-package ligature
+      :config
+      ;; Enable all JetBrains Mono ligatures in programming modes
+      (ligature-set-ligatures 'prog-mode '("-|" "-~" "---" "-<<" "-<" "--" "->" "->>" "-->" "///" "/=" "/=="
+                                           "/>" "//" "/*" "*>" "***" "*/" "<-" "<<-" "<=>" "<=" "<|" "<||"
+                                           "<|||" "<|>" "<:" "<>" "<-<" "<<<" "<==" "<<=" "<=<" "<==>" "<-|"
+                                           "<<" "<~>" "<=|" "<~~" "<~" "<$>" "<$" "<+>" "<+" "</>" "</" "<*"
+                                           "<*>" "<->" "<!--" ":>" ":<" ":::" "::" ":?" ":?>" ":=" "::=" "=>>"
+                                           "==>" "=/=" "=!=" "=>" "===" "=:=" "==" "!==" "!!" "!=" ">]" ">:"
+                                           ">>-" ">>=" ">=>" ">>>" ">-" ">=" "&&&" "&&" "|||>" "||>" "|>" "|]"
+                                           "|}" "|=>" "|->" "|=" "||-" "|-" "||=" "||" ".." ".?" ".=" ".-" "..<"
+                                           "..." "+++" "+>" "++" "[||]" "[<" "[|" "{|" "??" "?." "?=" "?:" "##"
+                                           "###" "####" "#[" "#{" "#=" "#!" "#:" "#_(" "#_" "#?" "#(" ";;" "_|_"
+                                           "__" "~~" "~~>" "~>" "~-" "~@" "$>" "^=" "]#"))
+      ;; Enables ligature checks globally in all buffers. You can also do it
+      ;; per mode with `ligature-mode'.
+      (global-ligature-mode t)))
 
 #+end_src
 

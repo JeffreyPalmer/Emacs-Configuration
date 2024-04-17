@@ -9,6 +9,7 @@
 (defvar jpalmer/variable-font "Fira Sans")
 (defvar jpalmer/default-font-size 120)
 (defvar jpalmer/default-variable-font-size 150)
+(defvar jpalmer/is-emacs-mac t)
 
 (setq user-full-name "Jeffrey Palmer"
       user-mail-address "jeffrey.palmer@acm.org")
@@ -78,7 +79,9 @@
 ;; Revert buffers when the underlying file has changed
 (global-auto-revert-mode 1)
 
-(server-start)
+(unless (and (fboundp 'server-running-p)
+	     (server-running-p))
+  (server-start))
 
 (scroll-bar-mode -1)                    ; Disable the visible scrollbar
 (tool-bar-mode -1)                      ; Disable the toolbar
@@ -116,7 +119,28 @@
 (set-face-attribute 'cursor nil :background "goldenrod")
 
 ;; Enable ligatures in emacs-mac
-(mac-auto-operator-composition-mode)
+(if jpalmer/is-emacs-mac
+    ;; If we're on emacs-mac, use the built-in ligature support
+    (mac-auto-operator-composition-mode)
+
+  ;; Otherwise use the ligatures.el package
+  (use-package ligature
+    :config
+    ;; Enable all JetBrains Mono ligatures in programming modes
+    (ligature-set-ligatures 'prog-mode '("-|" "-~" "---" "-<<" "-<" "--" "->" "->>" "-->" "///" "/=" "/=="
+                                         "/>" "//" "/*" "*>" "***" "*/" "<-" "<<-" "<=>" "<=" "<|" "<||"
+                                         "<|||" "<|>" "<:" "<>" "<-<" "<<<" "<==" "<<=" "<=<" "<==>" "<-|"
+                                         "<<" "<~>" "<=|" "<~~" "<~" "<$>" "<$" "<+>" "<+" "</>" "</" "<*"
+                                         "<*>" "<->" "<!--" ":>" ":<" ":::" "::" ":?" ":?>" ":=" "::=" "=>>"
+                                         "==>" "=/=" "=!=" "=>" "===" "=:=" "==" "!==" "!!" "!=" ">]" ">:"
+                                         ">>-" ">>=" ">=>" ">>>" ">-" ">=" "&&&" "&&" "|||>" "||>" "|>" "|]"
+                                         "|}" "|=>" "|->" "|=" "||-" "|-" "||=" "||" ".." ".?" ".=" ".-" "..<"
+                                         "..." "+++" "+>" "++" "[||]" "[<" "[|" "{|" "??" "?." "?=" "?:" "##"
+                                         "###" "####" "#[" "#{" "#=" "#!" "#:" "#_(" "#_" "#?" "#(" ";;" "_|_"
+                                         "__" "~~" "~~>" "~>" "~-" "~@" "$>" "^=" "]#"))
+    ;; Enables ligature checks globally in all buffers. You can also do it
+    ;; per mode with `ligature-mode'.
+    (global-ligature-mode t)))
 
 (use-package doom-themes
   :config
@@ -542,6 +566,8 @@
 (use-package rainbow-mode
   :hook (org-mode emacs-lisp-mode web-mode typescript-mode js2-mode))
 
+(use-package vterm)
+
 (use-package magit
   :config
   (progn
@@ -566,6 +592,13 @@
   :after (git-gutter fringe-helper)
   :config
   (setq git-gutter-fr:side 'right-fringe))
+
+(use-package treesit-auto
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
 
 (use-package lsp-mode
   :after which-key
@@ -600,50 +633,68 @@
         lsp-ui-doc-position 'bottom)
   (lsp-ui-doc-show))
 
-(use-package typescript-mode
+(use-package typescript-ts-mode
   :mode "\\.ts\\'"
-  :config
-  (setq typescript-indent-level 4))
+  :hook (typescript-ts-mode . lsp-deferred)
+  :custom
+  (typescript-ts-mode-indent-offset 2))
 
-;; (defun jpalmer/set-js-indentation ()
-;;   (setq js-indent-level 4)
-;;   (setq-default tab-width 4))
-
-;; (use-package js2-mode
-;;   :mode "\\.jsx?\\'"
-;;   :config
-;;   ;; Don't use built-in syntax checking
-;;   (setq js2-mode-show-strict-warnings nil)
-;;   (add-hook 'js2-mode-hook #'jpalmer/set-js-indentation)
-;;   (add-hook 'json-mode-hook #'jpalmer/set-js-indentation))
-
-;; (use-package apheleia
-;;  :config
-;;  (apheleia-global-mode +1))
-
-;; (use-package prettier-js
-;;   :config
-;;  (setq prettier-js-show-errors nil))
+;; Work around an error in the current version of the typescript treesitter grammar
+(defvar jpalmer/tsx-treesit-auto-recipe
+  (make-treesit-auto-recipe
+   :lang 'tsx
+   :ts-mode 'tsx-ts-mode
+   :remap 'typescript-tsx-mode
+   :url "https://github.com/tree-sitter/tree-sitter-typescript"
+   :revision "v0.20.3"
+   :source-dir "tsx/src"
+   :ext "\\.tsx\\'")
+  "Recipe for treesitter tsx lib")
+(add-to-list 'treesit-auto-recipe-list jpalmer/tsx-treesit-auto-recipe)
+(defvar jpalmer/typescript-treesit-auto-recipe
+  (make-treesit-auto-recipe
+   :lang 'typescript
+   :ts-mode 'typescript-ts-mode
+   :remap 'typescript-mode
+   :url "https://github.com/tree-sitter/tree-sitter-typescript"
+   :revision "v0.20.3"
+   :source-dir "typescript/src"
+   :ext "\\.ts\\'")
+  "Recipe for treesitter typescript lib")
+(add-to-list 'treesit-auto-recipe-list jpalmer/typescript-treesit-auto-recipe)
 
 (use-package lsp-julia
-  ;; :after lsp-mode
-  :config
-  (setq lsp-julia-default-environment "~/.julia/environments/v1.9"))
+      ;; :after lsp-mode
+      :config
+      (setq lsp-julia-default-environment "~/.julia/environments/v1.9"
+            julia-repl-set-terminal-backend 'vterm))
 
-(use-package julia-ts-mode
-  ;; :after lsp-julia
-  :mode "\\.jl$"
-  :config
-  (add-to-list 'lsp-language-id-configuration '(julia-ts-mode . "julia"))
-  (lsp-register-client
-   (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-julia--rls-command)
-               :major-modes '(julia-mode ess-julia-mode julia-ts-mode)
-               :server-id 'julia-ls
-               :multi-root t))
-  )
+    ;; (use-package julia-ts-mode
+    ;;   ;; :after lsp-julia
+    ;;   :mode "\\.jl$"
+    ;;   :config
+    ;;   (add-to-list 'lsp-language-id-configuration '(julia-ts-mode . "julia"))
+    ;;   (lsp-register-client
+    ;;    (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-julia--rls-command)
+    ;;                :major-modes '(julia-mode ess-julia-mode julia-ts-mode)
+    ;;                :server-id 'julia-ls
+    ;;                :multi-root t))
+    ;;   )
+
+(use-package julia-mode
+  :after lsp-mode
+  :hook (julia-mode . lsp-deferred))
 
 (use-package julia-repl
-  :hook (julia-ts-mode . julia-repl-mode))
+  :hook (julia-mode . julia-repl-mode))
+
+;; Try using julia-snail for a more friendly repl experience
+(use-package julia-snail
+  :hook (julia-mode . julia-snail-mode))
+
+;; Apparently the julia repl uses more colors, so add this to enable the display of more colors in a terminal
+;; (use-package eterm-256color
+;;  :hook (term-mode . eterm-256color))
 
 ;; (use-package rust-mode
 ;;   :init
@@ -699,16 +750,25 @@
 
 ;;   (add-to-list 'flycheck-checkers 'jpalmer/glsl-lang-validator))
 
-(use-package wgsl-mode
-  :after lsp-mode
-  :config
-  ;; Register this mode with lsp
-  ; (add-to-list 'lsp-language-id-configuration '(wgsl-mode . "wgsl"))
-  ;(lsp-register-client
-  ; (make-lsp-client :new-connection (lsp-stdio-connection "wgsl_analyzer")
-  ;                  :activation-fn (lsp-activate-on "wgsl")
-  ;                  :server-id "wgsl-ls"))
-  )
+(use-package wgsl-ts-mode
+  :straight (:host github :repo "acowley/wgsl-ts-mode")
+  :hook (wgsl-ts-mode . lsp-deferred)
+  :mode "\\.wgsl\\'")
+
+;; Support for WGSL grammar
+(defvar jpalmer/wgsl-treesit-auto-recipe
+  (make-treesit-auto-recipe
+   :lang 'wgsl
+   :ts-mode 'wgsl-ts-mode
+   :remap '(wgsl-mode)
+   :url "https://github.com/szebniok/tree-sitter-wgsl"
+   :revision "master"
+   :source-dir "src"
+   :ext "\\.wgsl\\'"))
+(add-to-list 'treesit-auto-recipe-list jpalmer/wgsl-treesit-auto-recipe)
+
+;; Try to fix lsp mode's support for wgsl-ts-mode
+(add-to-list 'lsp-language-id-configuration '(wgsl-ts-mode . "wgsl"))
 
 (use-package web-mode
   :mode "\\.html?\\'"
@@ -748,10 +808,6 @@
   ;; FIXME: This will probably need to be fixed
   ; :hook (lsp-mode glsl-mode)
   :config (global-flycheck-mode))
-
-(use-package yasnippet
-  :hook (prog-mode . yas-minor-mode)
-  :config (yas-reload-all))
 
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 
@@ -828,7 +884,10 @@
                                  entry (file+olp+datetree "journal.org")
                                  "* %?")
                                 ("l" "A link, for reading later." entry (file "")
-                                 "* [[%:link][%:description]]%?"))
+                                 "* [[%:link][%:description]]%?")
+                                ;; Set up a default template
+                                ("u" "Capture a firefox link" entry (file "")
+                                 "* %i%?"))
         ;; refile settings
         org-refile-targets '((nil :maxlevel . 9)
                              (org-agenda-files :maxlevel . 9))
@@ -1059,6 +1118,17 @@
   :bind ("M-g o" . org-ql-find-in-agenda))
 
 ;; Now add support for org-file searching using org-ql-find into consult
+
+;; org-mac-link adds some utilities that capture links from various mac applications
+;; Press C-c g to bring up an app menu
+(use-package org-mac-link
+  :bind (:map org-mode-map ("C-c g" . org-mac-link-get-link)))
+
+(defun jpalmer/url-firefox-capture-to-org ()
+  (interactive)
+  (org-capture-string (org-mac-link-firefox-get-frontmost-url) "u")
+  (ignore-errors)
+  (org-capture-finalize))
 
 (use-package neotree
   :bind ("<f8>" . neotree-project-dir)
