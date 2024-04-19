@@ -1120,7 +1120,7 @@ The treesitter-based configuration
     :mode "\\.ts\\'"
     :hook (typescript-ts-mode . lsp-deferred)
     :custom
-    (typescript-ts-mode-indent-offset 2))
+    (typescript-ts-mode-indent-offset 4))
 
   ;; Work around an error in the current version of the typescript treesitter grammar
   (defvar jpalmer/tsx-treesit-auto-recipe
