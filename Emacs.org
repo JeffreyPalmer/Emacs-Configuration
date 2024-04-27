@@ -236,7 +236,9 @@ Install the doom themes
     (setq doom-themes-enable-bold nil
           doom-themes-enable-italic t
           doom-themes-padded-modeline t) ; Adds a 4 pixel margin around the modeline
-    (load-theme 'doom-dark+ t)
+    ; My previous theme
+    ; (load-theme 'doom-dark+ t)
+    (load-theme 'doom-oceanic-next)
     (doom-themes-visual-bell-config)
     (doom-themes-neotree-config)
     (doom-themes-org-config))
@@ -847,7 +849,6 @@ This deletes all whitespace up to the last non-whitespace character when editing
     :init (smart-hungry-delete-add-default-hooks))
 
   (use-package hungry-delete
-    :init
     ;; This will leave a space between the previous text and the following text
     ;; (setq hungry-delete-join-reluctantly t)
     :config
@@ -925,15 +926,17 @@ This is required to ensure that SSH interaction with GitHub (for example) is sea
     (set-face-attribute 'show-paren-match-expression nil :background "#363e4a" :weight 'extra-bold)
     (show-paren-mode 1))
 #+end_src
-**** Paredit for lisp languages [disabled while testing puni]
-#+begin_src emacs-lisp :tangle no
+**** Paredit for lisp languages
+#+begin_src emacs-lisp
   (use-package paredit
     ;:diminish paredit-mode
     :hook
-    ((clojure-mode cider-repl-mode emacs-lisp-mode lisp-mode lisp-interaction-mode mprepl) . enable-paredit-mode))
+    ((clojure-mode cider-repl-mode emacs-lisp-mode lisp-mode lisp-interaction-mode mprepl) . enable-paredit-mode)
+    :config
+    (setq backward-delete-char-untabify-method 'all))
 #+end_src
-**** Puni (like paredit but for many languages)
-#+begin_src emacs-lisp
+**** Puni (like paredit but for many languages) [disabled]
+#+begin_src emacs-lisp :tangle no
   (use-package puni
     :init
     (puni-global-mode)
@@ -941,15 +944,20 @@ This is required to ensure that SSH interaction with GitHub (for example) is sea
     ; :hook (term-mode . puni-disable-puni-mode)
     )
 #+end_src
+**** Rainbow delimiters
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+    :hook
+    (prog-mode . rainbow-delimiters-mode))
+#+end_src
 *** Highlight indentation levels
 Show an indicator for the start of an indentation scope.
 #+begin_src emacs-lisp
   (use-package highlight-indent-guides
     :custom
-    (highlight-indent-guides-auto-character-face-perc 40)
-    ;(highlight-indent-guides-auto-odd-face-perc 80)
-    ;(highlight-indent-guides-auto-even-face-perc 80)
-    (highlight-indent-guides-auto-top-character-face-perc 100)
+    ; See if these are necessary with my new theme
+    ;(highlight-indent-guides-auto-character-face-perc 40)
+    ;(highlight-indent-guides-auto-top-character-face-perc 100)
     (highlight-indent-guides-responsive 'top)
     (highlight-indent-guides-method 'bitmap)
     :hook
