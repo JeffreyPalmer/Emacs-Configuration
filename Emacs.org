@@ -564,13 +564,14 @@ This configuration now uses Vertico.
     (corfu-preselect 'prompt)
     (corfu-auto t)
     (corfu-quit-no-match 'separator)
-    ;; :bind
-    ;; (:map corfu-map
-    ;;       ("TAB" . corfu-next)
-    ;;       ([tab] . corfu-next)
-    ;;       ("S-TAB" . corfu-previous)
-    ;;       ([backtab] . corfu-previous))
-
+    ;; enable tab-and-go completion
+    ;; See https://github.com/minad/corfu#tab-and-go-completion
+    :bind
+    (:map corfu-map
+          ("TAB" . corfu-next)
+          ([tab] . corfu-next)
+          ("S-TAB" . corfu-previous)
+          ([backtab] . corfu-previous))
     :init
     (global-corfu-mode)
     (corfu-popupinfo-mode))
@@ -583,7 +584,7 @@ This configuration now uses Vertico.
 
   (use-package emacs
     :init
-    (setq completion-cycle-threshold 3
+    (setq completion-cycle-threshold 10
           tab-always-indent 'complete))
 
 #+end_src
@@ -920,24 +921,39 @@ This is required to ensure that SSH interaction with GitHub (for example) is sea
   ;; Try this other option for now
   (use-package paren
     :config
-    (set-face-attribute 'show-paren-match-expression nil :background "#363e4a")
+    (setq show-paren-delay 0)
+    (set-face-attribute 'show-paren-match-expression nil :background "#363e4a" :weight 'extra-bold)
     (show-paren-mode 1))
 #+end_src
-**** Paredit for lisp languages
-#+begin_src emacs-lisp
+**** Paredit for lisp languages [disabled while testing puni]
+#+begin_src emacs-lisp :tangle no
   (use-package paredit
-    :diminish paredit-mode
+    ;:diminish paredit-mode
     :hook
-    ((clojure-mode cider-repl-mode emacs-lisp-mode lisp-mode lisp-interaction-mode) . enable-paredit-mode))
+    ((clojure-mode cider-repl-mode emacs-lisp-mode lisp-mode lisp-interaction-mode mprepl) . enable-paredit-mode))
+#+end_src
+**** Puni (like paredit but for many languages)
+#+begin_src emacs-lisp
+  (use-package puni
+    :init
+    (puni-global-mode)
+    ; How to disable puni in a specific mode
+    ; :hook (term-mode . puni-disable-puni-mode)
+    )
 #+end_src
 *** Highlight indentation levels
 Show an indicator for the start of an indentation scope.
 #+begin_src emacs-lisp
   (use-package highlight-indent-guides
     :custom
-    (highlight-indent-guides-auto-character-face-perc 30)
-    :config (setq highlight-indent-guides-method 'bitmap)
-    :hook (prog-mode . highlight-indent-guides-mode))
+    (highlight-indent-guides-auto-character-face-perc 40)
+    ;(highlight-indent-guides-auto-odd-face-perc 80)
+    ;(highlight-indent-guides-auto-even-face-perc 80)
+    (highlight-indent-guides-auto-top-character-face-perc 100)
+    (highlight-indent-guides-responsive 'top)
+    (highlight-indent-guides-method 'bitmap)
+    :hook
+    (prog-mode . highlight-indent-guides-mode))
 #+end_src
 *** Enable sub-word mode
 
@@ -1057,6 +1073,7 @@ Now, install and configure LSP mode.
     :custom
     (lsp-headerline-breadcrumb-enable nil)
     (lsp-completion-provider :none)       ; we use Corfu!
+    (lsp-enable-snippet nil)
     :init
     ;; Improve IO performance for LSP, from the documentation here:
     ;; https://emacs-lsp.github.io/lsp-mode/page/performance/#increase-the-amount-of-data-which-emacs-reads-from-the-process
@@ -1064,7 +1081,9 @@ Now, install and configure LSP mode.
     (defun jpalmer/lsp-mode-setup-completion ()
       (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
             '(orderless)))
-    :hook ((prog-mode . lsp-deferred)
+    :hook (
+           ;; Don't automatically enable lsp for all languages?
+           ;; (prog-mode . lsp-deferred)
            ;; (web-mode . lsp-deferred)
            (lsp-mode . lsp-enable-which-key-integration)
            (lsp-completion-mode . jpalmer/lsp-mode-setup-completion))
@@ -1206,6 +1225,26 @@ The treesitter-based configuration
   ;; FIXME: Put this back
   (add-hook 'emacs-lisp-mode-hook #'flycheck-mode)
 #+end_src
+*** Common Lisp
+The old standard SLIME
+#+begin_src emacs-lisp :tangle no
+  (use-package slime
+    :custom (inferior-lisp-program "ccl64"))
+#+end_src
+
+The new mode, SLY
+#+begin_src emacs-lisp
+  (use-package sly
+    :custom (inferior-lisp-program "sbcl"))
+  (use-package sly-asdf
+    :config (push 'sly-asdf sly-contribs))
+  (use-package sly-quicklisp
+    :config (push 'sly-quicklisp sly-contribs))
+  ;(use-package sly-overlay)
+  (use-package sly-repl-ansi-color
+    :config (push 'sly-repl-ansi-color sly-contribs))
+
+#+end_src
 *** Clojure
 #+begin_src emacs-lisp
   ;; Install the base clojure mode
@@ -1316,12 +1355,19 @@ Try using a different WGSL mode that doesn't use treesitter.
 
   ;; (use-package skewer-mode)
 #+end_src
+*** Zig [disabled]
+Basic support for Zig, but I'm not really using this at the moment so it's disabled.
+#+begin_src emacs-lisp :tangle no
+  (use-package zig-mode
+    :mode "\\.zig\\'"
+    :hook (zig-mode . lsp-deferred))
+#+end_src
 ** Compilation
 Set up the compile package and ensure that compilation output automatically scrolls.
 #+begin_src emacs-lisp
   (use-package compile
     :custom
-    (compilation-sroll-output t))
+    (compilation-scroll-output t))
 
   (defun auto-recompile-buffer ()
     (interactive)
