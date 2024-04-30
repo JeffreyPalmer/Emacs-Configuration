@@ -354,11 +354,14 @@ I used to have code to do this, but it turns out that there are interactive scre
 [[https://github.com/abo-abo/avy][Avy]] makes it possible to jump to visible text using a character-based decision tree.
 #+begin_src emacs-lisp
   (use-package avy
+    :custom
+    (avy-keys '(?a ?r ?s ?t ?n ?e ?i ?o))
+    (avy-orders-alist '((avy-goto-char-2 . avy-order-closest)
+                        (avy-goto-line . avy-order-closest)))
     :bind (("s-;" . avy-goto-char-2)
            ("s-g" . avy-goto-line))
     :config
-    (avy-setup-default)
-    (setq avy-keys '(?a ?r ?s ?t ?n ?e ?i ?o)))
+    (avy-setup-default))
 #+end_src
 * Helpful Help
 Add additional information to various help displays.
@@ -563,17 +566,17 @@ This configuration now uses Vertico.
   (use-package corfu
     :custom
     (corfu-cycle t)
-    (corfu-preselect 'prompt)
+    ;(corfu-preselect 'prompt)
     (corfu-auto t)
     (corfu-quit-no-match 'separator)
     ;; enable tab-and-go completion
     ;; See https://github.com/minad/corfu#tab-and-go-completion
-    :bind
-    (:map corfu-map
-          ("TAB" . corfu-next)
-          ([tab] . corfu-next)
-          ("S-TAB" . corfu-previous)
-          ([backtab] . corfu-previous))
+    ;;:bind
+    ;;(:map corfu-map
+    ;;      ("TAB" . corfu-next)
+    ;;      ([tab] . corfu-next)
+    ;;       ("S-TAB" . corfu-previous)
+    ;;      ([backtab] . corfu-previous))
     :init
     (global-corfu-mode)
     (corfu-popupinfo-mode))
@@ -586,7 +589,7 @@ This configuration now uses Vertico.
 
   (use-package emacs
     :init
-    (setq completion-cycle-threshold 10
+    (setq completion-cycle-threshold t
           tab-always-indent 'complete))
 
 #+end_src
@@ -931,7 +934,7 @@ This is required to ensure that SSH interaction with GitHub (for example) is sea
   (use-package paredit
     ;:diminish paredit-mode
     :hook
-    ((clojure-mode cider-repl-mode emacs-lisp-mode lisp-mode lisp-interaction-mode mprepl) . enable-paredit-mode)
+    ((clojure-mode cider-repl-mode emacs-lisp-mode lisp-mode lisp-interaction-mode) . enable-paredit-mode)
     :config
     (setq backward-delete-char-untabify-method 'all))
 #+end_src
@@ -1395,14 +1398,154 @@ Set up the compile package and ensure that compilation output automatically scro
     ; :hook (lsp-mode glsl-mode)
     :config (global-flycheck-mode))
 #+end_src
-** Snippets [disabled]
-
+** Snippets
+All of these snippets packages are currently disabled because I barely use them and they were not behaving nicely. I may give tempel a try again at some point.
+*** Yasnippets [disabled]
 I think these are being a little flaky but I don't have time to investigate at the moment
 #+begin_src emacs-lisp :tangle no
   (use-package yasnippet
     :hook (prog-mode . yas-minor-mode)
     :config (yas-reload-all))
 #+end_src
+
+*** tempel
+I'm giving [[https://github.com/minad/tempel][tempel]] a try, but it's a little odd. At least, I think my configuration is not working properly.
+#+begin_src emacs-lisp
+  (use-package tempel
+    ;;:custom
+    ;;(tempel-trigger-prefix "<")
+    :bind (("M-+" . tempel-complete)
+           ("M-*" . tempel-insert))
+    :init
+    (defun tempel-setup-capf ()
+      ;; Add the Tempel Capf to `completion-at-point-functions'.
+      ;; `tempel-expand' only triggers on exact matches. Alternatively use
+      ;; `tempel-complete' if you want to see all matches, but then you
+      ;; should also configure `tempel-trigger-prefix', such that Tempel
+      ;; does not trigger too often when you don't expect it. NOTE: We add
+      ;; `tempel-expand' *before* the main programming mode Capf, such
+      ;; that it will be tried first.
+      (setq-local completion-at-point-functions
+                  (cons #'tempel-complete
+                        completion-at-point-functions)))
+    :hook
+    (conf-mode . tempel-setup-capf)
+    (prog-mode . tempel-setup-capf)
+    (text-mode . tempel-setup-capf)
+
+    ;; Enable it with abbrev
+    ;;(add-hook 'prog-mode-hook #'tempel-abbrev-mode)
+    ;;(global-tempel-abbrev-mode)
+    )
+
+  ;; Some basic templates - I'll probably want to add to this at some point
+  (use-package tempel-collection)
+#+end_src
+
+For some reason this wasn't working properly.
+
+Write out some additional templates to the tempel template file
+#+begin_src emacs-lisp :mkdirp yes :tangle /Users/jeff/.config/emacs/etc/tempel/templates.eld
+;; -*- mode: lisp -*-
+;; This file was automatically generated - DO NOT EDIT
+;;
+
+lisp-mode sly-mrepl emacs-lisp-mode
+
+(lambda "(lambda (" p ")" n> r> q")")
+(var "(defvar " p "\n  \"" p"\")")
+(param "(defparameter " p " (" p ")\n  \"" p "\"" n> r> q")")
+(macro "(defmacro " p " (" p ")\n  \"" p "\"" n> r> q")")
+(fun "(defun " p " (" p ")\n  \"" p "\"" n> r> q ")")
+(let "(let (" p ")" n> r> ")")
+(cond "(cond"n>
+      "("(p "(predicate)")" "(p "return")")"n>
+      "(t"                   (p "default")"))" q ")")
+(dolist "(dolist (" (p "needle") " " (p "hay-stack") " " (p "optional-returned-variable")")"n>
+  (r "(message needle)")")")
+
+emacs-lisp-mode
+
+(header ";;; " (or (buffer-file-name) (buffer-name)) " -- " p
+        " -*- lexical-binding: t -*-" n n)
+(provide "(provide '" (file-name-base (or (buffer-file-name) (buffer-name))) ")" n
+         ";;; " (file-name-nondirectory (or (buffer-file-name) (buffer-name))) " ends here" n)
+(package (i header) r n n (i provide))
+
+;; Definitions
+(custom "(defcustom " p "\n  \"" p "\"" n> ":type '" p ")")
+(face "(defface " p " '((t :inherit " p "))\n  \"" p "\")")
+(group "(defgroup " p " nil\n  \"" p "\"" n> ":group '" p n> ":prefix \"" p "-\")")
+(command "(defun " p " (" p ")\n  \"" p "\"" n> "(interactive)" n> r> ")")
+(const "(defconst " p "\n  \"" p "\")")
+
+(rec "(letrec (" p ")" n> r> ")")
+
+lisp-mode sly-mrepl-mode
+
+(defvar "(defvar *" p "*\n  \"" p "\")")
+(defparam "(defparameter *" p "*\n  \"" p "\")")
+(defconst "(defvar +" p "+\n  \"" p "\")")
+
+(ftype "(declaim (ftype (function (" (p "arg-type-1 arg-type-2 ..." )") "
+       (p "return-type") ") "
+       (p "function-name" func-name)"))")
+
+(defun (i ftype) n>
+  "(defun " (s func-name) " (" p ")\n  \"" p "\"" n> r> ")")
+
+(the "(the "(p "type") " " (r "variable") ")")
+
+(deftype "(deftype " (p "Name Of Type") " ()"n>
+  "`(satisfies " (p "Predicate To Check Type") "))")
+
+(typecase "(typecase " (r "variable")n>
+          "(" (p "type")" "(p "(do this)")")"n>
+          "(t "           (p "default")"))")
+
+(slot "(" (p "slotname" slot) n>
+      ":reader " (s slot) n>
+      ":type " (p "String") n>
+      ":initarg "  (format ":%s" slot) n>
+      ":initform " "(error \"" (format "%s" (upcase slot)) " required\"" ")" n>
+      ":documentation \"A " (p "Slot Description.")"\")")
+
+(class "(defclass " (p "classname " classname) " ()" n>
+       "(" (i slot) p ")" n>
+       "(:documentation \"" (p "A general HTTP request.") "\"))")
+
+(defstruct "(defstruct "(p "Name") n>
+           "("(p "slot")" " (p "default-value") " :type" (p "type") "))")
+
+(defpackage "(defpackage " (p "my-package" package)n>
+            "(:use :cl)"n>
+            "(:import-from :" (p "alexandria")n>
+            (p ":with-gensyms :curry")")" p ")")
+
+(in-package (i defpackage) n>
+            "(in-package :" (s package) ")")
+
+(doc
+ "Syntax:"n n
+ (p "function-name") "(" (p "args" arg)")"" => " (p "return-value" ret)n n
+ "Arguments and Values:"n n
+ (s arg) "--a " (p "type-of-arg") n
+ (s ret) "-- " (p "return-value-type")
+ "
+
+Description:
+
+"
+ (p "description of function")
+ )
+
+;; Local Variables:
+;; mode: lisp-data
+;; outline-regexp: "[a-z]"
+;; End:
+
+#+end_src
+
 * Text Editing
 Enable automatic wrapping of long lines in text modes, only. This makes it easier to edit text files, but leaves code formatting up to the developer.
 
