@@ -819,14 +819,15 @@ Winner mode allows you to easily undo/redo window configuration changes by press
 ** Window Navigation
 Support directional and letter-based buffer navigation
 #+begin_src emacs-lisp
-  ;; This allows window navigation by pressing <Shift+Direction>
-  (windmove-default-keybindings)
-  (use-package ace-window
-    :bind
-    (("M-o" . ace-window))
-    :config
-    (setq aw-keys '(?a ?r ?s ?t ?n ?e ?i ?o)
-          aw-ignore-current t))
+    ;; This allows window navigation by pressing <Shift+Direction>
+    (windmove-default-keybindings)
+    (use-package ace-window
+      :bind
+      (("M-o" . ace-window)
+       ("s-o" . other-window))
+      :config
+      (setq aw-keys '(?a ?r ?s ?t ?n ?e ?i ?o)
+            aw-ignore-current t))
 #+end_src
 
 ** Control buffer placement
@@ -919,15 +920,23 @@ This is required to ensure that SSH interaction with GitHub (for example) is sea
    :config
    (electric-pair-mode))
 #+end_src
-**** Highlight Parentheses
+**** Highlight Parentheses [disabled]
+These are currently disabled as I experiment with ~rainbow-delimiters~.
 #+begin_src emacs-lisp
-  ; (use-package highlight-parentheses)
+  (use-package highlight-parentheses
+    :disabled t
+    :custom
+    (highlight-parentheses-highlight-adjacent t)
+    :config (global-highlight-parentheses-mode))
+
   ;; Try this other option for now
   (use-package paren
+    ;  :custom
+    ; (show-paren-delay 0)
     :config
-    (setq show-paren-delay 0)
-    (set-face-attribute 'show-paren-match-expression nil :background "#363e4a" :weight 'extra-bold)
-    (show-paren-mode 1))
+    ;(set-face-attribute 'show-paren-match-expression nil :background "#363e4a" :weight 'extra-bold)
+    ; Disable this as rainbow delimiters doesn't require it
+    (show-paren-mode 0))
 #+end_src
 **** Paredit for lisp languages
 #+begin_src emacs-lisp
