@@ -225,6 +225,12 @@ This allows things like buffer cleanup to happen during the day instead of at mi
       ;; per mode with `ligature-mode'.
       (global-ligature-mode t)))
 
+  ;; Show lambda as a symbol
+  (add-hook 'lisp-mode-hook
+            (lambda ()
+              (setq prettify-symbols-alist '(("lambda" . ?λ)))
+              (prettify-symbols-mode 1)))
+
 #+end_src
 
 ** Theming
@@ -569,6 +575,10 @@ This configuration now uses Vertico.
     ;(corfu-preselect 'prompt)
     (corfu-auto t)
     (corfu-quit-no-match 'separator)
+    (corfu-preselect 'directory)
+    ;; Try disabling return-based completion
+    :bind (:map corfu-map
+                ("RET" . nil))
     ;; enable tab-and-go completion
     ;; See https://github.com/minad/corfu#tab-and-go-completion
     ;;:bind
@@ -1210,8 +1220,9 @@ The treesitter-based configuration
     :after lsp-mode
     :hook (julia-mode . lsp-deferred))
 
-  (use-package julia-repl
-    :hook (julia-mode . julia-repl-mode))
+  ;; This isn't required with julia-snail
+  ;(use-package julia-repl
+  ;  :hook (julia-mode . julia-repl-mode))
 
   ;; Try using julia-snail for a more friendly repl experience
   (use-package julia-snail
@@ -1417,9 +1428,9 @@ I think these are being a little flaky but I don't have time to investigate at t
     :config (yas-reload-all))
 #+end_src
 
-*** tempel
+*** tempel [disabled]
 I'm giving [[https://github.com/minad/tempel][tempel]] a try, but it's a little odd. At least, I think my configuration is not working properly.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package tempel
     ;;:custom
     ;;(tempel-trigger-prefix "<")
@@ -1454,7 +1465,8 @@ I'm giving [[https://github.com/minad/tempel][tempel]] a try, but it's a little 
 For some reason this wasn't working properly.
 
 Write out some additional templates to the tempel template file
-#+begin_src emacs-lisp :mkdirp yes :tangle /Users/jeff/.config/emacs/etc/tempel/templates.eld
+#+begin_src emacs-lisp :mkdirp yes :tangle no
+;; :tangle /Users/jeff/.config/emacs/etc/tempel/templates.eld
 ;; -*- mode: lisp -*-
 ;; This file was automatically generated - DO NOT EDIT
 ;;
