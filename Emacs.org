@@ -1041,7 +1041,9 @@ TODO: Try out the new built-in support for projects using project.el. A bunch of
 
 *** Use vterm for better shell performance
 #+begin_src emacs-lisp
-  (use-package vterm)
+  (use-package vterm
+    :custom
+    (vterm-kill-buffer-on-exit nil))
 #+end_src
 
 ** Version Control
@@ -1075,7 +1077,7 @@ TODO: Try out the new built-in support for projects using project.el. A bunch of
     (setq git-gutter-fr:side 'right-fringe))
 #+end_src
 ** Languages
-*** Tree Sitter Language Definitions [disabled]
+*** Tree Sitter Language Definitions
 Use [[https://github.com/renzmann/treesit-auto][treesit-auto]] to manage this stuff for me.
 
 #+begin_src emacs-lisp
@@ -1097,40 +1099,49 @@ First, ensure that we are [[https://emacs-lsp.github.io/lsp-mode/page/performanc
 
 Now, install and configure LSP mode.
 #+begin_src emacs-lisp
-  (use-package lsp-mode
-    :after which-key
-    :commands lsp lsp-deferred
-    :custom
-    (lsp-headerline-breadcrumb-enable nil)
-    (lsp-completion-provider :none)       ; we use Corfu!
-    (lsp-enable-snippet nil)
-    :init
-    ;; Improve IO performance for LSP, from the documentation here:
-    ;; https://emacs-lsp.github.io/lsp-mode/page/performance/#increase-the-amount-of-data-which-emacs-reads-from-the-process
-    (setq read-process-output-max (* 1024 1024)) ; 1mb
-    (defun jpalmer/lsp-mode-setup-completion ()
-      (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
-            '(orderless)))
-    :hook (
-           ;; Don't automatically enable lsp for all languages?
-           ;; (prog-mode . lsp-deferred)
-           ;; (web-mode . lsp-deferred)
-           (lsp-mode . lsp-enable-which-key-integration)
-           (lsp-completion-mode . jpalmer/lsp-mode-setup-completion))
-    ; :bind (:map lsp-mode-map ("TAB" . completion-at-point))
-    )
+    (use-package lsp-mode
+      :after which-key
+      :commands lsp lsp-deferred
+      :custom
+      (lsp-headerline-breadcrumb-enable nil)
+      (lsp-completion-provider :none)       ; we use Corfu!
+      (lsp-enable-snippet nil)
+      :init
+      ;; Improve IO performance for LSP, from the documentation here:
+      ;; https://emacs-lsp.github.io/lsp-mode/page/performance/#increase-the-amount-of-data-which-emacs-reads-from-the-process
+      (setq read-process-output-max (* 1024 1024)) ; 1mb
+      (defun jpalmer/lsp-mode-setup-completion ()
+        (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+              '(orderless)))
+      :hook (
+             ;; Don't automatically enable lsp for all languages?
+             ;; (prog-mode . lsp-deferred)
+             ;; (web-mode . lsp-deferred)
+             (lsp-mode . lsp-enable-which-key-integration)
+             (lsp-completion-mode . jpalmer/lsp-mode-setup-completion))
+      ; :bind (:map lsp-mode-map ("TAB" . completion-at-point))
+      )
 
-  ;; also install lsp-ui
+    ;; also install lsp-ui
   (use-package lsp-ui
     :hook (lsp-mode . lsp-ui-mode)
+    :custom
+    ;; LSP UI SIDELINE settings
+    (lsp-ui-sideline-enable t)
+    (lsp-ui-sideline-ignore-duplicate t)
+    (lsp-ui-sideline-show-hover nil)
+    (lsp-ui-sideline-show-diagnostics t)
+    (lsp-ui-flycheck-enable t)
+    (lsp-ui-imenu-enable t)
+    (lsp-lens-enable t)
+    ;; LSP UI DOC settings
+    (lsp-ui-doc-enable t)
+    (lsp-ui-doc-side 'right)
+    (lsp-ui-doc-position 'top)
+    (lsp-ui-doc-show-with-cursor t)
+    ;; LSP UI PEEK settings
+    (lsp-ui-peek-enable t)
     :config
-    (setq lsp-ui-sideline-enable t
-          lsp-ui-flycheck-enable t
-          lsp-ui-imenu-enable t
-          lsp-ui-sideline-ignore-duplicate t
-          lsp-ui-sideline-show-hover nil
-          lsp-lens-enable t
-          lsp-ui-doc-position 'bottom)
     (lsp-ui-doc-show))
 #+end_src
 *** Typescript/Javascript
@@ -1199,38 +1210,26 @@ The treesitter-based configuration
 *** Julia
 #+begin_src emacs-lisp
   (use-package lsp-julia
-        ;; :after lsp-mode
         :config
-        (setq lsp-julia-default-environment "~/.julia/environments/v1.9"
-              julia-repl-set-terminal-backend 'vterm))
-
-      ;; (use-package julia-ts-mode
-      ;;   ;; :after lsp-julia
-      ;;   :mode "\\.jl$"
-      ;;   :config
-      ;;   (add-to-list 'lsp-language-id-configuration '(julia-ts-mode . "julia"))
-      ;;   (lsp-register-client
-      ;;    (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-julia--rls-command)
-      ;;                :major-modes '(julia-mode ess-julia-mode julia-ts-mode)
-      ;;                :server-id 'julia-ls
-      ;;                :multi-root t))
-      ;;   )
+        (setq lsp-julia-default-environment "~/.julia/environments/v1.10"))
 
   (use-package julia-mode
-    :after lsp-mode
     :hook (julia-mode . lsp-deferred))
 
-  ;; This isn't required with julia-snail
-  ;(use-package julia-repl
-  ;  :hook (julia-mode . julia-repl-mode))
+  ;; REPL Support
+  (use-package julia-repl
+    :after vterm
+    :hook (julia-mode . julia-repl-mode)
+    :config (setq julia-repl-set-terminal-backend 'vterm))
 
-  ;; Try using julia-snail for a more friendly repl experience
+  ;; julia-snail tries to provide a repl experience closer to lisp
+  ;; Unfortunately this doesn't provide enough information for my day-to-day programming
+  ;; Going to try to use julia-repl and lsp
   (use-package julia-snail
-    :hook (julia-mode . julia-snail-mode))
-
-  ;; Apparently the julia repl uses more colors, so add this to enable the display of more colors in a terminal
-  ;; (use-package eterm-256color
-  ;;  :hook (term-mode . eterm-256color))
+    :disabled t
+    :after vterm
+    :hook (julia-mode . julia-snail-mode)
+    :config (setq julia-repl-set-terminal-backend 'vterm))
 
 #+end_src
 *** Rust
