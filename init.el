@@ -142,12 +142,20 @@
     ;; per mode with `ligature-mode'.
     (global-ligature-mode t)))
 
+;; Show lambda as a symbol
+(add-hook 'lisp-mode-hook
+          (lambda ()
+            (setq prettify-symbols-alist '(("lambda" . ?λ)))
+            (prettify-symbols-mode 1)))
+
 (use-package doom-themes
   :config
   (setq doom-themes-enable-bold nil
         doom-themes-enable-italic t
         doom-themes-padded-modeline t) ; Adds a 4 pixel margin around the modeline
-  (load-theme 'doom-dark+ t)
+  ; My previous theme
+  ; (load-theme 'doom-dark+ t)
+  (load-theme 'doom-oceanic-next)
   (doom-themes-visual-bell-config)
   (doom-themes-neotree-config)
   (doom-themes-org-config))
@@ -197,11 +205,14 @@
   (setq which-key-idle-delay 1))
 
 (use-package avy
+  :custom
+  (avy-keys '(?a ?r ?s ?t ?n ?e ?i ?o))
+  (avy-orders-alist '((avy-goto-char-2 . avy-order-closest)
+                      (avy-goto-line . avy-order-closest)))
   :bind (("s-;" . avy-goto-char-2)
          ("s-g" . avy-goto-line))
   :config
-  (avy-setup-default)
-  (setq avy-keys '(?a ?r ?s ?t ?n ?e ?i ?o)))
+  (avy-setup-default))
 
 ;; Try harder apropros
 (setq-default apropos-do-all t)
@@ -385,16 +396,21 @@
 (use-package corfu
   :custom
   (corfu-cycle t)
-  (corfu-preselect 'prompt)
+  ;(corfu-preselect 'prompt)
   (corfu-auto t)
   (corfu-quit-no-match 'separator)
-  ;; :bind
-  ;; (:map corfu-map
-  ;;       ("TAB" . corfu-next)
-  ;;       ([tab] . corfu-next)
+  (corfu-preselect 'directory)
+  ;; Try disabling return-based completion
+  :bind (:map corfu-map
+              ("RET" . nil))
+  ;; enable tab-and-go completion
+  ;; See https://github.com/minad/corfu#tab-and-go-completion
+  ;;:bind
+  ;;(:map corfu-map
+  ;;      ("TAB" . corfu-next)
+  ;;      ([tab] . corfu-next)
   ;;       ("S-TAB" . corfu-previous)
-  ;;       ([backtab] . corfu-previous))
-
+  ;;      ([backtab] . corfu-previous))
   :init
   (global-corfu-mode)
   (corfu-popupinfo-mode))
@@ -407,7 +423,7 @@
 
 (use-package emacs
   :init
-  (setq completion-cycle-threshold 3
+  (setq completion-cycle-threshold t
         tab-always-indent 'complete))
 
 (use-package marginalia
@@ -462,7 +478,8 @@
 (windmove-default-keybindings)
 (use-package ace-window
   :bind
-  (("M-o" . ace-window))
+  (("M-o" . ace-window)
+   ("s-o" . other-window))
   :config
   (setq aw-keys '(?a ?r ?s ?t ?n ?e ?i ?o)
         aw-ignore-current t))
@@ -483,7 +500,6 @@
   :init (smart-hungry-delete-add-default-hooks))
 
 (use-package hungry-delete
-  :init
   ;; This will leave a space between the previous text and the following text
   ;; (setq hungry-delete-join-reluctantly t)
   :config
@@ -521,23 +537,41 @@
  :config
  (electric-pair-mode))
 
-; (use-package highlight-parentheses)
+(use-package highlight-parentheses
+  :disabled t
+  :custom
+  (highlight-parentheses-highlight-adjacent t)
+  :config (global-highlight-parentheses-mode))
+
 ;; Try this other option for now
 (use-package paren
+  ;  :custom
+  ; (show-paren-delay 0)
   :config
-  (set-face-attribute 'show-paren-match-expression nil :background "#363e4a")
-  (show-paren-mode 1))
+  ;(set-face-attribute 'show-paren-match-expression nil :background "#363e4a" :weight 'extra-bold)
+  ; Disable this as rainbow delimiters doesn't require it
+  (show-paren-mode 0))
 
 (use-package paredit
-  :diminish paredit-mode
+  ;:diminish paredit-mode
   :hook
-  ((clojure-mode cider-repl-mode emacs-lisp-mode lisp-mode lisp-interaction-mode) . enable-paredit-mode))
+  ((clojure-mode cider-repl-mode emacs-lisp-mode lisp-mode lisp-interaction-mode) . enable-paredit-mode)
+  :config
+  (setq backward-delete-char-untabify-method 'all))
+
+(use-package rainbow-delimiters
+  :hook
+  (prog-mode . rainbow-delimiters-mode))
 
 (use-package highlight-indent-guides
   :custom
-  (highlight-indent-guides-auto-character-face-perc 30)
-  :config (setq highlight-indent-guides-method 'bitmap)
-  :hook (prog-mode . highlight-indent-guides-mode))
+  ; See if these are necessary with my new theme
+  ;(highlight-indent-guides-auto-character-face-perc 40)
+  ;(highlight-indent-guides-auto-top-character-face-perc 100)
+  (highlight-indent-guides-responsive 'top)
+  (highlight-indent-guides-method 'bitmap)
+  :hook
+  (prog-mode . highlight-indent-guides-mode))
 
 (global-subword-mode 1)
 
@@ -566,7 +600,9 @@
 (use-package rainbow-mode
   :hook (org-mode emacs-lisp-mode web-mode typescript-mode js2-mode))
 
-(use-package vterm)
+(use-package vterm
+  :custom
+  (vterm-kill-buffer-on-exit nil))
 
 (use-package magit
   :config
@@ -601,43 +637,55 @@
   (global-treesit-auto-mode))
 
 (use-package lsp-mode
-  :after which-key
-  :commands lsp lsp-deferred
-  :custom
-  (lsp-headerline-breadcrumb-enable nil)
-  (lsp-completion-provider :none)       ; we use Corfu!
-  :init
-  ;; Improve IO performance for LSP, from the documentation here:
-  ;; https://emacs-lsp.github.io/lsp-mode/page/performance/#increase-the-amount-of-data-which-emacs-reads-from-the-process
-  (setq read-process-output-max (* 1024 1024)) ; 1mb
-  (defun jpalmer/lsp-mode-setup-completion ()
-    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
-          '(orderless)))
-  :hook ((prog-mode . lsp-deferred)
-         ;; (web-mode . lsp-deferred)
-         (lsp-mode . lsp-enable-which-key-integration)
-         (lsp-completion-mode . jpalmer/lsp-mode-setup-completion))
-  ; :bind (:map lsp-mode-map ("TAB" . completion-at-point))
-  )
+    :after which-key
+    :commands lsp lsp-deferred
+    :custom
+    (lsp-headerline-breadcrumb-enable nil)
+    (lsp-completion-provider :none)       ; we use Corfu!
+    (lsp-enable-snippet nil)
+    :init
+    ;; Improve IO performance for LSP, from the documentation here:
+    ;; https://emacs-lsp.github.io/lsp-mode/page/performance/#increase-the-amount-of-data-which-emacs-reads-from-the-process
+    (setq read-process-output-max (* 1024 1024)) ; 1mb
+    (defun jpalmer/lsp-mode-setup-completion ()
+      (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+            '(orderless)))
+    :hook (
+           ;; Don't automatically enable lsp for all languages?
+           ;; (prog-mode . lsp-deferred)
+           ;; (web-mode . lsp-deferred)
+           (lsp-mode . lsp-enable-which-key-integration)
+           (lsp-completion-mode . jpalmer/lsp-mode-setup-completion))
+    ; :bind (:map lsp-mode-map ("TAB" . completion-at-point))
+    )
 
-;; also install lsp-ui
+  ;; also install lsp-ui
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  ;; LSP UI SIDELINE settings
+  (lsp-ui-sideline-enable t)
+  (lsp-ui-sideline-ignore-duplicate t)
+  (lsp-ui-sideline-show-hover nil)
+  (lsp-ui-sideline-show-diagnostics t)
+  (lsp-ui-flycheck-enable t)
+  (lsp-ui-imenu-enable t)
+  (lsp-lens-enable t)
+  ;; LSP UI DOC settings
+  (lsp-ui-doc-enable t)
+  (lsp-ui-doc-side 'right)
+  (lsp-ui-doc-position 'top)
+  (lsp-ui-doc-show-with-cursor t)
+  ;; LSP UI PEEK settings
+  (lsp-ui-peek-enable t)
   :config
-  (setq lsp-ui-sideline-enable t
-        lsp-ui-flycheck-enable t
-        lsp-ui-imenu-enable t
-        lsp-ui-sideline-ignore-duplicate t
-        lsp-ui-sideline-show-hover nil
-        lsp-lens-enable t
-        lsp-ui-doc-position 'bottom)
   (lsp-ui-doc-show))
 
 (use-package typescript-ts-mode
   :mode "\\.ts\\'"
   :hook (typescript-ts-mode . lsp-deferred)
   :custom
-  (typescript-ts-mode-indent-offset 2))
+  (typescript-ts-mode-indent-offset 4))
 
 ;; Work around an error in the current version of the typescript treesitter grammar
 (defvar jpalmer/tsx-treesit-auto-recipe
@@ -664,37 +712,26 @@
 (add-to-list 'treesit-auto-recipe-list jpalmer/typescript-treesit-auto-recipe)
 
 (use-package lsp-julia
-      ;; :after lsp-mode
       :config
-      (setq lsp-julia-default-environment "~/.julia/environments/v1.9"
-            julia-repl-set-terminal-backend 'vterm))
-
-    ;; (use-package julia-ts-mode
-    ;;   ;; :after lsp-julia
-    ;;   :mode "\\.jl$"
-    ;;   :config
-    ;;   (add-to-list 'lsp-language-id-configuration '(julia-ts-mode . "julia"))
-    ;;   (lsp-register-client
-    ;;    (make-lsp-client :new-connection (lsp-stdio-connection 'lsp-julia--rls-command)
-    ;;                :major-modes '(julia-mode ess-julia-mode julia-ts-mode)
-    ;;                :server-id 'julia-ls
-    ;;                :multi-root t))
-    ;;   )
+      (setq lsp-julia-default-environment "~/.julia/environments/v1.10"))
 
 (use-package julia-mode
-  :after lsp-mode
   :hook (julia-mode . lsp-deferred))
 
+;; REPL Support
 (use-package julia-repl
-  :hook (julia-mode . julia-repl-mode))
+  :after vterm
+  :hook (julia-mode . julia-repl-mode)
+  :config (setq julia-repl-set-terminal-backend 'vterm))
 
-;; Try using julia-snail for a more friendly repl experience
+;; julia-snail tries to provide a repl experience closer to lisp
+;; Unfortunately this doesn't provide enough information for my day-to-day programming
+;; Going to try to use julia-repl and lsp
 (use-package julia-snail
-  :hook (julia-mode . julia-snail-mode))
-
-;; Apparently the julia repl uses more colors, so add this to enable the display of more colors in a terminal
-;; (use-package eterm-256color
-;;  :hook (term-mode . eterm-256color))
+  :disabled t
+  :after vterm
+  :hook (julia-mode . julia-snail-mode)
+  :config (setq julia-repl-set-terminal-backend 'vterm))
 
 ;; (use-package rust-mode
 ;;   :init
@@ -709,6 +746,16 @@
   :hook (python-mode . (lambda ()
                          (require 'lsp-pyright)
                          (lsp))))
+
+(use-package sly
+  :custom (inferior-lisp-program "sbcl"))
+(use-package sly-asdf
+  :config (push 'sly-asdf sly-contribs))
+(use-package sly-quicklisp
+  :config (push 'sly-quicklisp sly-contribs))
+;(use-package sly-overlay)
+(use-package sly-repl-ansi-color
+  :config (push 'sly-repl-ansi-color sly-contribs))
 
 ;; Install the base clojure mode
 (use-package clojure-mode)
@@ -791,7 +838,7 @@
 
 (use-package compile
   :custom
-  (compilation-sroll-output t))
+  (compilation-scroll-output t))
 
 (defun auto-recompile-buffer ()
   (interactive)

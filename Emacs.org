@@ -107,7 +107,6 @@ Now straight.el needs to be bootstrapped. This bootstrapping code is provided di
         warning-suppress-types '((comp) (comp)))
 #+end_src
 
-This is disabled for now while I investigate the native compilation issues I'm seeing.
 #+begin_src emacs-lisp :tangle /Users/jeff/.config/emacs/early-init.el
   ;; Set the directory to look for native files
 
