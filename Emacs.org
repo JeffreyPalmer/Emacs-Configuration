@@ -243,7 +243,7 @@ Install the doom themes
           doom-themes-padded-modeline t) ; Adds a 4 pixel margin around the modeline
     ; My previous theme
     ; (load-theme 'doom-dark+ t)
-    (load-theme 'doom-oceanic-next)
+    (load-theme 'doom-oceanic-next t)
     (doom-themes-visual-bell-config)
     (doom-themes-neotree-config)
     (doom-themes-org-config))
