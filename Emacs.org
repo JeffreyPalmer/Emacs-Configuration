@@ -303,15 +303,14 @@ This configuration is for the built-in version of the modus themes:
 NOTE: The first time this configuration is loaded, the mode line icons will need to be installed via =M-x all-the-icons-install-fonts=.
 #+begin_src emacs-lisp
   (use-package all-the-icons)
-
+  (use-package nerd-icons)
   (use-package doom-modeline
     :init (doom-modeline-mode 1)
     :custom ((doom-modeline-buffer-encoding nil)
-             (doom-modeline-buffer-file-name-style 'relative-from-project)
-             (doom-modeline-height 15)))
+             (doom-modeline-buffer-file-name-style 'relative-from-project)))
 #+end_src
 
-* Highlight Current Line
+** Highlight Current Line
 #+begin_src emacs-lisp
   (use-package hl-line
     :config
@@ -573,19 +572,20 @@ This configuration now uses Vertico.
     (corfu-cycle t)
     ;(corfu-preselect 'prompt)
     (corfu-auto t)
+    (corfu-auto-delay 0.5)
     (corfu-quit-no-match 'separator)
-    (corfu-preselect 'directory)
+    (corfu-preselect 'prompt)
     ;; Try disabling return-based completion
-    :bind (:map corfu-map
-                ("RET" . nil))
+    ;;:bind (:map corfu-map
+    ;;            ("RET" . nil))
     ;; enable tab-and-go completion
     ;; See https://github.com/minad/corfu#tab-and-go-completion
-    ;;:bind
-    ;;(:map corfu-map
-    ;;      ("TAB" . corfu-next)
-    ;;      ([tab] . corfu-next)
-    ;;       ("S-TAB" . corfu-previous)
-    ;;      ([backtab] . corfu-previous))
+    :bind
+    (:map corfu-map
+          ("TAB" . corfu-next)
+          ([tab] . corfu-next)
+           ("S-TAB" . corfu-previous)
+          ([backtab] . corfu-previous))
     :init
     (global-corfu-mode)
     (corfu-popupinfo-mode))
@@ -840,22 +840,78 @@ Support directional and letter-based buffer navigation
 #+end_src
 
 ** Control buffer placement
-#+begin_src emacs-lisp
-  (setq display-buffer-base-action
-      '(display-buffer-reuse-mode-window
-        display-buffer-reuse-window
-        display-buffer-same-window))
-  ;; If a popup does happen, don't resize windows to be equally sized
-  (setq even-window-sizes nil)
-#+end_src
+*** Emacs-Purpose
+Try using [[https://github.com/bmag/emacs-purpose][emacs-purpose]] to manage my window layouts/etc. This did not (easily) do what I wanted. At least, not enough to keep it around.
+#+begin_src emacs-lisp :tangle no
+  (use-package window-purpose
+    :config
+    (add-to-list 'purpose-user-mode-purposes '(lisp-mode . lisp-file-purpose))
+    ;; I don't know why this isn't working
+    ;; (add-to-list 'purpose-user-mode-purposes '(sly-mrepl-mode . lisp-repl-purpose))
+    (add-to-list 'purpose-user-regexp-purposes '("\\*sly-mrepl" . lisp-repl-purpose))
+    (purpose-compile-user-configuration)
 
+    ;; This is required to load up the following extensions
+    (require 'window-purpose-x)
+    (purpose-x-magit-single-on)
+    (purpose-x-persp-setup)
+    (purpose-x-kill-setup)
+    (purpose-mode))
+#+end_src
+*** Display Buffer Alist
+Hack the window placement control mechanism directly.
+#+begin_src emacs-lisp :tangle no
+  (use-package emacs
+    :config
+    (setq display-buffer-alist
+          '((".*"
+             (display-buffer-reuse-window display-buffer-same-window)
+             (reusable-frames . t))
+            `(,(rx bos "*sly-mrepl")
+              (display-buffer-reuse-window)
+              (display-buffer-in-side-window)
+              (reusable-frames . visible)
+              (side . bottom)
+              (window-height . 0.2))))
+    (setq even-window-sizes nil))
+#+end_src
+*** Shackle
+#+begin_src emacs-lisp
+      (use-package shackle
+        :custom
+        (shackle-default-rule '(:select t))
+        (shackle-rules '(("\\*sly-mrepl" :regexp t :align t :size 0.2 :select t)
+                         ("\\*sly-compilation" :regexp t :align 'below :size 0.3)
+                         ("\\*sly-db" :regexp t :align 'right :size 0.4)))
+        :config
+        (shackle-mode))
+#+end_src
+*** Popper
+#+begin_src emacs-lisp
+  (use-package popper
+    :bind (("C-`" . popper-toggle)
+           ("M-`" . popper-cycle)
+           ("C-M-`" . popper-toggle-type))
+    :custom
+    (popper-reference-buffers '("\\*Messages\\*"
+                                "Output\\*$"
+                                "\\*Async Shell Command\\*"
+                                help-mode
+                                compilation-mode
+                                "\\*sly-mrepl"))
+    (popper-group-function #'popper-group-by-perspective)
+    (popper-display-control nil)
+    :config
+    (popper-mode +1)
+    (popper-echo-mode +1))
+#+end_src
 * General Editing
 ** Hungry Delete
 This deletes all whitespace up to the last non-whitespace character when editing. It can be very handy.
 #+begin_src emacs-lisp
   ;; Disabled for now in favor of the not-so-smart hungry delete
   (use-package smart-hungry-delete
-    :disabled
+    :disabled t
     :bind (([remap backward-delete-char-untabify] . smart-hungry-delete-backward-char)
            ([remap delete-backward-char] . smart-hungry-delete-backward-char)
            ([remap delete-char] . smart-hungry-delete-forward-char))
@@ -929,19 +985,31 @@ This is required to ensure that SSH interaction with GitHub (for example) is sea
    :config
    (electric-pair-mode))
 #+end_src
-**** Highlight Parentheses [disabled]
-These are currently disabled as I experiment with ~rainbow-delimiters~.
+**** Highlight Parentheses
++These are currently disabled as I experiment with ~rainbow-delimiters~.+
+Note: That experiment didn't work out, as the rainbow colors were just not usefully actionable.
 #+begin_src emacs-lisp
   (use-package highlight-parentheses
-    :disabled t
     :custom
     (highlight-parentheses-highlight-adjacent t)
+    ;; Custom level colors
+    (highlight-parentheses-colors
+     '(
+       "dodger blue"
+       "lime green"
+       "dark orchid"
+       "deep pink"
+       "orange"
+       "light sky blue"
+       "light green"
+       "gold"
+       "magenta"))
     :config (global-highlight-parentheses-mode))
 
   ;; Try this other option for now
   (use-package paren
-    ;  :custom
-    ; (show-paren-delay 0)
+    :custom
+    (show-paren-delay 0)
     :config
     ;(set-face-attribute 'show-paren-match-expression nil :background "#363e4a" :weight 'extra-bold)
     ; Disable this as rainbow delimiters doesn't require it
@@ -966,7 +1034,7 @@ These are currently disabled as I experiment with ~rainbow-delimiters~.
     )
 #+end_src
 **** Rainbow delimiters
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package rainbow-delimiters
     :hook
     (prog-mode . rainbow-delimiters-mode))
@@ -977,8 +1045,8 @@ Show an indicator for the start of an indentation scope.
   (use-package highlight-indent-guides
     :custom
     ; See if these are necessary with my new theme
-    ;(highlight-indent-guides-auto-character-face-perc 40)
-    ;(highlight-indent-guides-auto-top-character-face-perc 100)
+    (highlight-indent-guides-auto-character-face-perc 20)
+    (highlight-indent-guides-auto-top-character-face-perc 100)
     (highlight-indent-guides-responsive 'top)
     (highlight-indent-guides-method 'bitmap)
     :hook
@@ -1274,6 +1342,21 @@ The new mode, SLY
     :config (push 'sly-repl-ansi-color sly-contribs))
 
 #+end_src
+
+Also make sure to enable lookup in the info-based Hyperspec that I
+have on my machine. This is limited to just the hyperspec for now, but
+I may want to add ASDF at some point.
+#+begin_src emacs-lisp
+  (use-package info-look
+    :config
+    (info-lookup-add-help
+     :mode 'lisp-mode
+     :regexp "[^][()'\" \t\n]+"
+     :ignore-case t
+     :doc-spec '(("(ansicl)Symbol Index" nil nil nil))))
+#+end_src
+
+
 *** Clojure
 #+begin_src emacs-lisp
   ;; Install the base clojure mode
