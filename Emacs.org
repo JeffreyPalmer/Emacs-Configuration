@@ -1323,21 +1323,15 @@ The treesitter-based configuration
   (add-hook 'emacs-lisp-mode-hook #'flycheck-mode)
 #+end_src
 *** Common Lisp
-The old standard SLIME
-#+begin_src emacs-lisp :tangle no
-  (use-package slime
-    :custom (inferior-lisp-program "ccl64"))
-#+end_src
-
-The new mode, SLY
+I use [[https://github.com/joaotavora/sly][SLY]] - a fork of Slime that has some nice features.
 #+begin_src emacs-lisp
   (use-package sly
     :custom (inferior-lisp-program "sbcl"))
   (use-package sly-asdf
     :config (push 'sly-asdf sly-contribs))
-  (use-package sly-quicklisp
-    :config (push 'sly-quicklisp sly-contribs))
-  ;(use-package sly-overlay)
+  ;;(use-package sly-quicklisp
+  ;;  :config (push 'sly-quicklisp sly-contribs))
+  ;;(use-package sly-overlay)
   (use-package sly-repl-ansi-color
     :config (push 'sly-repl-ansi-color sly-contribs))
 
