@@ -1326,7 +1326,13 @@ The treesitter-based configuration
 I use [[https://github.com/joaotavora/sly][SLY]] - a fork of Slime that has some nice features.
 #+begin_src emacs-lisp
   (use-package sly
-    :custom (inferior-lisp-program "sbcl"))
+    ;:custom (inferior-lisp-program "sbcl")
+    ;; Configure SLY to support running with QLOT
+    :config
+    (setq sly-lisp-implementations
+          '((sbcl ("sbcl") :coding-system utf-8-unix)
+            (qlot ("qlot" "exec" "sbcl") :coding-system utf-8-unix))))
+
   (use-package sly-asdf
     :config (push 'sly-asdf sly-contribs))
   ;;(use-package sly-quicklisp
@@ -1349,8 +1355,6 @@ I may want to add ASDF at some point.
      :ignore-case t
      :doc-spec '(("(ansicl)Symbol Index" nil nil nil))))
 #+end_src
-
-
 *** Clojure
 #+begin_src emacs-lisp
   ;; Install the base clojure mode
