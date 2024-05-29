@@ -877,14 +877,15 @@ Hack the window placement control mechanism directly.
 #+end_src
 *** Shackle
 #+begin_src emacs-lisp
-      (use-package shackle
-        :custom
-        (shackle-default-rule '(:select t))
-        (shackle-rules '(("\\*sly-mrepl" :regexp t :align t :size 0.2 :select t)
-                         ("\\*sly-compilation" :regexp t :align 'below :size 0.3)
-                         ("\\*sly-db" :regexp t :align 'right :size 0.4)))
-        :config
-        (shackle-mode))
+        (use-package shackle
+          :custom
+          (shackle-default-rule '(:select t))
+          (shackle-rules '(("\\*sly-mrepl" :regexp t :align t :size 0.2 :select t)
+                           ("\\*sly-compilation" :regexp t :align 'below :size 0.3)
+                           ("\\*sly-db" :regexp t :align 'right :size 0.4)
+                           ("\\*julia\\*" :regexp t :align 'below :size 0.2 :select t)))
+          :config
+          (shackle-mode))
 #+end_src
 *** Popper
 #+begin_src emacs-lisp
@@ -898,7 +899,8 @@ Hack the window placement control mechanism directly.
                                 "\\*Async Shell Command\\*"
                                 help-mode
                                 compilation-mode
-                                "\\*sly-mrepl"))
+                                "\\*sly-mrepl"
+                                "\\*julia\\*"))
     (popper-group-function #'popper-group-by-perspective)
     (popper-display-control nil)
     :config
@@ -1287,7 +1289,7 @@ The treesitter-based configuration
   (use-package julia-repl
     :after vterm
     :hook (julia-mode . julia-repl-mode)
-    :config (setq julia-repl-set-terminal-backend 'vterm))
+    :config (julia-repl-set-terminal-backend 'vterm))
 
   ;; julia-snail tries to provide a repl experience closer to lisp
   ;; Unfortunately this doesn't provide enough information for my day-to-day programming
