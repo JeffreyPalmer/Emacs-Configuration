@@ -1279,8 +1279,9 @@ The treesitter-based configuration
 *** Julia
 #+begin_src emacs-lisp
   (use-package lsp-julia
-        :config
-        (setq lsp-julia-default-environment "~/.julia/environments/v1.10"))
+    :custom
+    (lsp-julia-package-dir nil)
+    (lsp-julia-default-environment "~/.julia/environments/v1.10"))
 
   (use-package julia-mode
     :hook (julia-mode . lsp-deferred))

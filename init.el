@@ -155,7 +155,7 @@
         doom-themes-padded-modeline t) ; Adds a 4 pixel margin around the modeline
   ; My previous theme
   ; (load-theme 'doom-dark+ t)
-  (load-theme 'doom-oceanic-next)
+  (load-theme 'doom-oceanic-next t)
   (doom-themes-visual-bell-config)
   (doom-themes-neotree-config)
   (doom-themes-org-config))
@@ -166,12 +166,11 @@
   :hook ((prog-mode text-mode) . idle-highlight-mode))
 
 (use-package all-the-icons)
-
+(use-package nerd-icons)
 (use-package doom-modeline
   :init (doom-modeline-mode 1)
   :custom ((doom-modeline-buffer-encoding nil)
-           (doom-modeline-buffer-file-name-style 'relative-from-project)
-           (doom-modeline-height 15)))
+           (doom-modeline-buffer-file-name-style 'relative-from-project)))
 
 (use-package hl-line
   :config
@@ -398,19 +397,20 @@
   (corfu-cycle t)
   ;(corfu-preselect 'prompt)
   (corfu-auto t)
+  (corfu-auto-delay 0.5)
   (corfu-quit-no-match 'separator)
-  (corfu-preselect 'directory)
+  (corfu-preselect 'prompt)
   ;; Try disabling return-based completion
-  :bind (:map corfu-map
-              ("RET" . nil))
+  ;;:bind (:map corfu-map
+  ;;            ("RET" . nil))
   ;; enable tab-and-go completion
   ;; See https://github.com/minad/corfu#tab-and-go-completion
-  ;;:bind
-  ;;(:map corfu-map
-  ;;      ("TAB" . corfu-next)
-  ;;      ([tab] . corfu-next)
-  ;;       ("S-TAB" . corfu-previous)
-  ;;      ([backtab] . corfu-previous))
+  :bind
+  (:map corfu-map
+        ("TAB" . corfu-next)
+        ([tab] . corfu-next)
+         ("S-TAB" . corfu-previous)
+        ([backtab] . corfu-previous))
   :init
   (global-corfu-mode)
   (corfu-popupinfo-mode))
@@ -484,16 +484,37 @@
   (setq aw-keys '(?a ?r ?s ?t ?n ?e ?i ?o)
         aw-ignore-current t))
 
-(setq display-buffer-base-action
-    '(display-buffer-reuse-mode-window
-      display-buffer-reuse-window
-      display-buffer-same-window))
-;; If a popup does happen, don't resize windows to be equally sized
-(setq even-window-sizes nil)
+(use-package shackle
+  :custom
+  (shackle-default-rule '(:select t))
+  (shackle-rules '(("\\*sly-mrepl" :regexp t :align t :size 0.2 :select t)
+                   ("\\*sly-compilation" :regexp t :align 'below :size 0.3)
+                   ("\\*sly-db" :regexp t :align 'right :size 0.4)
+                   ("\\*julia\\*" :regexp t :align 'below :size 0.2 :select t)))
+  :config
+  (shackle-mode))
+
+(use-package popper
+  :bind (("C-`" . popper-toggle)
+         ("M-`" . popper-cycle)
+         ("C-M-`" . popper-toggle-type))
+  :custom
+  (popper-reference-buffers '("\\*Messages\\*"
+                              "Output\\*$"
+                              "\\*Async Shell Command\\*"
+                              help-mode
+                              compilation-mode
+                              "\\*sly-mrepl"
+                              "\\*julia\\*"))
+  (popper-group-function #'popper-group-by-perspective)
+  (popper-display-control nil)
+  :config
+  (popper-mode +1)
+  (popper-echo-mode +1))
 
 ;; Disabled for now in favor of the not-so-smart hungry delete
 (use-package smart-hungry-delete
-  :disabled
+  :disabled t
   :bind (([remap backward-delete-char-untabify] . smart-hungry-delete-backward-char)
          ([remap delete-backward-char] . smart-hungry-delete-backward-char)
          ([remap delete-char] . smart-hungry-delete-forward-char))
@@ -538,15 +559,26 @@
  (electric-pair-mode))
 
 (use-package highlight-parentheses
-  :disabled t
   :custom
   (highlight-parentheses-highlight-adjacent t)
+  ;; Custom level colors
+  (highlight-parentheses-colors
+   '(
+     "dodger blue"
+     "lime green"
+     "dark orchid"
+     "deep pink"
+     "orange"
+     "light sky blue"
+     "light green"
+     "gold"
+     "magenta"))
   :config (global-highlight-parentheses-mode))
 
 ;; Try this other option for now
 (use-package paren
-  ;  :custom
-  ; (show-paren-delay 0)
+  :custom
+  (show-paren-delay 0)
   :config
   ;(set-face-attribute 'show-paren-match-expression nil :background "#363e4a" :weight 'extra-bold)
   ; Disable this as rainbow delimiters doesn't require it
@@ -559,15 +591,11 @@
   :config
   (setq backward-delete-char-untabify-method 'all))
 
-(use-package rainbow-delimiters
-  :hook
-  (prog-mode . rainbow-delimiters-mode))
-
 (use-package highlight-indent-guides
   :custom
   ; See if these are necessary with my new theme
-  ;(highlight-indent-guides-auto-character-face-perc 40)
-  ;(highlight-indent-guides-auto-top-character-face-perc 100)
+  (highlight-indent-guides-auto-character-face-perc 20)
+  (highlight-indent-guides-auto-top-character-face-perc 100)
   (highlight-indent-guides-responsive 'top)
   (highlight-indent-guides-method 'bitmap)
   :hook
@@ -712,8 +740,9 @@
 (add-to-list 'treesit-auto-recipe-list jpalmer/typescript-treesit-auto-recipe)
 
 (use-package lsp-julia
-      :config
-      (setq lsp-julia-default-environment "~/.julia/environments/v1.10"))
+  :custom
+  (lsp-julia-package-dir nil)
+  (lsp-julia-default-environment "~/.julia/environments/v1.10"))
 
 (use-package julia-mode
   :hook (julia-mode . lsp-deferred))
@@ -722,7 +751,7 @@
 (use-package julia-repl
   :after vterm
   :hook (julia-mode . julia-repl-mode)
-  :config (setq julia-repl-set-terminal-backend 'vterm))
+  :config (julia-repl-set-terminal-backend 'vterm))
 
 ;; julia-snail tries to provide a repl experience closer to lisp
 ;; Unfortunately this doesn't provide enough information for my day-to-day programming
@@ -748,14 +777,28 @@
                          (lsp))))
 
 (use-package sly
-  :custom (inferior-lisp-program "sbcl"))
+  ;:custom (inferior-lisp-program "sbcl")
+  ;; Configure SLY to support running with QLOT
+  :config
+  (setq sly-lisp-implementations
+        '((sbcl ("sbcl") :coding-system utf-8-unix)
+          (qlot ("qlot" "exec" "sbcl") :coding-system utf-8-unix))))
+
 (use-package sly-asdf
   :config (push 'sly-asdf sly-contribs))
-(use-package sly-quicklisp
-  :config (push 'sly-quicklisp sly-contribs))
-;(use-package sly-overlay)
+;;(use-package sly-quicklisp
+;;  :config (push 'sly-quicklisp sly-contribs))
+;;(use-package sly-overlay)
 (use-package sly-repl-ansi-color
   :config (push 'sly-repl-ansi-color sly-contribs))
+
+(use-package info-look
+  :config
+  (info-lookup-add-help
+   :mode 'lisp-mode
+   :regexp "[^][()'\" \t\n]+"
+   :ignore-case t
+   :doc-spec '(("(ansicl)Symbol Index" nil nil nil))))
 
 ;; Install the base clojure mode
 (use-package clojure-mode)
