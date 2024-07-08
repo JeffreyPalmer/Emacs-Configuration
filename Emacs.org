@@ -2107,7 +2107,7 @@ First, some support functions from [[https://github.com/gregoryg/emacs-gregoryg]
      (gptel-model "local-llm")
      (gptel-post-stream-hook 'gptel-auto-scroll)
      (gptel-post-response-hook 'gptel-end-of-response)
-     ;; Disabe this for now
+     ;; Disable this for now
      ; (gptel-response-filter-functions '(gjg/gptel-convert-org-with-pandoc))
      :config
      (setq gptel-expert-commands t))

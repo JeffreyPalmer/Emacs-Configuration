@@ -1243,15 +1243,50 @@
                 (neotree-find file-name)))
         (message "Could not find git project root.")))))
 
+(defun gjg/gptel--convert-markdown->org (str)
+  "Convert string STR from markdown to org markup using Pandoc.
+   Remove the property drawers Pandoc insists on inserting for org output."
+      (interactive)
+      (let* ((org-prefix (alist-get 'org-mode gptel-prompt-prefix-alist))
+             (shift-indent (progn (string-match "^\\(\\*+\\)" org-prefix) (length (match-string 1 org-prefix))))
+             (lua-filter (when (file-readable-p "~/.config/pandoc/gfm_code_to_org_block.lua")
+                           (concat "--lua-filter=" (expand-file-name "~/.config/pandoc/gfm_code_to_org_block.lua"))))
+             (temp-name (make-temp-name "gptel-convert-" ))
+             (sentence-end "\\([.?!
+      ]\\)"))
+        (with-current-buffer (get-buffer-create (concat "*" temp-name "*"))
+          (insert str)
+          (write-region (point-min) (point-max) (concat "/tmp/" temp-name ".md" ))
+          (shell-command-on-region (point-min) (point-max)
+                                   (format "pandoc -f gfm -t org --shift-heading-level-by=%d %s|sed '/:PROPERTIES:/,/:END:/d'" shift-indent lua-filter)
+                                   nil ;; use current buffer
+                                   t   ;; replace the buffer contents
+                                   "*gptel-convert-error*")
+          (goto-char (point-max))
+          (buffer-string))))
+
+(defun gjg/gptel-convert-org-with-pandoc (content buffer)
+        "Transform CONTENT acoording to required major-mode using `pandoc'.
+         Currenly only `org-mode' is supported
+         This depends on the `pandoc' binary only, not on the  Emacs Lisp `pandoc' package."
+        (pcase (buffer-local-value 'major-mode buffer)
+          ('org-mode (gjg/gptel--convert-markdown->org content))
+          (_ content)))
+
 (use-package gptel
- :custom
- (gptel-backend (gptel-make-openai "koboldcpp"
-                    :stream t
-                    :protocol "http"
-                    :host "10.0.1.192:5000"
-                    :models '("mixtral-instruct")))
- (gptel-default-mode 'org-mode)
- (gptel-model "mixtral-instruct")
- )
+   :custom
+   (gptel-backend (gptel-make-openai "koboldcpp"
+                      :stream t
+                      :protocol "http"
+                      :host "10.0.1.192:5000"
+                      :models '("local-llm")))
+   (gptel-default-mode 'org-mode)
+   (gptel-model "local-llm")
+   (gptel-post-stream-hook 'gptel-auto-scroll)
+   (gptel-post-response-hook 'gptel-end-of-response)
+   ;; Disable this for now
+   ; (gptel-response-filter-functions '(gjg/gptel-convert-org-with-pandoc))
+   :config
+   (setq gptel-expert-commands t))
 
 (setq gc-cons-threshold (* 2 1024 1024))
