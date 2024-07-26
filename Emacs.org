@@ -30,9 +30,9 @@ The goal of this work is to be able to generate a fixed, known-good configuratio
 
 #+begin_src emacs-lisp
   (defvar jpalmer/default-font "Jetbrains Mono")
-  (defvar jpalmer/variable-font "Fira Sans")
-  (defvar jpalmer/default-font-size 120)
-  (defvar jpalmer/default-variable-font-size 150)
+  (defvar jpalmer/variable-font "Avenir Next")
+  (defvar jpalmer/default-font-size 140)
+  (defvar jpalmer/default-variable-font-size 180)
   (defvar jpalmer/is-emacs-mac t)
 #+end_src
 
@@ -1678,6 +1678,12 @@ Enable automatic wrapping of long lines in text modes, only. This makes it easie
     (add-hook 'markdown-mode-hook 'jpalmer/markdown-mode-hook))
 #+end_src
 
+** WriteRoom Mode
+[[https://github.com/joostkremers/writeroom-mode][WriteRoom]] mode provides "distraction-free writing for Emacs."
+
+#+begin_src emacs-lisp
+  (use-package writeroom-mode)
+#+end_src
 * Org Mode
 ** General Org Setup
 #+begin_src emacs-lisp
