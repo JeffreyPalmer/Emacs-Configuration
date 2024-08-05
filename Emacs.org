@@ -1762,18 +1762,18 @@ Enable automatic wrapping of long lines in text modes, only. This makes it easie
           org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "TODAY(y)" "IN_PROGRESS(i)" "WAITING(w@/!)" "|" "DONE(d!/!)")
                               (sequence "PROJECT(p)" "ACTIVE(a)" "|" "FINISHED(f!)" "CANCELLED(c@)")
                               (sequence "SOMEDAY(S!)" "MAYBE(m!)"))
-          org-todo-keyword-faces '(("TODO" :foreground "DodgerBlue3")
-                                   ("NEXT" :foreground "DodgerBlue2")
-                                   ("TODAY" :foreground "SpringGreen2")
-                                   ("IN_PROGRESS" :foreground "SpringGreen2")
-                                   ("DONE" :foreground "forest green")
-                                   ("PROJECT" :foreground "cornflower blue")
-                                   ("ACTIVE" :foreground "deep sky blue")
-                                   ("FINISHED" :foreground "forest green")
-                                   ("CANCELLED" :foreground "goldenrod")
-                                   ("WAITING" :foreground "coral")
-                                   ("SOMEDAY" :foreground "purple")
-                                   ("MAYBE" :foreground "purple"))
+          org-todo-keyword-faces '(("TODO" . (:foreground "DodgerBlue3"))
+                                   ("NEXT" . (:foreground "DodgerBlue2"))
+                                   ("TODAY" . (:foreground "SpringGreen2"))
+                                   ("IN_PROGRESS" . (:foreground "SpringGreen2"))
+                                   ("DONE" . (:foreground "forest green"))
+                                   ("PROJECT" . (:foreground "cornflower blue"))
+                                   ("ACTIVE" . (:foreground "deep sky blue"))
+                                   ("FINISHED" . (:foreground "forest green"))
+                                   ("CANCELLED" . (:foreground "goldenrod"))
+                                   ("WAITING" . (:foreground "coral"))
+                                   ("SOMEDAY" . (:foreground "purple"))
+                                   ("MAYBE" . (:foreground "purple")))
           org-todo-state-tags-triggers '(("PROJECT" ("project" . t) ("active" . nil))
                                          ("" ("project" . nil) ("active" . nil))
                                          ("ACTIVE" ("active" . t))
@@ -1845,7 +1845,7 @@ Enable automatic wrapping of long lines in text modes, only. This makes it easie
 
 ** Better Fonts
 *** Improved bullet formatting
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package org-superstar
     :after org
     :hook (org-mode . org-superstar-mode)
@@ -1887,6 +1887,29 @@ Enable automatic wrapping of long lines in text modes, only. This makes it easie
     ;; Get rid of the background on column views
     (set-face-attribute 'org-column nil :background 'unspecified)
     (set-face-attribute 'org-column-title nil :background 'unspecified))
+#+end_src
+
+** Org Modern Theme
+https://github.com/minad/org-modern
+Turns out that this theme configures TODO faces differently than org, so configure those here.
+#+begin_src emacs-lisp
+  (use-package org-modern
+    :custom
+    (org-modern-todo-faces '(("TODO" . (:background "DodgerBlue3"))
+                             ("NEXT" . (:background "DodgerBlue2"))
+                             ("TODAY" . (:background "lime green" :foreground "black"))
+                             ("IN_PROGRESS" . (:background "lime green" :foreground "black"))
+                             ("DONE" . (:background "forest green"))
+                             ("PROJECT" . (:background "cornflower blue"))
+                             ("ACTIVE" . (:background "deep sky blue"))
+                             ("FINISHED" . (:background "forest green"))
+                             ("CANCELLED" . (:background "goldenrod"))
+                             ("WAITING" . (:background "tomato" :foreground "black"))
+                             ("SOMEDAY" . (:background "purple"))
+                             ("MAYBE" . (:background "purple"))))
+    :hook
+    (org-mode . org-modern-mode)
+    (org-agenda-finalize . org-modern-agenda))
 #+end_src
 
 ** Fixup agenda display of empty sections
