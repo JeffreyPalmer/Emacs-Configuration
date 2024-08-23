@@ -6,9 +6,9 @@
 ;;
 
 (defvar jpalmer/default-font "Jetbrains Mono")
-(defvar jpalmer/variable-font "Fira Sans")
-(defvar jpalmer/default-font-size 120)
-(defvar jpalmer/default-variable-font-size 150)
+(defvar jpalmer/variable-font "Avenir Next")
+(defvar jpalmer/default-font-size 140)
+(defvar jpalmer/default-variable-font-size 180)
 (defvar jpalmer/is-emacs-mac t)
 
 (setq user-full-name "Jeffrey Palmer"
@@ -920,6 +920,8 @@
     (jpalmer/set-markdown-header-font-sizes))
   (add-hook 'markdown-mode-hook 'jpalmer/markdown-mode-hook))
 
+(use-package writeroom-mode)
+
 (use-package org
   ;; :ensure org-contrib
   ;; :pin gnu
@@ -992,21 +994,22 @@
                                 (redeadline  . "New deadline from %S on %t")
                                 (deldeadline . "Removed deadline, was %S on %t"))
         org-startup-indented t
+        org-startup-folded 'show2levels
         org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "TODAY(y)" "IN_PROGRESS(i)" "WAITING(w@/!)" "|" "DONE(d!/!)")
                             (sequence "PROJECT(p)" "ACTIVE(a)" "|" "FINISHED(f!)" "CANCELLED(c@)")
                             (sequence "SOMEDAY(S!)" "MAYBE(m!)"))
-        org-todo-keyword-faces '(("TODO" :foreground "DodgerBlue3")
-                                 ("NEXT" :foreground "DodgerBlue2")
-                                 ("TODAY" :foreground "SpringGreen2")
-                                 ("IN_PROGRESS" :foreground "SpringGreen2")
-                                 ("DONE" :foreground "forest green")
-                                 ("PROJECT" :foreground "cornflower blue")
-                                 ("ACTIVE" :foreground "deep sky blue")
-                                 ("FINISHED" :foreground "forest green")
-                                 ("CANCELLED" :foreground "goldenrod")
-                                 ("WAITING" :foreground "coral")
-                                 ("SOMEDAY" :foreground "purple")
-                                 ("MAYBE" :foreground "purple"))
+        org-todo-keyword-faces '(("TODO" . (:foreground "DodgerBlue3"))
+                                 ("NEXT" . (:foreground "DodgerBlue2"))
+                                 ("TODAY" . (:foreground "SpringGreen2"))
+                                 ("IN_PROGRESS" . (:foreground "SpringGreen2"))
+                                 ("DONE" . (:foreground "forest green"))
+                                 ("PROJECT" . (:foreground "cornflower blue"))
+                                 ("ACTIVE" . (:foreground "deep sky blue"))
+                                 ("FINISHED" . (:foreground "forest green"))
+                                 ("CANCELLED" . (:foreground "goldenrod"))
+                                 ("WAITING" . (:foreground "coral"))
+                                 ("SOMEDAY" . (:foreground "purple"))
+                                 ("MAYBE" . (:foreground "purple")))
         org-todo-state-tags-triggers '(("PROJECT" ("project" . t) ("active" . nil))
                                        ("" ("project" . nil) ("active" . nil))
                                        ("ACTIVE" ("active" . t))
@@ -1075,13 +1078,6 @@
             (org-tags-match-list-sublevels nil)))))
   (org-clock-persistence-insinuate))
 
-(use-package org-superstar
-  :after org
-  :hook (org-mode . org-superstar-mode)
-  :custom
-  (org-superstar-remove-leading-stars t)
-  (org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
-
 (with-eval-after-load 'org-faces
   ;; Increase the size of various headings
   (set-face-attribute 'org-document-title nil :font jpalmer/variable-font :weight 'light :height 1.3)
@@ -1113,6 +1109,24 @@
   ;; Get rid of the background on column views
   (set-face-attribute 'org-column nil :background 'unspecified)
   (set-face-attribute 'org-column-title nil :background 'unspecified))
+
+(use-package org-modern
+  :custom
+  (org-modern-todo-faces '(("TODO" . (:background "DodgerBlue3"))
+                           ("NEXT" . (:background "DodgerBlue2"))
+                           ("TODAY" . (:background "lime green" :foreground "black"))
+                           ("IN_PROGRESS" . (:background "lime green" :foreground "black"))
+                           ("DONE" . (:background "forest green"))
+                           ("PROJECT" . (:background "cornflower blue"))
+                           ("ACTIVE" . (:background "deep sky blue"))
+                           ("FINISHED" . (:background "forest green"))
+                           ("CANCELLED" . (:background "goldenrod"))
+                           ("WAITING" . (:background "tomato" :foreground "black"))
+                           ("SOMEDAY" . (:background "purple"))
+                           ("MAYBE" . (:background "purple"))))
+  :hook
+  (org-mode . org-modern-mode)
+  (org-agenda-finalize . org-modern-agenda))
 
 (defun jpalmer/org-agenda-delete-empty-blocks ()
     "Remove empty agenda blocks.
