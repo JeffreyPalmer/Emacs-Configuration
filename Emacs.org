@@ -800,7 +800,7 @@ This seems like it might work nicely with projectile mode? Let's try it out.
     (:map projectile-command-map ("p" . projectile-persp-switch-project)))
 #+end_src
 
-** Window layout management via Eyebrowse
+** Window layout management via Eyebrowse [disabled]
 #+begin_src emacs-lisp :tangle no
   (use-package eyebrowse
     :init
@@ -816,7 +816,9 @@ This seems like it might work nicely with projectile mode? Let's try it out.
   ;;   :config (eyebrowse-restore-mode))
 
   (use-package desktop
-    :config (desktop-save-mode +1))
+    :custom
+    (desktop-save-mode +1)
+    (desktop-save 'ask))
 
 #+end_src
 ** Window Layout Undo/Redo via Winner Mode
