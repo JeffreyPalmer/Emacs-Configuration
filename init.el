@@ -1292,7 +1292,7 @@
    (gptel-backend (gptel-make-openai "koboldcpp"
                       :stream t
                       :protocol "http"
-                      :host "10.0.1.192:5000"
+                      :host "10.0.1.145:5000"
                       :models '("local-llm")))
    (gptel-default-mode 'org-mode)
    (gptel-model "local-llm")
