@@ -356,6 +356,8 @@ There are some keybinds that I absolutely hate when operating in a modern graphi
 I used to have code to do this, but it turns out that there are interactive screen scaling commands already in emacs, bound to =C-x C-+=, =C-x C--=, and =C-x C-0=. Plus, they're interactive in the same way that Hydra provides, so ultimately this configuration is not needed.
 ** Navigation
 [[https://github.com/abo-abo/avy][Avy]] makes it possible to jump to visible text using a character-based decision tree.
+
+This is apparently [[https://karthinks.com/software/avy-can-do-anything/][a very powerful package]] that I'm under-using. I should fix that.
 #+begin_src emacs-lisp
   (use-package avy
     :custom
@@ -367,6 +369,13 @@ I used to have code to do this, but it turns out that there are interactive scre
     :config
     (avy-setup-default))
 #+end_src
+
+Also install [[https://github.com/kickingvegas/casual-avy][casual-avy]] to make learning this package a little easier.
+#+begin_src emacs-lisp
+  (use-package casual-avy
+    :bind ("C-M-g" . casual-avy-tmenu))
+#+end_src
+
 * Helpful Help
 Add additional information to various help displays.
 #+begin_src emacs-lisp
