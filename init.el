@@ -6,9 +6,10 @@
 ;;
 
 (defvar jpalmer/default-font "Jetbrains Mono")
-(defvar jpalmer/variable-font "Avenir Next")
+;; (defvar jpalmer/variable-font "Avenir Next")
+(defvar jpalmer/variable-font "Optima")
 (defvar jpalmer/default-font-size 140)
-(defvar jpalmer/default-variable-font-size 180)
+(defvar jpalmer/default-variable-font-size 190)
 (defvar jpalmer/is-emacs-mac t)
 
 (setq user-full-name "Jeffrey Palmer"
@@ -113,7 +114,7 @@
 (set-face-attribute 'fixed-pitch nil :font jpalmer/default-font :height jpalmer/default-font-size :weight 'light)
 
 ;; Set the variable pitch face
-(set-face-attribute 'variable-pitch nil :font jpalmer/variable-font :height jpalmer/default-variable-font-size :weight 'light)
+(set-face-attribute 'variable-pitch nil :font jpalmer/variable-font :height jpalmer/default-variable-font-size :weight 'regular)
 
 ;; Customize the global cursor color
 (set-face-attribute 'cursor nil :background "goldenrod")
@@ -212,6 +213,9 @@
          ("s-g" . avy-goto-line))
   :config
   (avy-setup-default))
+
+(use-package casual-avy
+  :bind ("C-M-g" . casual-avy-tmenu))
 
 ;; Try harder apropros
 (setq-default apropos-do-all t)
@@ -660,6 +664,7 @@
 (use-package treesit-auto
   :custom
   (treesit-auto-install 'prompt)
+  (treesit-font-lock-level 4)
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode))
@@ -1000,14 +1005,14 @@
                             (sequence "SOMEDAY(S!)" "MAYBE(m!)"))
         org-todo-keyword-faces '(("TODO" . (:foreground "DodgerBlue3"))
                                  ("NEXT" . (:foreground "DodgerBlue2"))
-                                 ("TODAY" . (:foreground "SpringGreen2"))
-                                 ("IN_PROGRESS" . (:foreground "SpringGreen2"))
+                                 ("TODAY" . (:foreground "lime green"))
+                                 ("IN_PROGRESS" . (:foreground "lime green"))
                                  ("DONE" . (:foreground "forest green"))
                                  ("PROJECT" . (:foreground "cornflower blue"))
                                  ("ACTIVE" . (:foreground "deep sky blue"))
                                  ("FINISHED" . (:foreground "forest green"))
                                  ("CANCELLED" . (:foreground "goldenrod"))
-                                 ("WAITING" . (:foreground "coral"))
+                                 ("WAITING" . (:foreground "tomato"))
                                  ("SOMEDAY" . (:foreground "purple"))
                                  ("MAYBE" . (:foreground "purple")))
         org-todo-state-tags-triggers '(("PROJECT" ("project" . t) ("active" . nil))
@@ -1078,18 +1083,28 @@
             (org-tags-match-list-sublevels nil)))))
   (org-clock-persistence-insinuate))
 
+(use-package org-superstar
+  :after org
+  :hook (org-mode . org-superstar-mode)
+  :custom
+  (org-superstar-remove-leading-stars t)
+  ; (org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●"))
+  (org-superstar-headline-bullets-list '("◉" "◈" "○" "▷"))
+  (org-superstar-cycle-headline-bullets nil)
+  )
+
 (with-eval-after-load 'org-faces
   ;; Increase the size of various headings
-  (set-face-attribute 'org-document-title nil :font jpalmer/variable-font :weight 'light :height 1.3)
+  (set-face-attribute 'org-document-title nil :font jpalmer/variable-font :weight 'regular :height 1.3)
   (dolist (face '((org-level-1 . 1.25)
                   (org-level-2 . 1.2)
                   (org-level-3 . 1.15)
                   (org-level-4 . 1.1)
-                  (org-level-5 . 1.1)
-                  (org-level-6 . 1.1)
-                  (org-level-7 . 1.1)
-                  (org-level-8 . 1.1)))
-    (set-face-attribute (car face) nil :font jpalmer/variable-font :weight 'light :height (cdr face)))
+                  (org-level-5 . 1.0)
+                  (org-level-6 . 1.0)
+                  (org-level-7 . 1.0)
+                  (org-level-8 . 1.0)))
+    (set-face-attribute (car face) nil :font jpalmer/variable-font :weight 'regular :height (cdr face)))
 
   ;; Make sure org-indent face is available
   (require 'org-indent)
@@ -1109,24 +1124,6 @@
   ;; Get rid of the background on column views
   (set-face-attribute 'org-column nil :background 'unspecified)
   (set-face-attribute 'org-column-title nil :background 'unspecified))
-
-(use-package org-modern
-  :custom
-  (org-modern-todo-faces '(("TODO" . (:background "DodgerBlue3"))
-                           ("NEXT" . (:background "DodgerBlue2"))
-                           ("TODAY" . (:background "lime green" :foreground "black"))
-                           ("IN_PROGRESS" . (:background "lime green" :foreground "black"))
-                           ("DONE" . (:background "forest green"))
-                           ("PROJECT" . (:background "cornflower blue"))
-                           ("ACTIVE" . (:background "deep sky blue"))
-                           ("FINISHED" . (:background "forest green"))
-                           ("CANCELLED" . (:background "goldenrod"))
-                           ("WAITING" . (:background "tomato" :foreground "black"))
-                           ("SOMEDAY" . (:background "purple"))
-                           ("MAYBE" . (:background "purple"))))
-  :hook
-  (org-mode . org-modern-mode)
-  (org-agenda-finalize . org-modern-agenda))
 
 (defun jpalmer/org-agenda-delete-empty-blocks ()
     "Remove empty agenda blocks.
@@ -1222,17 +1219,6 @@
   :bind ("M-g o" . org-ql-find-in-agenda))
 
 ;; Now add support for org-file searching using org-ql-find into consult
-
-;; org-mac-link adds some utilities that capture links from various mac applications
-;; Press C-c g to bring up an app menu
-(use-package org-mac-link
-  :bind (:map org-mode-map ("C-c g" . org-mac-link-get-link)))
-
-(defun jpalmer/url-firefox-capture-to-org ()
-  (interactive)
-  (org-capture-string (org-mac-link-firefox-get-frontmost-url) "u")
-  (ignore-errors)
-  (org-capture-finalize))
 
 (use-package neotree
   :bind ("<f8>" . neotree-project-dir)
