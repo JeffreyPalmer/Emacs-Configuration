@@ -30,9 +30,10 @@ The goal of this work is to be able to generate a fixed, known-good configuratio
 
 #+begin_src emacs-lisp
   (defvar jpalmer/default-font "Jetbrains Mono")
-  (defvar jpalmer/variable-font "Avenir Next")
+  ;; (defvar jpalmer/variable-font "Avenir Next")
+  (defvar jpalmer/variable-font "Optima")
   (defvar jpalmer/default-font-size 140)
-  (defvar jpalmer/default-variable-font-size 180)
+  (defvar jpalmer/default-variable-font-size 190)
   (defvar jpalmer/is-emacs-mac t)
 #+end_src
 
@@ -195,7 +196,7 @@ This allows things like buffer cleanup to happen during the day instead of at mi
   (set-face-attribute 'fixed-pitch nil :font jpalmer/default-font :height jpalmer/default-font-size :weight 'light)
 
   ;; Set the variable pitch face
-  (set-face-attribute 'variable-pitch nil :font jpalmer/variable-font :height jpalmer/default-variable-font-size :weight 'light)
+  (set-face-attribute 'variable-pitch nil :font jpalmer/variable-font :height jpalmer/default-variable-font-size :weight 'regular)
 
   ;; Customize the global cursor color
   (set-face-attribute 'cursor nil :background "goldenrod")
@@ -251,7 +252,7 @@ Install the doom themes
 
 I'm currently testing out some other options, but my previous go-to theme was "doom-tomorrow-night".
 *** Modus Themes (DISABLED)
-Try out the Modus themes.
+Try out the Modus themes. Currently not using this because I don't have time to read a novel to understand how to use it.
 
 This configuration is for the built-in version of the modus themes:
 #+begin_src emacs-lisp :tangle no
@@ -1777,14 +1778,14 @@ Enable automatic wrapping of long lines in text modes, only. This makes it easie
                               (sequence "SOMEDAY(S!)" "MAYBE(m!)"))
           org-todo-keyword-faces '(("TODO" . (:foreground "DodgerBlue3"))
                                    ("NEXT" . (:foreground "DodgerBlue2"))
-                                   ("TODAY" . (:foreground "SpringGreen2"))
-                                   ("IN_PROGRESS" . (:foreground "SpringGreen2"))
+                                   ("TODAY" . (:foreground "lime green"))
+                                   ("IN_PROGRESS" . (:foreground "lime green"))
                                    ("DONE" . (:foreground "forest green"))
                                    ("PROJECT" . (:foreground "cornflower blue"))
                                    ("ACTIVE" . (:foreground "deep sky blue"))
                                    ("FINISHED" . (:foreground "forest green"))
                                    ("CANCELLED" . (:foreground "goldenrod"))
-                                   ("WAITING" . (:foreground "coral"))
+                                   ("WAITING" . (:foreground "tomato"))
                                    ("SOMEDAY" . (:foreground "purple"))
                                    ("MAYBE" . (:foreground "purple")))
           org-todo-state-tags-triggers '(("PROJECT" ("project" . t) ("active" . nil))
@@ -1858,29 +1859,32 @@ Enable automatic wrapping of long lines in text modes, only. This makes it easie
 
 ** Better Fonts
 *** Improved bullet formatting
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package org-superstar
     :after org
     :hook (org-mode . org-superstar-mode)
     :custom
     (org-superstar-remove-leading-stars t)
-    (org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●")))
+    ; (org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●"))
+    (org-superstar-headline-bullets-list '("◉" "◈" "○" "▷"))
+    (org-superstar-cycle-headline-bullets nil)
+    )
 #+end_src
 
 *** Font Adjustments
 #+begin_src emacs-lisp
   (with-eval-after-load 'org-faces
     ;; Increase the size of various headings
-    (set-face-attribute 'org-document-title nil :font jpalmer/variable-font :weight 'light :height 1.3)
+    (set-face-attribute 'org-document-title nil :font jpalmer/variable-font :weight 'regular :height 1.3)
     (dolist (face '((org-level-1 . 1.25)
                     (org-level-2 . 1.2)
                     (org-level-3 . 1.15)
                     (org-level-4 . 1.1)
-                    (org-level-5 . 1.1)
-                    (org-level-6 . 1.1)
-                    (org-level-7 . 1.1)
-                    (org-level-8 . 1.1)))
-      (set-face-attribute (car face) nil :font jpalmer/variable-font :weight 'light :height (cdr face)))
+                    (org-level-5 . 1.0)
+                    (org-level-6 . 1.0)
+                    (org-level-7 . 1.0)
+                    (org-level-8 . 1.0)))
+      (set-face-attribute (car face) nil :font jpalmer/variable-font :weight 'regular :height (cdr face)))
 
     ;; Make sure org-indent face is available
     (require 'org-indent)
@@ -1902,10 +1906,10 @@ Enable automatic wrapping of long lines in text modes, only. This makes it easie
     (set-face-attribute 'org-column-title nil :background 'unspecified))
 #+end_src
 
-** Org Modern Theme
+** Org Modern Theme [DISABLED]
 https://github.com/minad/org-modern
 Turns out that this theme configures TODO faces differently than org, so configure those here.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package org-modern
     :custom
     (org-modern-todo-faces '(("TODO" . (:background "DodgerBlue3"))
@@ -2048,7 +2052,7 @@ Turns out that this theme configures TODO faces differently than org, so configu
   ;; Now add support for org-file searching using org-ql-find into consult
 #+end_src
 
-** Org-Capture
+** Org-Capture [DISABLED]
 Trying to get a working configuration of ~org-capture~ without using ~emacs-mac~.
 
 Okay, so this package uses AppleScript to control other applications
@@ -2061,7 +2065,7 @@ so this appears to be working nicely now.
 
 This setup is taken from [[https://macowners.club/posts/org-capture-from-everywhere-macos/][this article]].
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   ;; org-mac-link adds some utilities that capture links from various mac applications
   ;; Press C-c g to bring up an app menu
   (use-package org-mac-link
