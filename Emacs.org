@@ -872,6 +872,9 @@ Try using [[https://github.com/bmag/emacs-purpose][emacs-purpose]] to manage my 
 #+end_src
 *** Display Buffer Alist
 Hack the window placement control mechanism directly.
+
+There's a lot that can be done using this variable, but I'm not really trying very hard here. See [[https://protesilaos.com/codelog/2024-02-08-emacs-window-rules-display-buffer-alist/][this blog post]] for an overview.
+
 #+begin_src emacs-lisp :tangle no
   (use-package emacs
     :config
