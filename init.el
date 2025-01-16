@@ -1083,16 +1083,6 @@
             (org-tags-match-list-sublevels nil)))))
   (org-clock-persistence-insinuate))
 
-(use-package org-superstar
-  :after org
-  :hook (org-mode . org-superstar-mode)
-  :custom
-  (org-superstar-remove-leading-stars t)
-  ; (org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●"))
-  (org-superstar-headline-bullets-list '("◉" "◈" "○" "▷"))
-  (org-superstar-cycle-headline-bullets nil)
-  )
-
 (with-eval-after-load 'org-faces
   ;; Increase the size of various headings
   (set-face-attribute 'org-document-title nil :font jpalmer/variable-font :weight 'regular :height 1.3)

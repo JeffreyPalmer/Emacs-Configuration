@@ -1861,8 +1861,9 @@ Enable automatic wrapping of long lines in text modes, only. This makes it easie
 #+end_src
 
 ** Better Fonts
-*** Improved bullet formatting
-#+begin_src emacs-lisp
+*** Improved bullet formatting [disabled]
+I've disabled this for now, because something was causing weird bulled display issues. I'm testing my configuration without this to see if it's the culprit.
+#+begin_src emacs-lisp :tangle no
   (use-package org-superstar
     :after org
     :hook (org-mode . org-superstar-mode)
@@ -2045,6 +2046,7 @@ Turns out that this theme configures TODO faces differently than org, so configu
 
 ** Org-QL
 [[https://github.com/alphapapa/org-ql][org-ql]] is a package that provides a query language for org files, as well as some advanced search capabilities.
+TODO: Figure out how to use this to provide agenda-like views that are more advanced than my current agenda views (probably not really necessary, tbh)
 #+begin_src emacs-lisp
   (use-package org-ql
     :straight (:host github
@@ -2083,6 +2085,7 @@ This setup is taken from [[https://macowners.club/posts/org-capture-from-everywh
 #+end_src
 * Tree Navigation
 Set up a tree-based navigation system, just in case.
+I honestly almost never use this, so maybe it's better to remove it.
 #+begin_src emacs-lisp
   (use-package neotree
     :bind ("<f8>" . neotree-project-dir)
