@@ -1385,9 +1385,7 @@ I may want to add ASDF at some point.
 *** WebGL/GLSL
 
 #+begin_src emacs-lisp
-  ;; FIXME: Put this back
-  (use-package glsl-mode
-    :mode "(\\.\\(glsl\\|vert\\|frag\\|geom\\)\\'")
+  (use-package glsl-mode)
 
   ;; Add completion support for glsl
   ;(use-package company-glsl
