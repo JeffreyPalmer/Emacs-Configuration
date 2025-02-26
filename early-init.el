@@ -15,4 +15,6 @@
    (convert-standard-filename
     (expand-file-name "var/eln-cache/" user-emacs-directory))))
 
+(add-to-list 'default-frame-alist '(undecorated-round . t))
+
 (setenv "LSP_USE_PLISTS" "true")

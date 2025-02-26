@@ -1663,6 +1663,7 @@ Description:
 #+end_src
 
 * Text Editing
+** Automatic Word Wrapping
 Enable automatic wrapping of long lines in text modes, only. This makes it easier to edit text files, but leaves code formatting up to the developer.
 
 #+begin_src emacs-lisp
@@ -1697,6 +1698,17 @@ Enable automatic wrapping of long lines in text modes, only. This makes it easie
 #+begin_src emacs-lisp
   (use-package writeroom-mode)
 #+end_src
+
+** Disable spelling popups
+I cannot stand these.
+
+Binding this new (in Emacs 30) variable to ~t~ will set the completion to use ~M-/~ which allows for word completion when desired, but skips using a popup.
+#+begin_src emacs-lisp
+  (use-package emacs
+    :custom
+    (text-mode-ispell-word-completion t))
+#+end_src
+
 * Org Mode
 ** General Org Setup
 #+begin_src emacs-lisp

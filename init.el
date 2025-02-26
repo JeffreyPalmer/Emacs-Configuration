@@ -10,7 +10,7 @@
 (defvar jpalmer/variable-font "Optima")
 (defvar jpalmer/default-font-size 140)
 (defvar jpalmer/default-variable-font-size 190)
-(defvar jpalmer/is-emacs-mac t)
+(defvar jpalmer/is-emacs-mac nil)
 
 (setq user-full-name "Jeffrey Palmer"
       user-mail-address "jeffrey.palmer@acm.org")
@@ -81,7 +81,7 @@
 (global-auto-revert-mode 1)
 
 (unless (and (fboundp 'server-running-p)
-	     (server-running-p))
+         (server-running-p))
   (server-start))
 
 (scroll-bar-mode -1)                    ; Disable the visible scrollbar
@@ -544,11 +544,12 @@
   :config
   (move-text-default-bindings))
 
-(use-package exec-path-from-shell
-  :config
-  ; (setq exec-path-from-shell-arguments nil)
-  (when (memq window-system '(mac ns))
-    (exec-path-from-shell-initialize)))
+(when jpalmer/is-emacs-mac
+  (use-package exec-path-from-shell
+    :config
+    ;; (setq exec-path-from-shell-arguments nil)
+    (when (memq window-system '(mac ns))
+      (exec-path-from-shell-initialize))))
 
 (use-package easy-kill
   :config
@@ -637,18 +638,9 @@
   (vterm-kill-buffer-on-exit nil))
 
 (use-package magit
-  :config
-  (progn
-    (defadvice magit-status (around magit-fullscreen activate)
-      (window-configuration-to-register :magit-fullscreen)
-      ad-do-it
-      (delete-other-windows))
-    (defun magit-quit-session ()
-      "Restores the previous window configuration and kills the magit buffer"
-      (interactive)
-      (kill-buffer)
-      (jump-to-register :magit-fullscreen))
-    (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)))
+  :custom
+  (magit-display-buffer-function 'magit-display-buffer-fullframe-status-v1)
+  (magit-bury-buffer-function 'magit-restore-window-configuration))
 
 (use-package git-gutter
   :config
@@ -811,9 +803,7 @@
 ;; Also include CIDER
 (use-package cider)
 
-;; FIXME: Put this back
-(use-package glsl-mode
-  :mode "(\\.\\(glsl\\|vert\\|frag\\|geom\\)\\'")
+(use-package glsl-mode)
 
 ;; Add completion support for glsl
 ;(use-package company-glsl
@@ -927,6 +917,11 @@
 
 (use-package writeroom-mode)
 
+(use-package emacs
+  :custom
+  (text-mode-ispell-word-completion t))
+
+(require 'org-protocol)
 (use-package org
   ;; :ensure org-contrib
   ;; :pin gnu
@@ -981,10 +976,7 @@
                                  entry (file+olp+datetree "journal.org")
                                  "* %?")
                                 ("l" "A link, for reading later." entry (file "")
-                                 "* [[%:link][%:description]]%?")
-                                ;; Set up a default template
-                                ("u" "Capture a firefox link" entry (file "")
-                                 "* %i%?"))
+                                 "* %:annotation\n%T\n%:i"))
         ;; refile settings
         org-refile-targets '((nil :maxlevel . 9)
                              (org-agenda-files :maxlevel . 9))
