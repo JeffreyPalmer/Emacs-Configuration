@@ -103,9 +103,9 @@ Now straight.el needs to be bootstrapped. This bootstrapping code is provided di
 
 #+begin_src emacs-lisp
   ;; Silence native code compiler warnings, as they're pretty chatty
-  (setq comp-async-report-warnings-errors nil
-        ;; This was generated when I asked emacs to disable the display of these compilation errors
-        warning-suppress-types '((comp) (comp)))
+  (use-package emacs
+    :custom
+    (native-comp-async-report-warnings-errors 'silent))
 #+end_src
 
 #+begin_src emacs-lisp :tangle /Users/jeff/.config/emacs/early-init.el
@@ -1662,61 +1662,14 @@ Description:
 
 #+end_src
 
-* Text Editing
-** Automatic Word Wrapping
-Enable automatic wrapping of long lines in text modes, only. This makes it easier to edit text files, but leaves code formatting up to the developer.
-
-#+begin_src emacs-lisp
-  (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
-#+end_src
-
-** Markdown Support
-#+begin_src emacs-lisp
-  (use-package markdown-mode
-    :commands (markdown-mode gfm-mode)
-    :mode
-    (("README\\.md\\'" . gfm-mode)
-     ("\\.md\\'" . markdown-mode)
-     ("\\.markdown\\'" . markdown-mode))
-    :config
-    (setq markdown-fontify-code-blocks-natively t)
-    (defun jpalmer/set-markdown-header-font-sizes ()
-      (dolist (face '((markdown-header-face-1 . 1.2)
-                      (markdown-header-face-2 . 1.1)
-                      (markdown-header-face-3 . 1.0)
-                      (markdown-header-face-4 . 1.0)
-                      (markdown-header-face-5 . 1.0)))
-        (set-face-attribute (car face) nil :weight 'normal :height (cdr face))))
-    (defun jpalmer/markdown-mode-hook ()
-      (jpalmer/set-markdown-header-font-sizes))
-    (add-hook 'markdown-mode-hook 'jpalmer/markdown-mode-hook))
-#+end_src
-
-** WriteRoom Mode
-[[https://github.com/joostkremers/writeroom-mode][WriteRoom]] mode provides "distraction-free writing for Emacs."
-
-#+begin_src emacs-lisp
-  (use-package writeroom-mode)
-#+end_src
-
-** Disable spelling popups
-I cannot stand these.
-
-Binding this new (in Emacs 30) variable to ~t~ will set the completion to use ~M-/~ which allows for word completion when desired, but skips using a popup.
-#+begin_src emacs-lisp
-  (use-package emacs
-    :custom
-    (text-mode-ispell-word-completion t))
-#+end_src
-
 * Org Mode
 ** General Org Setup
 #+begin_src emacs-lisp
-  (require 'org-protocol)
   (use-package org
     ;; :ensure org-contrib
     ;; :pin gnu
-    :straight (:type built-in)
+    ;; :straight (:type built-in)
+    :straight (:type git :host github :repo "emacs-straight/org-mode" :branch "bugfix")
     :bind (("C-c l" . org-store-link)
            ("C-c a" . org-agenda)
            ("C-c c" . org-capture)
@@ -1866,7 +1819,11 @@ Binding this new (in Emacs 30) variable to ~t~ will set the completion to use ~M
               (org-tags-match-list-sublevels nil)))))
     (org-clock-persistence-insinuate))
 #+end_src
-
+** Support org-capture
+This needs to come after we install and configure org, or else emacs will use the built-in version
+#+begin_src emacs-lisp
+  (require 'org-protocol)
+#+end_src
 ** Better Fonts
 *** Improved bullet formatting [disabled]
 I've disabled this for now, because something was causing weird bulled display issues. I'm testing my configuration without this to see if it's the culprit.
@@ -2090,6 +2047,53 @@ This setup is taken from [[https://macowners.club/posts/org-capture-from-everywh
     (org-capture-finalize))
 
 #+end_src
+* Text Editing
+** Automatic Word Wrapping
+Enable automatic wrapping of long lines in text modes, only. This makes it easier to edit text files, but leaves code formatting up to the developer.
+
+#+begin_src emacs-lisp
+  (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+#+end_src
+
+** Markdown Support
+#+begin_src emacs-lisp
+  (use-package markdown-mode
+    :commands (markdown-mode gfm-mode)
+    :mode
+    (("README\\.md\\'" . gfm-mode)
+     ("\\.md\\'" . markdown-mode)
+     ("\\.markdown\\'" . markdown-mode))
+    :config
+    (setq markdown-fontify-code-blocks-natively t)
+    (defun jpalmer/set-markdown-header-font-sizes ()
+      (dolist (face '((markdown-header-face-1 . 1.2)
+                      (markdown-header-face-2 . 1.1)
+                      (markdown-header-face-3 . 1.0)
+                      (markdown-header-face-4 . 1.0)
+                      (markdown-header-face-5 . 1.0)))
+        (set-face-attribute (car face) nil :weight 'normal :height (cdr face))))
+    (defun jpalmer/markdown-mode-hook ()
+      (jpalmer/set-markdown-header-font-sizes))
+    (add-hook 'markdown-mode-hook 'jpalmer/markdown-mode-hook))
+#+end_src
+
+** WriteRoom Mode
+[[https://github.com/joostkremers/writeroom-mode][WriteRoom]] mode provides "distraction-free writing for Emacs."
+
+#+begin_src emacs-lisp
+  (use-package writeroom-mode)
+#+end_src
+
+** Disable spelling popups
+I cannot stand these.
+
+Binding this new (in Emacs 30) variable to ~t~ will set the completion to use ~M-/~ which allows for word completion when desired, but skips using a popup. Hooray!
+#+begin_src emacs-lisp
+  (use-package emacs
+    :custom
+    (text-mode-ispell-word-completion t))
+#+end_src
+
 * Tree Navigation
 Set up a tree-based navigation system, just in case.
 I honestly almost never use this, so maybe it's better to remove it.
