@@ -8,7 +8,11 @@ This file contains the complete, documented configuration for my Emacs.
 
 The goal of this work is to be able to generate a fixed, known-good configuration for emacs from this file.
 
+NOTE: In order to configure a package that ships with emacs, use the following form:
+  ~(use-package org :straight (:type built-in))~
+
 * Generated File Warnings
+Include these warnings at the top of both generated files so that I don't accidentally edit them.
 #+begin_src emacs-lisp
   ;;
   ;; DO NOT EDIT!
