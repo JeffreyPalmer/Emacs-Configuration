@@ -167,7 +167,7 @@ This allows things like buffer cleanup to happen during the day instead of at mi
   (tool-bar-mode -1)                      ; Disable the toolbar
   (tooltip-mode -1)                       ; Disable tooltips
   (set-fringe-mode 10)                    ; Give some breathing room
-  (menu-bar-mode -1)                      ; Disable the menu bar
+  (menu-bar-mode (if jpalmer/is-emacs-mac -1 1)) ; Disable the menu bar if on emacs-mac, enable it otherwise
 
   (column-number-mode)
 
@@ -353,6 +353,7 @@ There are some keybinds that I absolutely hate when operating in a modern graphi
 ** Which Key Support
 #+begin_src emacs-lisp
   (use-package which-key
+    :straight (:type built-in)
     :init (which-key-mode)
     :diminish which-key-mode
     :config
@@ -857,44 +858,6 @@ Support directional and letter-based buffer navigation
 #+end_src
 
 ** Control buffer placement
-*** Emacs-Purpose
-Try using [[https://github.com/bmag/emacs-purpose][emacs-purpose]] to manage my window layouts/etc. This did not (easily) do what I wanted. At least, not enough to keep it around.
-#+begin_src emacs-lisp :tangle no
-  (use-package window-purpose
-    :config
-    (add-to-list 'purpose-user-mode-purposes '(lisp-mode . lisp-file-purpose))
-    ;; I don't know why this isn't working
-    ;; (add-to-list 'purpose-user-mode-purposes '(sly-mrepl-mode . lisp-repl-purpose))
-    (add-to-list 'purpose-user-regexp-purposes '("\\*sly-mrepl" . lisp-repl-purpose))
-    (purpose-compile-user-configuration)
-
-    ;; This is required to load up the following extensions
-    (require 'window-purpose-x)
-    (purpose-x-magit-single-on)
-    (purpose-x-persp-setup)
-    (purpose-x-kill-setup)
-    (purpose-mode))
-#+end_src
-*** Display Buffer Alist
-Hack the window placement control mechanism directly.
-
-There's a lot that can be done using this variable, but I'm not really trying very hard here. See [[https://protesilaos.com/codelog/2024-02-08-emacs-window-rules-display-buffer-alist/][this blog post]] for an overview.
-
-#+begin_src emacs-lisp :tangle no
-  (use-package emacs
-    :config
-    (setq display-buffer-alist
-          '((".*"
-             (display-buffer-reuse-window display-buffer-same-window)
-             (reusable-frames . t))
-            `(,(rx bos "*sly-mrepl")
-              (display-buffer-reuse-window)
-              (display-buffer-in-side-window)
-              (reusable-frames . visible)
-              (side . bottom)
-              (window-height . 0.2))))
-    (setq even-window-sizes nil))
-#+end_src
 *** Shackle
 #+begin_src emacs-lisp
         (use-package shackle
@@ -919,6 +882,9 @@ There's a lot that can be done using this variable, but I'm not really trying ve
                                 "\\*Async Shell Command\\*"
                                 help-mode
                                 compilation-mode
+                                messages-mode
+                                occur-mode
+                                "\\*helpful"
                                 "\\*sly-mrepl"
                                 "\\*julia\\*"))
     (popper-group-function #'popper-group-by-perspective)
@@ -926,6 +892,44 @@ There's a lot that can be done using this variable, but I'm not really trying ve
     :config
     (popper-mode +1)
     (popper-echo-mode +1))
+#+end_src
+*** Emacs-Purpose [disabled]
+Try using [[https://github.com/bmag/emacs-purpose][emacs-purpose]] to manage my window layouts/etc. This did not (easily) do what I wanted. At least, not enough to keep it around.
+#+begin_src emacs-lisp :tangle no
+  (use-package window-purpose
+    :config
+    (add-to-list 'purpose-user-mode-purposes '(lisp-mode . lisp-file-purpose))
+    ;; I don't know why this isn't working
+    ;; (add-to-list 'purpose-user-mode-purposes '(sly-mrepl-mode . lisp-repl-purpose))
+    (add-to-list 'purpose-user-regexp-purposes '("\\*sly-mrepl" . lisp-repl-purpose))
+    (purpose-compile-user-configuration)
+
+    ;; This is required to load up the following extensions
+    (require 'window-purpose-x)
+    (purpose-x-magit-single-on)
+    (purpose-x-persp-setup)
+    (purpose-x-kill-setup)
+    (purpose-mode))
+#+end_src
+*** Display Buffer Alist [disabled]
+Hack the window placement control mechanism directly.
+
+There's a lot that can be done using this variable, but I'm not really trying very hard here. See [[https://protesilaos.com/codelog/2024-02-08-emacs-window-rules-display-buffer-alist/][this blog post]] for an overview.
+
+#+begin_src emacs-lisp :tangle no
+  (use-package emacs
+    :config
+    (setq display-buffer-alist
+          '((".*"
+             (display-buffer-reuse-window display-buffer-same-window)
+             (reusable-frames . t))
+            `(,(rx bos "*sly-mrepl")
+              (display-buffer-reuse-window)
+              (display-buffer-in-side-window)
+              (reusable-frames . visible)
+              (side . bottom)
+              (window-height . 0.2))))
+    (setq even-window-sizes nil))
 #+end_src
 * General Editing
 ** Hungry Delete
@@ -1073,7 +1077,7 @@ Show an indicator for the start of an indentation scope.
     (highlight-indent-guides-auto-character-face-perc 20)
     (highlight-indent-guides-auto-top-character-face-perc 100)
     (highlight-indent-guides-responsive 'top)
-    (highlight-indent-guides-method 'bitmap)
+    (highlight-indent-guides-method 'character)
     :hook
     (prog-mode . highlight-indent-guides-mode))
 #+end_src
@@ -1085,15 +1089,6 @@ This allows easy navigation through camelCaseWords.
 #+end_src
 
 *** Highlight FIXME, TODO, etc.
-I used to use fic-mode but I'm now using hl-todo.
-#+begin_src emacs-lisp :tangle no
-  (use-package fic-mode
-    :disabled
-    :diminish fic-mode
-    :hook prog-mode)
-#+end_src
-
-Try using =hl-todo= one more time.
 #+begin_src emacs-lisp
   (use-package hl-todo
     ;; (global-hl-todo-mode +1)
@@ -1292,6 +1287,8 @@ The treesitter-based configuration
 
 #+end_src
 *** Julia
+**** LSP
+LSP seems to provide the most advanced Julia environment that I've found so far that works well in Emacs.
 #+begin_src emacs-lisp
   (use-package lsp-julia
     :custom
@@ -1306,12 +1303,17 @@ The treesitter-based configuration
     :after vterm
     :hook (julia-mode . julia-repl-mode)
     :config (julia-repl-set-terminal-backend 'vterm))
+#+end_src
 
-  ;; julia-snail tries to provide a repl experience closer to lisp
+**** Julia Snail
+~julia-snail~ tries to provide a REPL experience closer to lisp. Unfortunately this doesn't provide enough information for my day-to-day programming.
+
+Might want to try it again sometime. The people that like it REALLY like it.
+#+begin_src emacs-lisp :tangle no
+  ;; julia-snail tries to provide a repl experience closer to lisp*
   ;; Unfortunately this doesn't provide enough information for my day-to-day programming
   ;; Going to try to use julia-repl and lsp
   (use-package julia-snail
-    :disabled t
     :after vterm
     :hook (julia-mode . julia-snail-mode)
     :config (setq julia-repl-set-terminal-backend 'vterm))
