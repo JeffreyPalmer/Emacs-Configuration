@@ -52,9 +52,9 @@
 ;; (require 'straight-x)
 
 ;; Silence native code compiler warnings, as they're pretty chatty
-(setq comp-async-report-warnings-errors nil
-      ;; This was generated when I asked emacs to disable the display of these compilation errors
-      warning-suppress-types '((comp) (comp)))
+(use-package emacs
+  :custom
+  (native-comp-async-report-warnings-errors 'silent))
 
 ;; Use no-littering to automatically set common paths to the new user-emacs-directory
 (use-package no-littering
@@ -88,7 +88,7 @@
 (tool-bar-mode -1)                      ; Disable the toolbar
 (tooltip-mode -1)                       ; Disable tooltips
 (set-fringe-mode 10)                    ; Give some breathing room
-(menu-bar-mode -1)                      ; Disable the menu bar
+(menu-bar-mode (if jpalmer/is-emacs-mac -1 1)) ; Disable the menu bar if on emacs-mac, enable it otherwise
 
 (column-number-mode)
 
@@ -199,6 +199,7 @@
       mac-option-modifier 'meta)
 
 (use-package which-key
+  :straight (:type built-in)
   :init (which-key-mode)
   :diminish which-key-mode
   :config
@@ -508,6 +509,9 @@
                               "\\*Async Shell Command\\*"
                               help-mode
                               compilation-mode
+                              messages-mode
+                              occur-mode
+                              "\\*helpful"
                               "\\*sly-mrepl"
                               "\\*julia\\*"))
   (popper-group-function #'popper-group-by-perspective)
@@ -602,7 +606,7 @@
   (highlight-indent-guides-auto-character-face-perc 20)
   (highlight-indent-guides-auto-top-character-face-perc 100)
   (highlight-indent-guides-responsive 'top)
-  (highlight-indent-guides-method 'bitmap)
+  (highlight-indent-guides-method 'character)
   :hook
   (prog-mode . highlight-indent-guides-mode))
 
@@ -750,15 +754,6 @@
   :hook (julia-mode . julia-repl-mode)
   :config (julia-repl-set-terminal-backend 'vterm))
 
-;; julia-snail tries to provide a repl experience closer to lisp
-;; Unfortunately this doesn't provide enough information for my day-to-day programming
-;; Going to try to use julia-repl and lsp
-(use-package julia-snail
-  :disabled t
-  :after vterm
-  :hook (julia-mode . julia-snail-mode)
-  :config (setq julia-repl-set-terminal-backend 'vterm))
-
 ;; (use-package rust-mode
 ;;   :init
 ;;  (setq rust-mode-treesitter-derive nil))
@@ -894,38 +889,11 @@
   ; :hook (lsp-mode glsl-mode)
   :config (global-flycheck-mode))
 
-(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
-
-(use-package markdown-mode
-  :commands (markdown-mode gfm-mode)
-  :mode
-  (("README\\.md\\'" . gfm-mode)
-   ("\\.md\\'" . markdown-mode)
-   ("\\.markdown\\'" . markdown-mode))
-  :config
-  (setq markdown-fontify-code-blocks-natively t)
-  (defun jpalmer/set-markdown-header-font-sizes ()
-    (dolist (face '((markdown-header-face-1 . 1.2)
-                    (markdown-header-face-2 . 1.1)
-                    (markdown-header-face-3 . 1.0)
-                    (markdown-header-face-4 . 1.0)
-                    (markdown-header-face-5 . 1.0)))
-      (set-face-attribute (car face) nil :weight 'normal :height (cdr face))))
-  (defun jpalmer/markdown-mode-hook ()
-    (jpalmer/set-markdown-header-font-sizes))
-  (add-hook 'markdown-mode-hook 'jpalmer/markdown-mode-hook))
-
-(use-package writeroom-mode)
-
-(use-package emacs
-  :custom
-  (text-mode-ispell-word-completion t))
-
-(require 'org-protocol)
 (use-package org
   ;; :ensure org-contrib
   ;; :pin gnu
-  :straight (:type built-in)
+  ;; :straight (:type built-in)
+  :straight (:type git :host github :repo "emacs-straight/org-mode" :branch "bugfix")
   :bind (("C-c l" . org-store-link)
          ("C-c a" . org-agenda)
          ("C-c c" . org-capture)
@@ -1075,6 +1043,8 @@
             (org-tags-match-list-sublevels nil)))))
   (org-clock-persistence-insinuate))
 
+(require 'org-protocol)
+
 (with-eval-after-load 'org-faces
   ;; Increase the size of various headings
   (set-face-attribute 'org-document-title nil :font jpalmer/variable-font :weight 'regular :height 1.3)
@@ -1201,6 +1171,33 @@
   :bind ("M-g o" . org-ql-find-in-agenda))
 
 ;; Now add support for org-file searching using org-ql-find into consult
+
+(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+
+(use-package markdown-mode
+  :commands (markdown-mode gfm-mode)
+  :mode
+  (("README\\.md\\'" . gfm-mode)
+   ("\\.md\\'" . markdown-mode)
+   ("\\.markdown\\'" . markdown-mode))
+  :config
+  (setq markdown-fontify-code-blocks-natively t)
+  (defun jpalmer/set-markdown-header-font-sizes ()
+    (dolist (face '((markdown-header-face-1 . 1.2)
+                    (markdown-header-face-2 . 1.1)
+                    (markdown-header-face-3 . 1.0)
+                    (markdown-header-face-4 . 1.0)
+                    (markdown-header-face-5 . 1.0)))
+      (set-face-attribute (car face) nil :weight 'normal :height (cdr face))))
+  (defun jpalmer/markdown-mode-hook ()
+    (jpalmer/set-markdown-header-font-sizes))
+  (add-hook 'markdown-mode-hook 'jpalmer/markdown-mode-hook))
+
+(use-package writeroom-mode)
+
+(use-package emacs
+  :custom
+  (text-mode-ispell-word-completion t))
 
 (use-package neotree
   :bind ("<f8>" . neotree-project-dir)
