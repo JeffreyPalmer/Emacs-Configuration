@@ -1293,6 +1293,8 @@ The treesitter-based configuration
 *** Julia
 **** LSP
 LSP seems to provide the most advanced Julia environment that I've found so far that works well in Emacs.
+
+Note to self: For some unknown reason I can't move the ~julia-mode~ declaration into its own block without breaking the linkage between ~julia-lsp~ and ~julia-mode~, and I don't have time to figure it out.
 #+begin_src emacs-lisp
   (use-package lsp-julia
     :custom
@@ -1319,8 +1321,9 @@ Might want to try it again sometime. The people that like it REALLY like it.
   ;; Going to try to use julia-repl and lsp
   (use-package julia-snail
     :after vterm
+    :custom (julia-snail-terminal-type :vterm)
     :hook (julia-mode . julia-snail-mode)
-    :config (setq julia-repl-set-terminal-backend 'vterm))
+    )
 
 #+end_src
 *** Rust
