@@ -441,14 +441,24 @@ This configuration now uses Vertico.
   (defun jpalmer/consult-line-forward ()
     "Search for a matching line forward."
     (interactive)
-    (consult-line (thing-at-point 'symbol)))
+    (consult-line
+     ;; Uncomment this line to enable search to start with the symbol at
+     ;; the current point
+     ;;
+     ;; (thing-at-point 'symbol)
+     ))
 
   (defun jpalmer/consult-line-backward ()
     "Search for a matching line backward."
     (interactive)
     (advice-add 'consult--line-candidates :filter-return 'reverse)
     (vertico-reverse-mode +1)
-    (unwind-protect (consult-line (thing-at-point 'symbol))
+    (unwind-protect (consult-line
+                     ;; Uncomment this line to enable search to start
+                     ;; with the symbol at the current point
+                     ;;
+                     ;; (thing-at-point 'symbol)
+                     )
       (vertico-reverse-mode -1)
       (advice-remove 'consult--line-candidates 'reverse)))
 
