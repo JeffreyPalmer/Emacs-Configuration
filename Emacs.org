@@ -1087,7 +1087,7 @@ Note: That experiment didn't work out, as the rainbow colors were just not usefu
 #+end_src
 *** Highlight indentation levels
 **** Indent-bars
-An alternative to ~highlight-indent-guides~ that should behave a bit better w.r.t. empty lines.
+[[https://github.com/jdtsmith/indent-bars][Indent-bars]] is an alternative to ~highlight-indent-guides~ that behaves a bit better w.r.t. empty lines.
 #+begin_src emacs-lisp
   (use-package indent-bars
     :custom
@@ -1150,7 +1150,23 @@ TODO: Try out the new built-in support for projects using project.el. A bunch of
 #+end_src
 
 *** Highlight color names in buffers
+
+I'm now using [[https://github.com/DevelopmentCool2449/colorful-mode][colorful-mode]].
 #+begin_src emacs-lisp
+    (use-package colorful-mode
+      :custom
+      (colorful-use-prefix t)
+      (colorful-only-strings 'only-prog)
+      (css-fontify-colors nil)
+      :config
+      (global-colorful-mode t)
+      (add-to-list 'global-colorful-modes 'helpful-mode)
+      (add-to-list 'global-colorful-modes 'vterm-mode))
+
+#+end_src
+
+I was originally using ~rainbow-mode~.
+#+begin_src emacs-lisp :tangle no
   (use-package rainbow-mode
     :hook (org-mode emacs-lisp-mode web-mode typescript-mode js2-mode))
 #+end_src
