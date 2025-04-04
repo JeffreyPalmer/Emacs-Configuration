@@ -2071,6 +2071,12 @@ TODO: Figure out how to use this to provide agenda-like views that are more adva
   ;; Now add support for org-file searching using org-ql-find into consult
 #+end_src
 
+** Org-Chef
+Try out this package and see how it works.
+#+begin_src emacs-lisp
+  (use-package org-chef)
+#+end_src
+
 ** Org-Capture [DISABLED]
 Trying to get a working configuration of ~org-capture~ without using ~emacs-mac~.
 
