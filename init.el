@@ -1190,6 +1190,8 @@
 
 ;; Now add support for org-file searching using org-ql-find into consult
 
+(use-package org-chef)
+
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 
 (use-package markdown-mode
