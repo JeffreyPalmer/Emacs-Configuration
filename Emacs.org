@@ -1086,9 +1086,11 @@ Note: That experiment didn't work out, as the rainbow colors were just not usefu
     (prog-mode . rainbow-delimiters-mode))
 #+end_src
 *** Highlight indentation levels
-**** Indent-bars
+**** Indent-bars [disabled]
 [[https://github.com/jdtsmith/indent-bars][Indent-bars]] is an alternative to ~highlight-indent-guides~ that behaves a bit better w.r.t. empty lines.
-#+begin_src emacs-lisp
+
+This is currently disabled because it doesn't work at all with Common Lisp code.
+#+begin_src emacs-lisp :tangle no
   (use-package indent-bars
     :custom
     (indent-bars-color '(default :face-bg nil :blend 0.2))
@@ -1097,9 +1099,9 @@ Note: That experiment didn't work out, as the rainbow colors were just not usefu
     (indent-bars-prefer-character t)
     :hook (prog-mode . indent-bars-mode))
 #+end_src
-**** Highlight-indent-guides [disabled]
+**** Highlight-indent-guides
 Show an indicator for the start of an indentation scope.
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package highlight-indent-guides
     :custom
     ;; See if these are necessary with my new theme
