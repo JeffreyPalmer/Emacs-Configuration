@@ -563,10 +563,14 @@
 
 (when jpalmer/is-emacs-mac
   (use-package exec-path-from-shell
+    :custom
+    (exec-path-from-shell-arguments nil)
     :config
     ;; (setq exec-path-from-shell-arguments nil)
     (when (memq window-system '(mac ns))
-      (exec-path-from-shell-initialize))))
+      (exec-path-from-shell-initialize)
+      (exec-path-from-shell-copy-env "CPATH")
+      (exec-path-from-shell-copy-env "LIBRARY_PATH"))))
 
 (use-package easy-kill
   :config
@@ -613,13 +617,15 @@
   :config
   (setq backward-delete-char-untabify-method 'all))
 
-(use-package indent-bars
+(use-package highlight-indent-guides
   :custom
-  (indent-bars-color '(default :face-bg nil :blend 0.2))
-  ;; (indent-bars-highlight-current-depth '(:face default :blend 0.4))
-  (indent-bars-color-by-depth nil)
-  (indent-bars-prefer-character t)
-  :hook (prog-mode . indent-bars-mode))
+  ;; See if these are necessary with my new theme
+  (highlight-indent-guides-auto-character-face-perc 20)
+  (highlight-indent-guides-auto-top-character-face-perc 100)
+  (highlight-indent-guides-responsive 'top)
+  (highlight-indent-guides-method 'character)
+  :hook
+  (prog-mode . highlight-indent-guides-mode))
 
 (global-subword-mode 1)
 
@@ -791,8 +797,8 @@
   ;; Configure SLY to support running with QLOT
   :config
   (setq sly-lisp-implementations
-        '((sbcl ("sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix)
-          (qlot ("qlot" "exec" "sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix))))
+        '((qlot ("qlot" "exec" "sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix)
+          (sbcl ("sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix))))
 
 (use-package sly-asdf
   :config (push 'sly-asdf sly-contribs))
