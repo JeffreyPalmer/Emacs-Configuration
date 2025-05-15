@@ -221,20 +221,25 @@ This allows things like buffer cleanup to happen during the day instead of at mi
     (use-package ligature
       :config
       ;; Enable all JetBrains Mono ligatures in programming modes
-      (ligature-set-ligatures 'prog-mode '("-|" "-~" "---" "-<<" "-<" "--" "->" "->>" "-->" "///" "/=" "/=="
-                                           "/>" "//" "/*" "*>" "***" "*/" "<-" "<<-" "<=>" "<=" "<|" "<||"
-                                           "<|||" "<|>" "<:" "<>" "<-<" "<<<" "<==" "<<=" "<=<" "<==>" "<-|"
-                                           "<<" "<~>" "<=|" "<~~" "<~" "<$>" "<$" "<+>" "<+" "</>" "</" "<*"
-                                           "<*>" "<->" "<!--" ":>" ":<" ":::" "::" ":?" ":?>" ":=" "::=" "=>>"
-                                           "==>" "=/=" "=!=" "=>" "===" "=:=" "==" "!==" "!!" "!=" ">]" ">:"
-                                           ">>-" ">>=" ">=>" ">>>" ">-" ">=" "&&&" "&&" "|||>" "||>" "|>" "|]"
-                                           "|}" "|=>" "|->" "|=" "||-" "|-" "||=" "||" ".." ".?" ".=" ".-" "..<"
-                                           "..." "+++" "+>" "++" "[||]" "[<" "[|" "{|" "??" "?." "?=" "?:" "##"
-                                           "###" "####" "#[" "#{" "#=" "#!" "#:" "#_(" "#_" "#?" "#(" ";;" "_|_"
-                                           "__" "~~" "~~>" "~>" "~-" "~@" "$>" "^=" "]#"))
+      (ligature-set-ligatures 'prog-mode '("--" "---" "==" "===" "!=" "!==" "=!="
+                                           "=:=" "=/=" "<=" ">=" "&&" "&&&" "&=" "++" "+++" "***" ";;" "!!"
+                                           "??" "???" "?:" "?." "?=" "<:" ":<" ":>" ">:" "<:<" "<>" "<<<" ">>>"
+                                           "<<" ">>" "||" "-|" "_|_" "|-" "||-" "|=" "||=" "##" "###" "####"
+                                           "#{" "#[" "]#" "#(" "#?" "#_" "#_(" "#:" "#!" "#=" "^=" "<$>" "<$"
+                                           "$>" "<+>" "<+" "+>" "<*>" "<*" "*>" "</" "</>" "/>" "<!--" "<#--"
+                                           "-->" "->" "->>" "<<-" "<-" "<=<" "=<<" "<<=" "<==" "<=>" "<==>"
+                                           "==>" "=>" "=>>" ">=>" ">>=" ">>-" ">-" "-<" "-<<" ">->" "<-<" "<-|"
+                                           "<=|" "|=>" "|->" "<->" "<~~" "<~" "<~>" "~~" "~~>" "~>" "~-" "-~"
+                                           "~@" "[||]" "|]" "[|" "|}" "{|" "[<" ">]" "|>" "<|" "||>" "<||"
+                                           "|||>" "<|||" "<|>" "..." ".." ".=" "..<" ".?" "::" ":::" ":=" "::="
+                                           ":?" ":?>" "//" "///" "/*" "*/" "/=" "//=" "/==" "@_" "__" "???"
+                                           "<:<" ";;;"))
+
       ;; Enables ligature checks globally in all buffers. You can also do it
       ;; per mode with `ligature-mode'.
-      (global-ligature-mode t)))
+      ;; (global-ligature-mode t)
+      :hook
+      (prog-mode . ligature-mode)))
 
   ;; Show lambda as a symbol
   (add-hook 'lisp-mode-hook
@@ -1404,6 +1409,7 @@ Might want to try it again sometime. The people that like it REALLY like it.
   (add-hook 'emacs-lisp-mode-hook #'flycheck-mode)
 #+end_src
 *** Common Lisp
+**** SLY
 I use [[https://github.com/joaotavora/sly][SLY]] - a fork of Slime that has some nice features.
 #+begin_src emacs-lisp
   (use-package sly
@@ -1423,13 +1429,22 @@ I use [[https://github.com/joaotavora/sly][SLY]] - a fork of Slime that has some
     :config (push 'sly-repl-ansi-color sly-contribs))
 
 #+end_src
-
-Also make sure to enable lookup in the info-based Hyperspec that I
+**** Hyperspec Info Files
+Now, set up ~info~ so that it can see the ANSI Common Lisp Specification.
+#+begin_src emacs-lisp
+  (use-package info
+    :config
+    (info-initialize)
+    (push "/Users/jeff/src/personal/ansicl.info/" Info-directory-list))
+#+end_src
+**** Hyperspec-based symbol lookup
+Finally, make sure to enable lookup in the info-based Hyperspec that I
 have on my machine. This is limited to just the hyperspec for now, but
 I may want to add ASDF at some point.
 #+begin_src emacs-lisp
   (use-package info-look
     :config
+    (add-to-list 'Info-default-directory-list "/Users/jeff/src/personal/ansicl.info/")
     (info-lookup-add-help
      :mode 'lisp-mode
      :regexp "[^][()'\" \t\n]+"
