@@ -10,7 +10,7 @@
 (defvar jpalmer/variable-font "Optima")
 (defvar jpalmer/default-font-size 140)
 (defvar jpalmer/default-variable-font-size 190)
-(defvar jpalmer/is-emacs-mac nil)
+(defvar jpalmer/is-emacs-mac t)
 
 (setq user-full-name "Jeffrey Palmer"
       user-mail-address "jeffrey.palmer@acm.org")
@@ -128,20 +128,25 @@
   (use-package ligature
     :config
     ;; Enable all JetBrains Mono ligatures in programming modes
-    (ligature-set-ligatures 'prog-mode '("-|" "-~" "---" "-<<" "-<" "--" "->" "->>" "-->" "///" "/=" "/=="
-                                         "/>" "//" "/*" "*>" "***" "*/" "<-" "<<-" "<=>" "<=" "<|" "<||"
-                                         "<|||" "<|>" "<:" "<>" "<-<" "<<<" "<==" "<<=" "<=<" "<==>" "<-|"
-                                         "<<" "<~>" "<=|" "<~~" "<~" "<$>" "<$" "<+>" "<+" "</>" "</" "<*"
-                                         "<*>" "<->" "<!--" ":>" ":<" ":::" "::" ":?" ":?>" ":=" "::=" "=>>"
-                                         "==>" "=/=" "=!=" "=>" "===" "=:=" "==" "!==" "!!" "!=" ">]" ">:"
-                                         ">>-" ">>=" ">=>" ">>>" ">-" ">=" "&&&" "&&" "|||>" "||>" "|>" "|]"
-                                         "|}" "|=>" "|->" "|=" "||-" "|-" "||=" "||" ".." ".?" ".=" ".-" "..<"
-                                         "..." "+++" "+>" "++" "[||]" "[<" "[|" "{|" "??" "?." "?=" "?:" "##"
-                                         "###" "####" "#[" "#{" "#=" "#!" "#:" "#_(" "#_" "#?" "#(" ";;" "_|_"
-                                         "__" "~~" "~~>" "~>" "~-" "~@" "$>" "^=" "]#"))
+    (ligature-set-ligatures 'prog-mode '("--" "---" "==" "===" "!=" "!==" "=!="
+                                         "=:=" "=/=" "<=" ">=" "&&" "&&&" "&=" "++" "+++" "***" ";;" "!!"
+                                         "??" "???" "?:" "?." "?=" "<:" ":<" ":>" ">:" "<:<" "<>" "<<<" ">>>"
+                                         "<<" ">>" "||" "-|" "_|_" "|-" "||-" "|=" "||=" "##" "###" "####"
+                                         "#{" "#[" "]#" "#(" "#?" "#_" "#_(" "#:" "#!" "#=" "^=" "<$>" "<$"
+                                         "$>" "<+>" "<+" "+>" "<*>" "<*" "*>" "</" "</>" "/>" "<!--" "<#--"
+                                         "-->" "->" "->>" "<<-" "<-" "<=<" "=<<" "<<=" "<==" "<=>" "<==>"
+                                         "==>" "=>" "=>>" ">=>" ">>=" ">>-" ">-" "-<" "-<<" ">->" "<-<" "<-|"
+                                         "<=|" "|=>" "|->" "<->" "<~~" "<~" "<~>" "~~" "~~>" "~>" "~-" "-~"
+                                         "~@" "[||]" "|]" "[|" "|}" "{|" "[<" ">]" "|>" "<|" "||>" "<||"
+                                         "|||>" "<|||" "<|>" "..." ".." ".=" "..<" ".?" "::" ":::" ":=" "::="
+                                         ":?" ":?>" "//" "///" "/*" "*/" "/=" "//=" "/==" "@_" "__" "???"
+                                         "<:<" ";;;"))
+
     ;; Enables ligature checks globally in all buffers. You can also do it
     ;; per mode with `ligature-mode'.
-    (global-ligature-mode t)))
+    ;; (global-ligature-mode t)
+    :hook
+    (prog-mode . ligature-mode)))
 
 ;; Show lambda as a symbol
 (add-hook 'lisp-mode-hook
@@ -808,8 +813,14 @@
 (use-package sly-repl-ansi-color
   :config (push 'sly-repl-ansi-color sly-contribs))
 
+(use-package info
+  :config
+  (info-initialize)
+  (push "/Users/jeff/src/personal/ansicl.info/" Info-directory-list))
+
 (use-package info-look
   :config
+  (add-to-list 'Info-default-directory-list "/Users/jeff/src/personal/ansicl.info/")
   (info-lookup-add-help
    :mode 'lisp-mode
    :regexp "[^][()'\" \t\n]+"
@@ -912,6 +923,36 @@
   ;; FIXME: This will probably need to be fixed
   ; :hook (lsp-mode glsl-mode)
   :config (global-flycheck-mode))
+
+(use-package tempel
+  ;;:custom
+  ;;(tempel-trigger-prefix "<")
+  :bind (("M-+" . tempel-complete)
+         ("M-*" . tempel-insert))
+  :init
+  (defun tempel-setup-capf ()
+    ;; Add the Tempel Capf to `completion-at-point-functions'.
+    ;; `tempel-expand' only triggers on exact matches. Alternatively use
+    ;; `tempel-complete' if you want to see all matches, but then you
+    ;; should also configure `tempel-trigger-prefix', such that Tempel
+    ;; does not trigger too often when you don't expect it. NOTE: We add
+    ;; `tempel-expand' *before* the main programming mode Capf, such
+    ;; that it will be tried first.
+    (setq-local completion-at-point-functions
+                (cons #'tempel-complete
+                      completion-at-point-functions)))
+  :hook
+  (conf-mode . tempel-setup-capf)
+  (prog-mode . tempel-setup-capf)
+  (text-mode . tempel-setup-capf)
+
+  ;; Enable it with abbrev
+  ;;(add-hook 'prog-mode-hook #'tempel-abbrev-mode)
+  ;;(global-tempel-abbrev-mode)
+  )
+
+;; Some basic templates - I'll probably want to add to this at some point
+(use-package tempel-collection)
 
 (use-package org
   ;; :ensure org-contrib

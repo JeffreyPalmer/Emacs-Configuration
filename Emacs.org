@@ -38,7 +38,7 @@ Include these warnings at the top of both generated files so that I don't accide
   (defvar jpalmer/variable-font "Optima")
   (defvar jpalmer/default-font-size 140)
   (defvar jpalmer/default-variable-font-size 190)
-  (defvar jpalmer/is-emacs-mac nil)
+  (defvar jpalmer/is-emacs-mac t)
 #+end_src
 
 * User Information
@@ -1603,7 +1603,7 @@ I think these are being a little flaky but I don't have time to investigate at t
 
 *** tempel [disabled]
 I'm giving [[https://github.com/minad/tempel][tempel]] a try, but it's a little odd. At least, I think my configuration is not working properly.
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package tempel
     ;;:custom
     ;;(tempel-trigger-prefix "<")
