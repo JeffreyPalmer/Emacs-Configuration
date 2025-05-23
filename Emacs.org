@@ -1324,6 +1324,7 @@ The treesitter-based configuration
     :custom
     (typescript-ts-mode-indent-offset 4))
 
+  ;; Trying the current version to see if there are still problems in 2025
   ;; Work around an error in the current version of the typescript treesitter grammar
   (defvar jpalmer/tsx-treesit-auto-recipe
     (make-treesit-auto-recipe
@@ -1335,7 +1336,7 @@ The treesitter-based configuration
      :source-dir "tsx/src"
      :ext "\\.tsx\\'")
     "Recipe for treesitter tsx lib")
-  (add-to-list 'treesit-auto-recipe-list jpalmer/tsx-treesit-auto-recipe)
+  ;; (add-to-list 'treesit-auto-recipe-list jpalmer/tsx-treesit-auto-recipe)
   (defvar jpalmer/typescript-treesit-auto-recipe
     (make-treesit-auto-recipe
      :lang 'typescript
@@ -1346,7 +1347,7 @@ The treesitter-based configuration
      :source-dir "typescript/src"
      :ext "\\.ts\\'")
     "Recipe for treesitter typescript lib")
-  (add-to-list 'treesit-auto-recipe-list jpalmer/typescript-treesit-auto-recipe)
+  ;; (add-to-list 'treesit-auto-recipe-list jpalmer/typescript-treesit-auto-recipe)
 
 #+end_src
 *** Julia
@@ -1558,13 +1559,6 @@ Try using a different WGSL mode that doesn't use treesitter.
   ;; (use-package impatient-mode)
 
   ;; (use-package skewer-mode)
-#+end_src
-*** Zig [disabled]
-Basic support for Zig, but I'm not really using this at the moment so it's disabled.
-#+begin_src emacs-lisp :tangle no
-  (use-package zig-mode
-    :mode "\\.zig\\'"
-    :hook (zig-mode . lsp-deferred))
 #+end_src
 ** Compilation
 Set up the compile package and ensure that compilation output automatically scrolls.
