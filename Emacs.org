@@ -2155,6 +2155,11 @@ Enable automatic wrapping of long lines in text modes, only. This makes it easie
     (add-hook 'markdown-mode-hook 'jpalmer/markdown-mode-hook))
 #+end_src
 
+** TeX (LaTeX/ConTeXt) Support
+#+begin_src emacs-lisp
+  (use-package auctex)
+#+end_src
+
 ** WriteRoom Mode
 [[https://github.com/joostkremers/writeroom-mode][WriteRoom]] mode provides "distraction-free writing for Emacs."
 

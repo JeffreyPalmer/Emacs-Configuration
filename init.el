@@ -745,6 +745,7 @@
   :custom
   (typescript-ts-mode-indent-offset 4))
 
+;; Trying the current version to see if there are still problems in 2025
 ;; Work around an error in the current version of the typescript treesitter grammar
 (defvar jpalmer/tsx-treesit-auto-recipe
   (make-treesit-auto-recipe
@@ -756,7 +757,7 @@
    :source-dir "tsx/src"
    :ext "\\.tsx\\'")
   "Recipe for treesitter tsx lib")
-(add-to-list 'treesit-auto-recipe-list jpalmer/tsx-treesit-auto-recipe)
+;; (add-to-list 'treesit-auto-recipe-list jpalmer/tsx-treesit-auto-recipe)
 (defvar jpalmer/typescript-treesit-auto-recipe
   (make-treesit-auto-recipe
    :lang 'typescript
@@ -767,7 +768,7 @@
    :source-dir "typescript/src"
    :ext "\\.ts\\'")
   "Recipe for treesitter typescript lib")
-(add-to-list 'treesit-auto-recipe-list jpalmer/typescript-treesit-auto-recipe)
+;; (add-to-list 'treesit-auto-recipe-list jpalmer/typescript-treesit-auto-recipe)
 
 (use-package lsp-julia
   :custom
@@ -1259,6 +1260,8 @@
   (defun jpalmer/markdown-mode-hook ()
     (jpalmer/set-markdown-header-font-sizes))
   (add-hook 'markdown-mode-hook 'jpalmer/markdown-mode-hook))
+
+(use-package auctex)
 
 (use-package writeroom-mode)
 
