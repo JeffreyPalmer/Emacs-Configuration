@@ -1597,7 +1597,7 @@ I think these are being a little flaky but I don't have time to investigate at t
 
 *** tempel [disabled]
 I'm giving [[https://github.com/minad/tempel][tempel]] a try, but it's a little odd. At least, I think my configuration is not working properly.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package tempel
     ;;:custom
     ;;(tempel-trigger-prefix "<")
