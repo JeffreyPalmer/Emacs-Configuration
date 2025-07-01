@@ -925,36 +925,6 @@
   ; :hook (lsp-mode glsl-mode)
   :config (global-flycheck-mode))
 
-(use-package tempel
-  ;;:custom
-  ;;(tempel-trigger-prefix "<")
-  :bind (("M-+" . tempel-complete)
-         ("M-*" . tempel-insert))
-  :init
-  (defun tempel-setup-capf ()
-    ;; Add the Tempel Capf to `completion-at-point-functions'.
-    ;; `tempel-expand' only triggers on exact matches. Alternatively use
-    ;; `tempel-complete' if you want to see all matches, but then you
-    ;; should also configure `tempel-trigger-prefix', such that Tempel
-    ;; does not trigger too often when you don't expect it. NOTE: We add
-    ;; `tempel-expand' *before* the main programming mode Capf, such
-    ;; that it will be tried first.
-    (setq-local completion-at-point-functions
-                (cons #'tempel-complete
-                      completion-at-point-functions)))
-  :hook
-  (conf-mode . tempel-setup-capf)
-  (prog-mode . tempel-setup-capf)
-  (text-mode . tempel-setup-capf)
-
-  ;; Enable it with abbrev
-  ;;(add-hook 'prog-mode-hook #'tempel-abbrev-mode)
-  ;;(global-tempel-abbrev-mode)
-  )
-
-;; Some basic templates - I'll probably want to add to this at some point
-(use-package tempel-collection)
-
 (use-package org
   ;; :ensure org-contrib
   ;; :pin gnu
