@@ -313,7 +313,7 @@ This configuration is for the built-in version of the modus themes:
   (use-package idle-highlight-mode
     :diminish idle-highlight-mode
     :config (setq idle-highlight-idle-time 0.5)
-    :hook ((prog-mode text-mode) . idle-highlight-mode))
+    :hook (prog-mode . idle-highlight-mode))
 #+end_src
 
 ** Modeline Improvements
