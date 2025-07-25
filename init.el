@@ -169,7 +169,7 @@
 (use-package idle-highlight-mode
   :diminish idle-highlight-mode
   :config (setq idle-highlight-idle-time 0.5)
-  :hook ((prog-mode text-mode) . idle-highlight-mode))
+  :hook (prog-mode . idle-highlight-mode))
 
 (use-package all-the-icons)
 (use-package nerd-icons)
