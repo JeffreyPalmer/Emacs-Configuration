@@ -1,18 +1,26 @@
 #+PROPERTY: header-args:emacs-lisp :tangle /Users/jeff/.config/emacs/init.el
 
-TODO: Look into using [[https://emacs.stackexchange.com/questions/36727/order-of-blocks-in-org-tangle][this]] to support block reordering, if necessary
+This file contains the complete, documented configuration for my
+Emacs.
 
-A bunch of the content in this file is inspired by/taken from the [[https://systemcrafters.net/emacs-from-scratch/][System Crafters]] site/channel.
+The goal of this work is to be able to generate a fixed, known-good
+configuration for emacs from this file. A bunch of the content in this
+file is inspired by/taken from the [[https://systemcrafters.net/emacs-from-scratch/][System Crafters]] site/channel.
 
-This file contains the complete, documented configuration for my Emacs.
+If this is the first time that a new computer is being configured,
+then fonts will need to be installed, as documented [[*Modeline Improvements][here]].
 
-The goal of this work is to be able to generate a fixed, known-good configuration for emacs from this file.
+NOTE: In order to configure a package that ships with emacs, use the
+following form:
 
-NOTE: In order to configure a package that ships with emacs, use the following form:
   ~(use-package org :straight (:type built-in))~
 
+TODO: Look into using [[https://emacs.stackexchange.com/questions/36727/order-of-blocks-in-org-tangle][this]] to support block reordering, if necessary
+
 * Generated File Warnings
-Include these warnings at the top of both generated files so that I don't accidentally edit them.
+Include these warnings at the top of both generated files so that I
+don't accidentally edit them.
+
 #+begin_src emacs-lisp
   ;;
   ;; DO NOT EDIT!
@@ -74,7 +82,8 @@ First of all we need to ensure that package isn't loaded at startup.
 #+end_src
 
 ** straight.el
-Now straight.el needs to be bootstrapped. This bootstrapping code is provided directly by the [[https://github.com/radian-software/straight.el][straight.el]] project.
+Now straight.el needs to be bootstrapped. This bootstrapping code is
+provided directly by the [[https://github.com/radian-software/straight.el][straight.el]] project.
 
 #+begin_src emacs-lisp
   (defvar bootstrap-version)
@@ -149,7 +158,9 @@ Now straight.el needs to be bootstrapped. This bootstrapping code is provided di
 #+end_src
 
 * Allow periodic tasks to run during the day
-This allows things like buffer cleanup to happen during the day instead of at midnight, when the computer is not typically on.
+This allows things like buffer cleanup to happen during the day
+instead of at midnight, when the computer is not typically on.
+
 #+begin_src emacs-lisp
   (use-package midnight
     :config
@@ -196,6 +207,9 @@ This allows things like buffer cleanup to happen during the day instead of at mi
 
   ;; Name the frame
   ; (set-frame-parameter nil 'name "Main")
+
+  ;; Reduce allocations during resize
+  (setq frame-resize-pixelwise t)
 
 #+end_src
 ** Font Configuration
@@ -266,9 +280,12 @@ Install the doom themes
     (doom-themes-org-config))
 #+end_src
 
-I'm currently testing out some other options, but my previous go-to theme was "doom-tomorrow-night".
+I'm currently testing out some other options, but my previous go-to
+theme was "doom-tomorrow-night".
+
 *** Modus Themes (DISABLED)
-Try out the Modus themes. Currently not using this because I don't have time to read a novel to understand how to use it.
+Try out the Modus themes. Currently not using this because I don't
+have time to read a novel to understand how to use it.
 
 This configuration is for the built-in version of the modus themes:
 #+begin_src emacs-lisp :tangle no
@@ -317,7 +334,9 @@ This configuration is for the built-in version of the modus themes:
 #+end_src
 
 ** Modeline Improvements
-NOTE: The first time this configuration is loaded, the mode line icons will need to be installed via =M-x all-the-icons-install-fonts=.
+NOTE: The first time this configuration is loaded, the mode line icons
+will need to be installed via =M-x all-the-icons-install-fonts=.
+
 #+begin_src emacs-lisp
   (use-package all-the-icons)
   (use-package nerd-icons)
@@ -335,13 +354,29 @@ NOTE: The first time this configuration is loaded, the mode line icons will need
 #+end_src
 
 ** Remove app title bar
-This doesn't appear to have any effect in emacs-mac, but it is documented as the "right thing to do" for emacs-plus, so who knows.
+This doesn't appear to have any effect in emacs-mac, but it is
+documented as the "right thing to do" for emacs-plus, so who knows.
+
 #+begin_src emacs-lisp :tangle /Users/jeff/.config/emacs/early-init.el
   (add-to-list 'default-frame-alist '(undecorated-round . t))
 #+end_src
+
+** Improve scrolling behavior
+#+begin_src emacs-lisp
+  (use-package ultra-scroll
+    :custom
+    (scroll-conservatively 3)
+    (scroll-margin 0)
+    :config
+    (ultra-scroll-mode 1))
+#+end_src
+
 * Key Bindings
 ** Get rid of garbage defaults
-There are some keybinds that I absolutely hate when operating in a modern graphical desktop environment. These should be disabled, but only when we're not in console mode.
+There are some keybinds that I absolutely hate when operating in a
+modern graphical desktop environment. These should be disabled, but
+only when in a windowed mode.
+
 #+begin_src emacs-lisp
   (when window-system
     (when (eq (key-binding (kbd "C-x C-z")) 'suspend-frame)
@@ -376,11 +411,18 @@ There are some keybinds that I absolutely hate when operating in a modern graphi
     (setq which-key-idle-delay 1))
 #+end_src
 ** Text Scaling
-I used to have code to do this, but it turns out that there are interactive screen scaling commands already in emacs, bound to =C-x C-+=, =C-x C--=, and =C-x C-0=. Plus, they're interactive in the same way that Hydra provides, so ultimately this configuration is not needed.
-** Navigation
-[[https://github.com/abo-abo/avy][Avy]] makes it possible to jump to visible text using a character-based decision tree.
+I used to have code to do this, but it turns out that there are
+interactive screen scaling commands already in emacs, bound to =C-x
+C-+=, =C-x C--=, and =C-x C-0=. Plus, they're interactive in the same way
+that Hydra provides, so ultimately this configuration is not needed.
 
-This is apparently [[https://karthinks.com/software/avy-can-do-anything/][a very powerful package]] that I'm under-using. I should fix that.
+** Navigation
+[[https://github.com/abo-abo/avy][Avy]] makes it possible to jump to visible text using a character-based
+decision tree.
+
+This is apparently [[https://karthinks.com/software/avy-can-do-anything/][a very powerful package]] that I'm under-using. I
+should fix that.
+
 #+begin_src emacs-lisp
   (use-package avy
     :custom
@@ -394,6 +436,7 @@ This is apparently [[https://karthinks.com/software/avy-can-do-anything/][a very
 #+end_src
 
 Also install [[https://github.com/kickingvegas/casual-avy][casual-avy]] to make learning this package a little easier.
+
 #+begin_src emacs-lisp
   (use-package casual-avy
     :bind ("C-M-g" . casual-avy-tmenu))
@@ -425,7 +468,9 @@ Add additional information to various help displays.
 This configuration now uses Vertico.
 ** Vertico/Consult-Based Completion
 *** Vertico
-[[https://github.com/minad/vertico][Vertico]] is a new completion UI that integrates with the default emacs completion system.
+[[https://github.com/minad/vertico][Vertico]] is a new completion UI that integrates with the default emacs
+completion system.
+
 #+begin_src emacs-lisp
   (use-package vertico
     :custom
@@ -447,7 +492,9 @@ This configuration now uses Vertico.
 #+end_src
 
 *** Consult
-[[https://github.com/minad/consult][Consult]] is a sister package to vertico and serves as the counsel equivalent to Ivy.
+[[https://github.com/minad/consult][Consult]] is a sister package to vertico and serves as the counsel
+equivalent to Ivy.
+
 #+begin_src emacs-lisp
 
   (defun jpalmer/consult-line-forward ()
@@ -610,7 +657,9 @@ This configuration now uses Vertico.
     )
 #+end_src
 ** Corfu (in-buffer completion)
-[[https://github.com/minad/corfu][Corfu]] is a new in-buffer completion approach from the person that created Vertico.
+[[https://github.com/minad/corfu][Corfu]] is a new in-buffer completion approach from the person that
+created Vertico.
+
 #+begin_src emacs-lisp
   (use-package corfu
     :custom
@@ -677,7 +726,9 @@ This configuration now uses Vertico.
     (embark-collect-mode . consult-preview-at-point-mode))
 #+end_src
 ** Ivy-Based Completion (DISABLED)
-All of these configurations are to support [[https://github.com/abo-abo/swiper][swiper/ivy]]-based completion and associated functionality.
+All of these configurations are to support [[https://github.com/abo-abo/swiper][swiper/ivy]]-based completion
+and associated functionality.
+
 #+begin_src emacs-lisp :tangle no
 
   (use-package ivy-posframe
@@ -819,7 +870,9 @@ All of these configurations are to support [[https://github.com/abo-abo/swiper][
 
 * Window Management
 ** Window layout management via perspective.el
-This seems like it might work nicely with projectile mode? Let's try it out.
+This seems like it might work nicely with projectile mode? Let's try
+it out.
+
 #+begin_src emacs-lisp
   (use-package perspective
     :custom
@@ -867,7 +920,9 @@ This seems like it might work nicely with projectile mode? Let's try it out.
 
 #+end_src
 ** Window Layout Undo/Redo via Winner Mode
-Winner mode allows you to easily undo/redo window configuration changes by pressing <C-c left> or <C-c right>
+Winner mode allows you to easily undo/redo window configuration
+changes by pressing <C-c left> or <C-c right>
+
 #+begin_src emacs-lisp
   (winner-mode 1)
 #+end_src
@@ -923,7 +978,9 @@ Support directional and letter-based buffer navigation
     (popper-echo-mode +1))
 #+end_src
 *** Emacs-Purpose [disabled]
-Try using [[https://github.com/bmag/emacs-purpose][emacs-purpose]] to manage my window layouts/etc. This did not (easily) do what I wanted. At least, not enough to keep it around.
+Try using [[https://github.com/bmag/emacs-purpose][emacs-purpose]] to manage my window layouts/etc. This did not
+(easily) do what I wanted. At least, not enough to keep it around.
+
 #+begin_src emacs-lisp :tangle no
   (use-package window-purpose
     :config
@@ -943,7 +1000,8 @@ Try using [[https://github.com/bmag/emacs-purpose][emacs-purpose]] to manage my 
 *** Display Buffer Alist [disabled]
 Hack the window placement control mechanism directly.
 
-There's a lot that can be done using this variable, but I'm not really trying very hard here. See [[https://protesilaos.com/codelog/2024-02-08-emacs-window-rules-display-buffer-alist/][this blog post]] for an overview.
+There's a lot that can be done using this variable, but I'm not really
+trying very hard here. See [[https://protesilaos.com/codelog/2024-02-08-emacs-window-rules-display-buffer-alist/][this blog post]] for an overview.
 
 #+begin_src emacs-lisp :tangle no
   (use-package emacs
@@ -962,7 +1020,9 @@ There's a lot that can be done using this variable, but I'm not really trying ve
 #+end_src
 * General Editing
 ** Hungry Delete
-This deletes all whitespace up to the last non-whitespace character when editing. It can be very handy.
+This deletes all whitespace up to the last non-whitespace character
+when editing. It can be very handy.
+
 #+begin_src emacs-lisp
   ;; Disabled for now in favor of the not-so-smart hungry delete
   (use-package smart-hungry-delete
@@ -980,6 +1040,7 @@ This deletes all whitespace up to the last non-whitespace character when editing
 #+end_src
 ** Whitespace Highlighting
 This highlights any odd whitespace in a buffer.
+
 #+begin_src emacs-lisp
   (use-package whitespace
     :config
@@ -1005,9 +1066,13 @@ This highlights any odd whitespace in a buffer.
     (move-text-default-bindings))
 #+end_src
 *** Set PATH from shell
-For some reason emacs doesn't normally start with the PATH from the shell on MacOS. This corrects that behavior so it's easier to run installed programs.
+For some reason emacs doesn't normally start with the PATH from the
+shell on MacOS. This corrects that behavior so it's easier to run
+installed programs.
 
-This should only be necessary with ~emacs-mac~ as ~emacs-plus~ has its own process for injecting environment variables.
+This should only be necessary with ~emacs-mac~ as ~emacs-plus~ has its own
+process for injecting environment variables.
+
 #+begin_src emacs-lisp
   (when jpalmer/is-emacs-mac
     (use-package exec-path-from-shell
@@ -1022,7 +1087,9 @@ This should only be necessary with ~emacs-mac~ as ~emacs-plus~ has its own proce
 #+end_src
 
 *** Keychain support
-This is required to ensure that SSH interaction with GitHub (for example) is seamless.
+This is required to ensure that SSH interaction with GitHub (for
+example) is seamless.
+
 #+begin_src emacs-lisp :tangle no
   (use-package keychain-environment
     :config
@@ -1049,7 +1116,9 @@ This is required to ensure that SSH interaction with GitHub (for example) is sea
 #+end_src
 **** Highlight Parentheses
 +These are currently disabled as I experiment with ~rainbow-delimiters~.+
-Note: That experiment didn't work out, as the rainbow colors were just not usefully actionable.
+Note: That experiment didn't work out, as the rainbow colors were just
+not usefully actionable.
+
 #+begin_src emacs-lisp
   (use-package highlight-parentheses
     :custom
@@ -1103,9 +1172,12 @@ Note: That experiment didn't work out, as the rainbow colors were just not usefu
 #+end_src
 *** Highlight indentation levels
 **** Indent-bars [disabled]
-[[https://github.com/jdtsmith/indent-bars][Indent-bars]] is an alternative to ~highlight-indent-guides~ that behaves a bit better w.r.t. empty lines.
+[[https://github.com/jdtsmith/indent-bars][Indent-bars]] is an alternative to ~highlight-indent-guides~ that behaves
+a bit better w.r.t. empty lines.
 
-This is currently disabled because it doesn't work at all with Common Lisp code.
+This is currently disabled because it doesn't work at all with Common
+Lisp code.
+
 #+begin_src emacs-lisp :tangle no
   (use-package indent-bars
     :custom
@@ -1149,7 +1221,10 @@ This allows easy navigation through camelCaseWords.
 #+end_src
 
 *** Project Support (Projectile)
-TODO: Try out the new built-in support for projects using project.el. A bunch of stuff might have to change, so that's not really a high priority.
+TODO: Try out the new built-in support for projects using
+project.el. A bunch of stuff might have to change, so that's not
+really a high priority.
+
 #+begin_src emacs-lisp
   (use-package projectile
     :config
@@ -1234,7 +1309,8 @@ Use [[https://github.com/renzmann/treesit-auto][treesit-auto]] to manage this st
 *** Language Server Support
 This configuration is for LSP mode
 
-First, ensure that we are [[https://emacs-lsp.github.io/lsp-mode/page/performance/#use-plists-for-deserialization][using plists for deserialization]] in LSP mode.
+First, ensure that we are [[https://emacs-lsp.github.io/lsp-mode/page/performance/#use-plists-for-deserialization][using plists for deserialization]] in LSP
+mode.
 #+begin_src emacs-lisp :tangle /Users/jeff/.config/emacs/early-init.el
   (setenv "LSP_USE_PLISTS" "true")
 #+end_src
@@ -1352,9 +1428,13 @@ The treesitter-based configuration
 #+end_src
 *** Julia
 **** LSP
-LSP seems to provide the most advanced Julia environment that I've found so far that works well in Emacs.
+LSP seems to provide the most advanced Julia environment that I've
+found so far that works well in Emacs.
 
-Note to self: For some unknown reason I can't move the ~julia-mode~ declaration into its own block without breaking the linkage between ~julia-lsp~ and ~julia-mode~, and I don't have time to figure it out.
+Note to self: For some unknown reason I can't move the ~julia-mode~
+declaration into its own block without breaking the linkage between
+~julia-lsp~ and ~julia-mode~, and I don't have time to figure it out.
+
 #+begin_src emacs-lisp
   (use-package lsp-julia
     :custom
@@ -1372,7 +1452,9 @@ Note to self: For some unknown reason I can't move the ~julia-mode~ declaration 
 #+end_src
 
 **** Julia Snail
-~julia-snail~ tries to provide a REPL experience closer to lisp. Unfortunately this doesn't provide enough information for my day-to-day programming.
+~julia-snail~ tries to provide a REPL experience closer to
+lisp. Unfortunately this doesn't provide enough information for my
+day-to-day programming.
 
 Might want to try it again sometime. The people that like it REALLY like it.
 #+begin_src emacs-lisp :tangle no
@@ -1431,7 +1513,8 @@ I use [[https://github.com/joaotavora/sly][SLY]] - a fork of Slime that has some
 
 #+end_src
 **** Hyperspec Info Files
-Now, set up ~info~ so that it can see the ANSI Common Lisp Specification.
+Now, set up ~info~ so that it can see the ANSI Common Lisp
+Specification.
 #+begin_src emacs-lisp
   (use-package info
     :config
@@ -1498,8 +1581,9 @@ I may want to add ASDF at some point.
 *** WGSL
 WGSL is the shader language for WebGPU.
 
-This is a tree-sitter-based approach that is currently disabled.
-For some reason this attempt at hooking into =treesit-auto= doesn't work. I ended up having to install the WGSL treesitter grammar by hand.
+This is a tree-sitter-based approach that is currently disabled.  For
+some reason this attempt at hooking into =treesit-auto= doesn't work. I
+ended up having to install the WGSL treesitter grammar by hand.
 
 This is apparently now built into LSP, so that should just work?
 
@@ -1561,7 +1645,8 @@ Try using a different WGSL mode that doesn't use treesitter.
   ;; (use-package skewer-mode)
 #+end_src
 ** Compilation
-Set up the compile package and ensure that compilation output automatically scrolls.
+Set up the compile package and ensure that compilation output
+automatically scrolls.
 #+begin_src emacs-lisp
   (use-package compile
     :custom
@@ -1586,9 +1671,13 @@ Set up the compile package and ensure that compilation output automatically scro
     :config (global-flycheck-mode))
 #+end_src
 ** Snippets
-All of these snippets packages are currently disabled because I barely use them and they were not behaving nicely. I may give tempel a try again at some point.
+All of these snippets packages are currently disabled because I barely
+use them and they were not behaving nicely. I may give tempel a try
+again at some point.
+
 *** Yasnippets [disabled]
-I think these are being a little flaky but I don't have time to investigate at the moment
+I think these are being a little flaky but I don't have time to
+investigate at the moment
 #+begin_src emacs-lisp :tangle no
   (use-package yasnippet
     :hook (prog-mode . yas-minor-mode)
@@ -1596,7 +1685,8 @@ I think these are being a little flaky but I don't have time to investigate at t
 #+end_src
 
 *** tempel [disabled]
-I'm giving [[https://github.com/minad/tempel][tempel]] a try, but it's a little odd. At least, I think my configuration is not working properly.
+I'm giving [[https://github.com/minad/tempel][tempel]] a try, but it's a little odd. At least, I think my
+configuration is not working properly.
 #+begin_src emacs-lisp :tangle no
   (use-package tempel
     ;;:custom
@@ -1892,13 +1982,16 @@ Description:
     (org-clock-persistence-insinuate))
 #+end_src
 ** Support org-capture
-This needs to come after we install and configure org, or else emacs will use the built-in version
+This needs to come after we install and configure org, or else emacs
+will use the built-in version
 #+begin_src emacs-lisp
   (require 'org-protocol)
 #+end_src
 ** Better Fonts
 *** Improved bullet formatting [disabled]
-I've disabled this for now, because something was causing weird bulled display issues. I'm testing my configuration without this to see if it's the culprit.
+I've disabled this for now, because something was causing weird bullet
+display issues. I'm testing my configuration without this to see if
+it's the culprit.
 #+begin_src emacs-lisp :tangle no
   (use-package org-superstar
     :after org
@@ -1948,7 +2041,9 @@ I've disabled this for now, because something was causing weird bulled display i
 
 ** Org Modern Theme [DISABLED]
 https://github.com/minad/org-modern
-Turns out that this theme configures TODO faces differently than org, so configure those here.
+
+Turns out that this theme configures TODO faces differently than org,
+so configure those here.
 #+begin_src emacs-lisp :tangle no
   (use-package org-modern
     :custom
@@ -2008,7 +2103,10 @@ Turns out that this theme configures TODO faces differently than org, so configu
 #+end_src
 
 ** Org Roam
-
+I don't really use this in any meaningful way - I should probably move
+the content that I did put into it back into normal org files, or
+actually commit to doing something more with it. Being in this halfway
+state is not great.
 #+begin_src emacs-lisp
   (use-package org-roam
     :ensure t
@@ -2081,8 +2179,12 @@ Turns out that this theme configures TODO faces differently than org, so configu
 #+end_src
 
 ** Org-QL
-[[https://github.com/alphapapa/org-ql][org-ql]] is a package that provides a query language for org files, as well as some advanced search capabilities.
-TODO: Figure out how to use this to provide agenda-like views that are more advanced than my current agenda views (probably not really necessary, tbh)
+[[https://github.com/alphapapa/org-ql][org-ql]] is a package that provides a query language for org files, as
+well as some advanced search capabilities.
+
+TODO: Figure out how to use this to provide agenda-like views that are
+more advanced than my current agenda views (probably not really
+necessary, tbh)
 #+begin_src emacs-lisp
   (use-package org-ql
     :straight (:host github
@@ -2100,7 +2202,8 @@ Try out this package and see how it works.
 #+end_src
 
 ** Org-Capture [DISABLED]
-Trying to get a working configuration of ~org-capture~ without using ~emacs-mac~.
+Trying to get a working configuration of ~org-capture~ without using
+~emacs-mac~.
 
 Okay, so this package uses AppleScript to control other applications
 to get URLs, etc. This is probably fine, and it allows the capture
@@ -2127,7 +2230,9 @@ This setup is taken from [[https://macowners.club/posts/org-capture-from-everywh
 #+end_src
 * Text Editing
 ** Automatic Word Wrapping
-Enable automatic wrapping of long lines in text modes, only. This makes it easier to edit text files, but leaves code formatting up to the developer.
+Enable automatic wrapping of long lines in text modes, only. This
+makes it easier to edit text files, but leaves code formatting up to
+the developer.
 
 #+begin_src emacs-lisp
   (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
@@ -2170,7 +2275,10 @@ Enable automatic wrapping of long lines in text modes, only. This makes it easie
 ** Disable spelling popups
 I cannot stand these.
 
-Binding this new (in Emacs 30) variable to ~t~ will set the completion to use ~M-/~ which allows for word completion when desired, but skips using a popup. Hooray!
+Binding this new (in Emacs 30) variable to ~t~ will set the completion
+to use ~M-/~ which allows for word completion when desired, but skips
+using a popup. Hooray!
+
 #+begin_src emacs-lisp
   (use-package emacs
     :custom
@@ -2179,6 +2287,7 @@ Binding this new (in Emacs 30) variable to ~t~ will set the completion to use ~M
 
 * Tree Navigation
 Set up a tree-based navigation system, just in case.
+
 I honestly almost never use this, so maybe it's better to remove it.
 #+begin_src emacs-lisp
   (use-package neotree
@@ -2206,7 +2315,8 @@ I honestly almost never use this, so maybe it's better to remove it.
 #+end_src
 
 * LLM Support
-This enables the =gptel= package, which is used to allow emacs to interact with LLM servers.
+This enables the =gptel= package, which is used to allow emacs to
+interact with LLM servers.
 
 First, some support functions from [[https://github.com/gregoryg/emacs-gregoryg][this emacs configuration]].
 #+begin_src emacs-lisp
