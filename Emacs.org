@@ -1,4 +1,4 @@
-#+PROPERTY: header-args:emacs-lisp :tangle /Users/jeff/.config/emacs/init.el
+#+PROPERTY: header-args:emacs-lisp :tangle ~/.config/emacs/init.el
 
 This file contains the complete, documented configuration for my
 Emacs.
@@ -30,7 +30,7 @@ don't accidentally edit them.
   ;;
 #+end_src
 
-#+begin_src emacs-lisp :tangle /Users/jeff/.config/emacs/early-init.el
+#+begin_src emacs-lisp :tangle ~/.config/emacs/early-init.el
   ;;
   ;; DO NOT EDIT!
   ;;
@@ -39,13 +39,15 @@ don't accidentally edit them.
   ;;
 #+end_src
 * Configuration Variables
+Trying to land on a set of fonts that are easily installable on both
+linux and MacOS. Looks like Jetbrains Mono and Lato are a good
+starting point.
 
 #+begin_src emacs-lisp
   (defvar jpalmer/default-font "Jetbrains Mono")
-  ;; (defvar jpalmer/variable-font "Avenir Next")
-  (defvar jpalmer/variable-font "Optima")
+  (defvar jpalmer/variable-font "Lato")
   (defvar jpalmer/default-font-size 140)
-  (defvar jpalmer/default-variable-font-size 190)
+  (defvar jpalmer/default-variable-font-size 170)
   (defvar jpalmer/is-emacs-mac t)
 #+end_src
 
@@ -77,7 +79,7 @@ and then use a hook to measure and report startup time.
 ** package
 First of all we need to ensure that package isn't loaded at startup.
 
-#+begin_src emacs-lisp :tangle /Users/jeff/.config/emacs/early-init.el
+#+begin_src emacs-lisp :tangle ~/.config/emacs/early-init.el
   (setq package-enable-at-startup nil)
 #+end_src
 
@@ -121,13 +123,15 @@ provided directly by the [[https://github.com/radian-software/straight.el][strai
     (native-comp-async-report-warnings-errors 'silent))
 #+end_src
 
-#+begin_src emacs-lisp :tangle /Users/jeff/.config/emacs/early-init.el
+I'm not planning to use emacs-plus any longer so I think this can be
+removed.
+#+begin_src emacs-lisp :tangle ~/.config/emacs/early-init.el
   ;; Manually set the path to avoid an issue with emacs-plus on Apple Silicon
   ;; This bug should be fixed soon and this could then be removed
-  (setenv "PATH" "/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/jeff/.qlot/bin")
-  (setenv "CPATH" "/opt/homebrew/include")
-  (setenv "LIBRARY_PATH" "/opt/homebrew/lib")
-  (setq exec-path (split-string (getenv "PATH") path-separator))
+  ;; (setenv "PATH" "/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/jeff/.qlot/bin")
+  ;; (setenv "CPATH" "/opt/homebrew/include")
+  ;; (setenv "LIBRARY_PATH" "/opt/homebrew/lib")
+  ;; (setq exec-path (split-string (getenv "PATH") path-separator))
 
   ;; Set the directory to look for native files
 
@@ -357,11 +361,15 @@ will need to be installed via =M-x all-the-icons-install-fonts=.
 This doesn't appear to have any effect in emacs-mac, but it is
 documented as the "right thing to do" for emacs-plus, so who knows.
 
-#+begin_src emacs-lisp :tangle /Users/jeff/.config/emacs/early-init.el
+#+begin_src emacs-lisp :tangle ~/.config/emacs/early-init.el
   (add-to-list 'default-frame-alist '(undecorated-round . t))
 #+end_src
 
 ** Improve scrolling behavior
+The package [[https://github.com/jdtsmith/ultra-scroll][ultra-scroll]] improves the scrolling experience with
+emacs-mac. It [[https://github.com/jdtsmith/emacs-mac/issues/47][may get integrated into the main build]], so this may not
+be necessary long term.
+
 #+begin_src emacs-lisp
   (use-package ultra-scroll
     :custom
@@ -1246,15 +1254,16 @@ really a high priority.
 
 I'm now using [[https://github.com/DevelopmentCool2449/colorful-mode][colorful-mode]].
 #+begin_src emacs-lisp
-    (use-package colorful-mode
-      :custom
-      (colorful-use-prefix t)
-      (colorful-only-strings 'only-prog)
-      (css-fontify-colors nil)
-      :config
-      (global-colorful-mode t)
-      (add-to-list 'global-colorful-modes 'helpful-mode)
-      (add-to-list 'global-colorful-modes 'vterm-mode))
+  (use-package colorful-mode
+    :custom
+    (colorful-use-prefix t)
+    (colorful-only-strings 'only-prog)
+    (css-fontify-colors nil)
+    :config
+    (global-colorful-mode t)
+    (add-to-list 'global-colorful-modes 'helpful-mode)
+    ;;(add-to-list 'global-colorful-modes 'vterm-mode)
+    )
 
 #+end_src
 
@@ -1265,8 +1274,11 @@ I was originally using ~rainbow-mode~.
 #+end_src
 
 *** Use vterm for better shell performance
+Only install this if we're on MacOS. Probably should parameterize some
+other things, as well.
 #+begin_src emacs-lisp
   (use-package vterm
+    :if (eq system-type 'darwin)
     :custom
     (vterm-kill-buffer-on-exit nil))
 #+end_src
@@ -1311,7 +1323,7 @@ This configuration is for LSP mode
 
 First, ensure that we are [[https://emacs-lsp.github.io/lsp-mode/page/performance/#use-plists-for-deserialization][using plists for deserialization]] in LSP
 mode.
-#+begin_src emacs-lisp :tangle /Users/jeff/.config/emacs/early-init.el
+#+begin_src emacs-lisp :tangle ~/.config/emacs/early-init.el
   (setenv "LSP_USE_PLISTS" "true")
 #+end_src
 
@@ -1446,9 +1458,10 @@ declaration into its own block without breaking the linkage between
 
   ;; REPL Support
   (use-package julia-repl
-    :after vterm
+    ;; :after vterm
     :hook (julia-mode . julia-repl-mode)
-    :config (julia-repl-set-terminal-backend 'vterm))
+    :config (julia-repl-set-terminal-backend
+             (if (eq system-type 'darwin) 'vterm 'ansi-term)))
 #+end_src
 
 **** Julia Snail
@@ -1723,7 +1736,7 @@ For some reason this wasn't working properly.
 
 Write out some additional templates to the tempel template file
 #+begin_src emacs-lisp :mkdirp yes :tangle no
-;; :tangle /Users/jeff/.config/emacs/etc/tempel/templates.eld
+;; :tangle ~/.config/emacs/etc/tempel/templates.eld
 ;; -*- mode: lisp -*-
 ;; This file was automatically generated - DO NOT EDIT
 ;;
