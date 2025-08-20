@@ -125,13 +125,17 @@ provided directly by the [[https://github.com/radian-software/straight.el][strai
 
 I'm not planning to use emacs-plus any longer so I think this can be
 removed.
+
+Apparently not, as this caused native compilation to fail. I suppose
+you DO need to set up the shell environment.
+
 #+begin_src emacs-lisp :tangle ~/.config/emacs/early-init.el
   ;; Manually set the path to avoid an issue with emacs-plus on Apple Silicon
   ;; This bug should be fixed soon and this could then be removed
-  ;; (setenv "PATH" "/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/jeff/.qlot/bin")
-  ;; (setenv "CPATH" "/opt/homebrew/include")
-  ;; (setenv "LIBRARY_PATH" "/opt/homebrew/lib")
-  ;; (setq exec-path (split-string (getenv "PATH") path-separator))
+  (setenv "PATH" "/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/jeff/.qlot/bin")
+  (setenv "CPATH" "/opt/homebrew/include")
+  (setenv "LIBRARY_PATH" "/opt/homebrew/lib")
+  (setq exec-path (split-string (getenv "PATH") path-separator))
 
   ;; Set the directory to look for native files
 

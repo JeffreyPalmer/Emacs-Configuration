@@ -6,10 +6,9 @@
 ;;
 
 (defvar jpalmer/default-font "Jetbrains Mono")
-;; (defvar jpalmer/variable-font "Avenir Next")
-(defvar jpalmer/variable-font "Optima")
+(defvar jpalmer/variable-font "Lato")
 (defvar jpalmer/default-font-size 140)
-(defvar jpalmer/default-variable-font-size 190)
+(defvar jpalmer/default-variable-font-size 170)
 (defvar jpalmer/is-emacs-mac t)
 
 (setq user-full-name "Jeffrey Palmer"
@@ -107,6 +106,9 @@
 ;; Name the frame
 ; (set-frame-parameter nil 'name "Main")
 
+;; Reduce allocations during resize
+(setq frame-resize-pixelwise t)
+
 ;; Set the default face
 (set-face-attribute 'default nil :font jpalmer/default-font :height jpalmer/default-font-size :weight 'light)
 
@@ -181,6 +183,13 @@
 (use-package hl-line
   :config
   (global-hl-line-mode +1))
+
+(use-package ultra-scroll
+  :custom
+  (scroll-conservatively 3)
+  (scroll-margin 0)
+  :config
+  (ultra-scroll-mode 1))
 
 (when window-system
   (when (eq (key-binding (kbd "C-x C-z")) 'suspend-frame)
@@ -664,9 +673,11 @@
   :config
   (global-colorful-mode t)
   (add-to-list 'global-colorful-modes 'helpful-mode)
-  (add-to-list 'global-colorful-modes 'vterm-mode))
+  ;;(add-to-list 'global-colorful-modes 'vterm-mode)
+  )
 
 (use-package vterm
+  :if (eq system-type 'darwin)
   :custom
   (vterm-kill-buffer-on-exit nil))
 
@@ -780,9 +791,10 @@
 
 ;; REPL Support
 (use-package julia-repl
-  :after vterm
+  ;; :after vterm
   :hook (julia-mode . julia-repl-mode)
-  :config (julia-repl-set-terminal-backend 'vterm))
+  :config (julia-repl-set-terminal-backend
+           (if (eq system-type 'darwin) 'vterm 'ansi-term)))
 
 ;; (use-package rust-mode
 ;;   :init
