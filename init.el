@@ -527,9 +527,9 @@
   (shackle-mode))
 
 (use-package popper
-  :bind (("C-`" . popper-toggle)
-         ("M-`" . popper-cycle)
-         ("C-M-`" . popper-toggle-type))
+  :bind (("C-'" . popper-toggle)
+         ("M-'" . popper-cycle)
+         ("C-M-'" . popper-toggle-type))
   :custom
   (popper-reference-buffers '("\\*Messages\\*"
                               "Output\\*$"
@@ -815,8 +815,9 @@
   ;; Configure SLY to support running with QLOT
   :config
   (setq sly-lisp-implementations
-        '((qlot ("qlot" "exec" "sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix)
-          (sbcl ("sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix))))
+        '((sbcl ("sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix))
+          (qlot ("qlot" "exec" "sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix)
+        ))
 
 (use-package sly-asdf
   :config (push 'sly-asdf sly-contribs))
