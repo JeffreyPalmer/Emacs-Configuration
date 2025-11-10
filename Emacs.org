@@ -1514,7 +1514,7 @@ Might want to try it again sometime. The people that like it REALLY like it.
 I use [[https://github.com/joaotavora/sly][SLY]] - a fork of Slime that has some nice features.
 #+begin_src emacs-lisp
   (use-package sly
-    ;:custom (inferior-lisp-program "sbcl")
+    :custom (inferior-lisp-program "sbcl")
     ;; Configure SLY to support running with QLOT
     :config
     (setq sly-lisp-implementations

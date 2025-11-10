@@ -811,7 +811,7 @@
                          (lsp))))
 
 (use-package sly
-  ;:custom (inferior-lisp-program "sbcl")
+  :custom (inferior-lisp-program "sbcl")
   ;; Configure SLY to support running with QLOT
   :config
   (setq sly-lisp-implementations
