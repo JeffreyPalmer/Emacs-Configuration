@@ -815,8 +815,8 @@
   ;; Configure SLY to support running with QLOT
   :config
   (setq sly-lisp-implementations
-        '((sbcl ("sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix))
-          (qlot ("qlot" "exec" "sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix)
+        '((sbcl ("sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix)
+          (qlot ("qlot" "exec" "sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix))
         ))
 
 (use-package sly-asdf
