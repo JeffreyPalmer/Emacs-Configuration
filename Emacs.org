@@ -641,8 +641,8 @@ equivalent to Ivy.
      consult-theme :preview-key '(:debounce 0.2 any)
      consult-ripgrep consult-git-grep consult-grep
      consult-bookmark consult-recent-file consult-xref
-     consult--source-bookmark consult--source-file-register
-     consult--source-recent-file consult--source-project-recent-file
+     consult-source-bookmark consult-source-file-register
+     consult-source-recent-file consult-source-project-recent-file
      ;; :preview-key "M-."
      :preview-key '(:debounce 0.4 any))
 
@@ -743,7 +743,7 @@ created Vertico.
 This seems like it might work nicely with projectile mode? Let's try
 it out.
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package perspective
     :custom
     (persp-mode-prefix-key (kbd "C-c w"))
@@ -757,7 +757,7 @@ it out.
 
   ;; Customize consult to support perspective buffer restrictions
   (with-eval-after-load 'consult
-    (consult-customize consult--source-buffer :hidden t :default nil)
+    (consult-customize consult-source-buffer :hidden t :default nil)
     (add-to-list 'consult-buffer-sources persp-consult-source))
 
   ;; Also add support for creating new perspectives in projectile
@@ -767,8 +767,8 @@ it out.
     :bind
     (:map projectile-command-map ("p" . projectile-persp-switch-project)))
 #+end_src
-** Window management via persp-mode
-#+begin_src emacs-lisp
+** Window management via persp-mode [disabled]
+#+begin_src emacs-lisp :tangle no
   (use-package persp-mode
     :custom
     (persp-mode t)
@@ -1366,6 +1366,7 @@ I use [[https://github.com/joaotavora/sly][SLY]] - a fork of Slime that has some
   (use-package sly
     :custom (inferior-lisp-program "sbcl")
     ;; Configure SLY to support running with QLOT
+    ;; Some of the packages that I use regularly require more memory
     :config
     (setq sly-lisp-implementations
           '((sbcl ("sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix)

@@ -178,6 +178,7 @@
 (use-package doom-modeline
   :init (doom-modeline-mode 1)
   :custom ((doom-modeline-buffer-encoding nil)
+           (coom-modeline-display-default-persp-name t)
            (doom-modeline-buffer-file-name-style 'relative-from-project)))
 
 (use-package hl-line
@@ -396,8 +397,8 @@
    consult-theme :preview-key '(:debounce 0.2 any)
    consult-ripgrep consult-git-grep consult-grep
    consult-bookmark consult-recent-file consult-xref
-   consult--source-bookmark consult--source-file-register
-   consult--source-recent-file consult--source-project-recent-file
+   consult-source-bookmark consult-source-file-register
+   consult-source-recent-file consult-source-project-recent-file
    ;; :preview-key "M-."
    :preview-key '(:debounce 0.4 any))
 
@@ -494,7 +495,7 @@
 
 ;; Customize consult to support perspective buffer restrictions
 (with-eval-after-load 'consult
-  (consult-customize consult--source-buffer :hidden t :default nil)
+  (consult-customize consult-source-buffer :hidden t :default nil)
   (add-to-list 'consult-buffer-sources persp-consult-source))
 
 ;; Also add support for creating new perspectives in projectile
@@ -784,7 +785,8 @@
 (use-package lsp-julia
   :custom
   (lsp-julia-package-dir nil)
-  (lsp-julia-default-environment "~/.julia/environments/v1.10"))
+  (lsp-julia-default-depot "~/.julia")
+  (lsp-julia-default-environment "~/.julia/environments/v1.12"))
 
 (use-package julia-mode
   :hook (julia-mode . lsp-deferred))
@@ -813,6 +815,7 @@
 (use-package sly
   :custom (inferior-lisp-program "sbcl")
   ;; Configure SLY to support running with QLOT
+  ;; Some of the packages that I use regularly require more memory
   :config
   (setq sly-lisp-implementations
         '((sbcl ("sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix)
