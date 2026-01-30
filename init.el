@@ -822,8 +822,8 @@
   ;; Some of the packages that I use regularly require more memory
   :config
   (setq sly-lisp-implementations
-        '((sbcl ("sbcl" "--dynamic-space-size" "8192") :coding-system utf-8-unix)
-          (qlot ("qlot" "exec" "sbcl" "--dynamic-space-size" "8192") :coding-system utf-8-unix))
+        '((qlot ("qlot" "exec" "sbcl" "--dynamic-space-size" "8192") :coding-system utf-8-unix)
+          (sbcl ("sbcl" "--dynamic-space-size" "8192") :coding-system utf-8-unix))
         ))
 
 (use-package sly-asdf
