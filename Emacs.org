@@ -219,6 +219,9 @@ instead of at midnight, when the computer is not typically on.
   ;; Reduce allocations during resize
   (setq frame-resize-pixelwise t)
 
+  ;; this doesn't really belong here but I'm not sure where else to put it
+  (setq dired-use-ls-dired nil)
+
 #+end_src
 ** Font Configuration
 #+begin_src emacs-lisp
@@ -442,7 +445,7 @@ should fix that.
     (avy-keys '(?a ?r ?s ?t ?n ?e ?i ?o))
     (avy-orders-alist '((avy-goto-char-2 . avy-order-closest)
                         (avy-goto-line . avy-order-closest)))
-    :bind (("s-;" . avy-goto-char-2)
+    :bind (("s-'" . avy-goto-char-2)
            ("s-g" . avy-goto-line))
     :config
     (avy-setup-default))
@@ -818,26 +821,27 @@ Support directional and letter-based buffer navigation
 *** Popper
 #+begin_src emacs-lisp
 
-  (use-package popper
-    :bind (("C-'" . popper-toggle)
-           ("M-'" . popper-cycle)
-           ("C-M-'" . popper-toggle-type))
-    :custom
-    (popper-reference-buffers '("\\*Messages\\*"
-                                "Output\\*$"
-                                "\\*Async Shell Command\\*"
-                                help-mode
-                                compilation-mode
-                                messages-mode
-                                occur-mode
-                                "\\*helpful"
-                                "\\*sly-mrepl"
-                                "\\*julia\\*"))
-    (popper-group-function #'popper-group-by-perspective)
-    (popper-display-control nil)
-    :config
-    (popper-mode +1)
-    (popper-echo-mode +1))
+    (use-package popper
+      :bind (("C-'" . popper-toggle)
+             ("M-'" . popper-cycle)
+             ("C-M-'" . popper-toggle-type))
+      :custom
+      (popper-reference-buffers '("\\*Messages\\*"
+                                  "Output\\*$"
+                                  "\\*Async Shell Command\\*"
+                                  help-mode
+                                  compilation-mode
+                                  messages-mode
+                                  occur-mode
+                                  "\\*helpful"
+                                  "\\*julia\\*"
+                                  "\\*sly-mrepl"
+                                  "\\*slime-repl\\*"))
+      (popper-group-function #'popper-group-by-perspective)
+      (popper-display-control nil)
+      :config
+      (popper-mode +1)
+      (popper-echo-mode +1))
 #+end_src
 *** Emacs-Purpose [disabled]
 Try using [[https://github.com/bmag/emacs-purpose][emacs-purpose]] to manage my window layouts/etc. This did not
@@ -873,6 +877,7 @@ trying very hard here. See [[https://protesilaos.com/codelog/2024-02-08-emacs-wi
              (display-buffer-reuse-window display-buffer-same-window)
              (reusable-frames . t))
             `(,(rx bos "*sly-mrepl")
+              ,(rx bos "*slime-repl")
               (display-buffer-reuse-window)
               (display-buffer-in-side-window)
               (reusable-frames . visible)
@@ -1361,7 +1366,8 @@ Might want to try it again sometime. The people that like it REALLY like it.
 #+end_src
 *** Common Lisp
 **** SLY
-I use [[https://github.com/joaotavora/sly][SLY]] - a fork of Slime that has some nice features.
+I use [[https://github.com/joaotavora/sly][SLY]] - a fork of Slime that has some nice features. Vera renders properly in the Sly REPL, which for some reason I'm not interested in exploring SLIME does not.
+
 #+begin_src emacs-lisp
   (use-package sly
     :custom (inferior-lisp-program "sbcl")
@@ -1369,8 +1375,8 @@ I use [[https://github.com/joaotavora/sly][SLY]] - a fork of Slime that has some
     ;; Some of the packages that I use regularly require more memory
     :config
     (setq sly-lisp-implementations
-          '((sbcl ("sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix)
-            (qlot ("qlot" "exec" "sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix))
+          '((sbcl ("sbcl" "--dynamic-space-size" "8192") :coding-system utf-8-unix)
+            (qlot ("qlot" "exec" "sbcl" "--dynamic-space-size" "8192") :coding-system utf-8-unix))
           ))
 
   (use-package sly-asdf
@@ -1381,6 +1387,16 @@ I use [[https://github.com/joaotavora/sly][SLY]] - a fork of Slime that has some
   (use-package sly-repl-ansi-color
     :config (push 'sly-repl-ansi-color sly-contribs))
 
+#+end_src
+**** SLIME
+Try out the lisp OG instead of Sly. The Vera REPL-based rendering doesn't work without some investigation.
+#+begin_src emacs-lisp :tangle no
+  (use-package slime
+    :config
+    (setq slime-lisp-implementations
+          '((sbcl ("sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix)
+            (qlot ("qlot" "exec" "sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix)))
+    (slime-setup '(slime-fancy slime-quicklisp slime-asdf slime-mrepl)))
 #+end_src
 **** Hyperspec Info Files
 Now, set up ~info~ so that it can see the ANSI Common Lisp

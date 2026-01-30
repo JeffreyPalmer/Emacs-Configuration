@@ -109,6 +109,9 @@
 ;; Reduce allocations during resize
 (setq frame-resize-pixelwise t)
 
+;; this doesn't really belong here but I'm not sure where else to put it
+(setq dired-use-ls-dired nil)
+
 ;; Set the default face
 (set-face-attribute 'default nil :font jpalmer/default-font :height jpalmer/default-font-size :weight 'light)
 
@@ -225,7 +228,7 @@
   (avy-keys '(?a ?r ?s ?t ?n ?e ?i ?o))
   (avy-orders-alist '((avy-goto-char-2 . avy-order-closest)
                       (avy-goto-line . avy-order-closest)))
-  :bind (("s-;" . avy-goto-char-2)
+  :bind (("s-'" . avy-goto-char-2)
          ("s-g" . avy-goto-line))
   :config
   (avy-setup-default))
@@ -540,8 +543,9 @@
                               messages-mode
                               occur-mode
                               "\\*helpful"
+                              "\\*julia\\*"
                               "\\*sly-mrepl"
-                              "\\*julia\\*"))
+                              "\\*slime-repl\\*"))
   (popper-group-function #'popper-group-by-perspective)
   (popper-display-control nil)
   :config
@@ -818,8 +822,8 @@
   ;; Some of the packages that I use regularly require more memory
   :config
   (setq sly-lisp-implementations
-        '((sbcl ("sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix)
-          (qlot ("qlot" "exec" "sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix))
+        '((sbcl ("sbcl" "--dynamic-space-size" "8192") :coding-system utf-8-unix)
+          (qlot ("qlot" "exec" "sbcl" "--dynamic-space-size" "8192") :coding-system utf-8-unix))
         ))
 
 (use-package sly-asdf
