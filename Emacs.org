@@ -982,10 +982,6 @@ example) is seamless.
    (electric-pair-mode))
 #+end_src
 **** Highlight Parentheses
-+These are currently disabled as I experiment with ~rainbow-delimiters~.+
-Note: That experiment didn't work out, as the rainbow colors were just
-not usefully actionable.
-
 #+begin_src emacs-lisp
   (use-package highlight-parentheses
     :custom
@@ -1021,21 +1017,6 @@ not usefully actionable.
     ((clojure-mode cider-repl-mode emacs-lisp-mode lisp-mode lisp-interaction-mode) . enable-paredit-mode)
     :config
     (setq backward-delete-char-untabify-method 'all))
-#+end_src
-**** Puni (like paredit but for many languages) [disabled]
-#+begin_src emacs-lisp :tangle no
-  (use-package puni
-    :init
-    (puni-global-mode)
-    ; How to disable puni in a specific mode
-    ; :hook (term-mode . puni-disable-puni-mode)
-    )
-#+end_src
-**** Rainbow delimiters
-#+begin_src emacs-lisp :tangle no
-  (use-package rainbow-delimiters
-    :hook
-    (prog-mode . rainbow-delimiters-mode))
 #+end_src
 *** Highlight indentation levels
 **** Indent-bars [disabled]
