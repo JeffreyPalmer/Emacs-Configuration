@@ -112,6 +112,9 @@
 ;; this doesn't really belong here but I'm not sure where else to put it
 (setq dired-use-ls-dired nil)
 
+;; allow usage of narrow-to-region
+(put 'narrow-to-region 'disabled nil)
+
 ;; Set the default face
 (set-face-attribute 'default nil :font jpalmer/default-font :height jpalmer/default-font-size :weight 'light)
 
@@ -1329,4 +1332,3 @@
    (setq gptel-expert-commands t))
 
 (setq gc-cons-threshold (* 2 1024 1024))
-(put 'narrow-to-region 'disabled nil)

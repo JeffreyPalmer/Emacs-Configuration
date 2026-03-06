@@ -222,6 +222,10 @@ instead of at midnight, when the computer is not typically on.
   ;; this doesn't really belong here but I'm not sure where else to put it
   (setq dired-use-ls-dired nil)
 
+  ;; allow usage of narrow-to-region
+  (put 'narrow-to-region 'disabled nil)
+
+
 #+end_src
 ** Font Configuration
 #+begin_src emacs-lisp
