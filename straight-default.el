@@ -38,7 +38,6 @@
  ("glsl-mode" . "86e6bb6cf28d1053366039683a4498401bab9c47")
  ("gntp.el" . "767571135e2c0985944017dc59b0be79af222ef5")
  ("gnu-elpa-mirror" . "f9ef3cae94703d6141fdbdbf155852278281e9b6")
- ("gptel" . "8879956648cc40e27c624ec6221971b7ab79d457")
  ("helpful" . "03756fa6ad4dcca5e0920622b1ee3f70abfc4e39")
  ("highlight-indent-guides" . "802fb2eaf67ead730d7e3483b9a1e9639705f267")
  ("highlight-parentheses.el" . "965b18dd69eff4457e17c9e84b3cbfdbfca2ddfb")
