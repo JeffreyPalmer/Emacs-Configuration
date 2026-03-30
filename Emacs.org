@@ -2043,7 +2043,12 @@ state is not great.
   (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
 
 #+end_src
-
+*** Show org markup when inside of a formatted element
+Use [[https://github.com/awth13/org-appear][org-appear]] to get this behavior.
+#+begin_src emacs-lisp
+  (use-package org-appear
+    :hook (org-mode . org-appear-mode))
+#+end_src
 ** Auto-Tangle Configuration Files
 
 #+begin_src emacs-lisp

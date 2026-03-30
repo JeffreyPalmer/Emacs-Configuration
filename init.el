@@ -1215,6 +1215,9 @@
 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
 (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
 
+(use-package org-appear
+  :hook (org-mode . org-appear-mode))
+
 (defun jpalmer/org-babel-tangle-config ()
   (when (string-equal (buffer-file-name)
                       (expand-file-name "./Emacs.org"))
