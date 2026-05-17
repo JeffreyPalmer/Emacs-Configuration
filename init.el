@@ -720,6 +720,7 @@
     (lsp-headerline-breadcrumb-enable nil)
     (lsp-completion-provider :none)       ; we use Corfu!
     (lsp-enable-snippet nil)
+    (lsp-enable-suggest-server-download nil)
     :init
     ;; Improve IO performance for LSP, from the documentation here:
     ;; https://emacs-lsp.github.io/lsp-mode/page/performance/#increase-the-amount-of-data-which-emacs-reads-from-the-process
@@ -912,19 +913,12 @@
 (use-package web-mode
   :mode "\\.html?\\'"
   :mode "\\.svelte\\'"
+  :mode "\\.astro\\'"
   :hook (web-mode . lsp-deferred)
   :config
   (setq-default web-mode-code-indent-offset 2)
   (setq-default web-mode-markup-indent-offset 2)
   (setq-default web-mode-attribute-indent-offset 2))
-
-;;
-;; These two packages don't really seem necessary, so I'm taking them out for now
-;;
-
-;; Start the server with `httpd-start`
-;; Use `impatient-mode` in any buffer
-;; (use-package impatient-mode)
 
 ;; (use-package skewer-mode)
 
@@ -1287,5 +1281,24 @@
                 (neotree-dir project-dir)
                 (neotree-find file-name)))
         (message "Could not find git project root.")))))
+
+(use-package gptel
+   :custom
+   (gptel-default-mode 'org-mode)
+   (gptel-model "local-llm")
+   (gptel-post-stream-hook 'gptel-auto-scroll)
+   (gptel-post-response-hook 'gptel-end-of-response)
+   :config
+   (gptel-make-openai "kobold-remote"
+                       :stream t
+                       :protocol "http"
+                       :host "10.0.1.145:5001"
+                       :models '(remote-llm))
+   (setq gptel-backend (gptel-make-openai "kobold-local"
+                         :stream t
+                         :protocol "http"
+                         :host "localhost:5001"
+                         :models '(local-llm)))
+   (setq gptel-expert-commands t))
 
 (setq gc-cons-threshold (* 2 1024 1024))
