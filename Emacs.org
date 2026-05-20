@@ -15,6 +15,14 @@ following form:
 
   ~(use-package org :straight (:type built-in))~
 
+NOTE: Use the following approach to conditionally configure based on emacs version:
+#+begin_src emacs-lisp :tangle no
+  (use-package which-key
+    ;; only install for emacs < 30 (use-package also provides an :unless clause)
+    :if (version< emacs-version "30"))
+#+end_src
+
+TODO: Figure out how to use conditionals for my various operating system versions
 TODO: Look into using [[https://emacs.stackexchange.com/questions/36727/order-of-blocks-in-org-tangle][this]] to support block reordering, if necessary
 
 * Generated File Warnings
@@ -132,9 +140,9 @@ you DO need to set up the shell environment.
 #+begin_src emacs-lisp :tangle ~/.config/emacs/early-init.el
   ;; Manually set the path to avoid an issue with emacs-plus on Apple Silicon
   ;; This bug should be fixed soon and this could then be removed
-  (setenv "PATH" "/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/jeff/.qlot/bin:/Users/jeff/.nodenv/shims")
+  (setenv "PATH" "/opt/local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/jeff/.qlot/bin:/Users/jeff/.bun/bin")
   (setenv "CPATH" "/opt/homebrew/include")
-  (setenv "LIBRARY_PATH" "/opt/homebrew/lib")
+  (setenv "LIBRARY_PATH" "/opt/local/lib:/opt/homebrew/lib")
   (setq exec-path (split-string (getenv "PATH") path-separator))
 
   ;; Set the directory to look for native files
@@ -294,8 +302,12 @@ Install the doom themes
     ; My previous theme
     ; (load-theme 'doom-dark+ t)
     (load-theme 'doom-oceanic-next t)
+    ;; I can't figure out how to get this to work so it's commented out for now
+    ;; (custom-theme-set-faces
+    ;;  'doom-oceanic-next
+    ;;  '(tab-bar-tab ((t (:foreground "yellow")))))
+    ;; (load-theme 'doom-oceanic-next t)
     (doom-themes-visual-bell-config)
-    (doom-themes-neotree-config)
     (doom-themes-org-config))
 #+end_src
 
@@ -427,7 +439,15 @@ only when in a windowed mode.
 #+end_src
 ** Which Key Support
 #+begin_src emacs-lisp
+  ;; which-key is built-in for emacs 30+
   (use-package which-key
+    :if (version< emacs-version "30")
+    :init (which-key-mode)
+    :diminish which-key-mode
+    :config
+    (setq which-key-idle-delay 1))
+  (use-package which-key
+    :if (version< "30" emacs-version)
     :straight (:type built-in)
     :init (which-key-mode)
     :diminish which-key-mode
@@ -750,11 +770,46 @@ created Vertico.
     (embark-collect-mode . consult-preview-at-point-mode))
 #+end_src
 * Window Management
+** Tab Bar Mode
+#+begin_src emacs-lisp
+  (use-package tab-bar
+    :straight (:type built-in)
+    :custom
+    (tab-bar-show 1)
+    (tab-bar-new-button-show nil)
+    (tab-bar-close-button-show nil)
+    (tab-bar-tab-hints t)
+    (tab-bar-separator " ")
+    (tab-bar-select-tab-modifiers '(super))
+    :init
+    (tab-bar-mode 1))
+#+end_src
+** Window layouts via activities.el
+Trying out [[https://github.com/alphapapa/activities.el][activities.el]] for window management along with trying out tab bar mode.
+#+begin_src emacs-lisp
+(use-package activities
+  :init
+  (activities-mode)
+  (activities-tabs-mode)
+  ;; Prevent `edebug' default bindings from interfering.
+  (setq edebug-inhibit-emacs-lisp-mode-bindings t)
+
+  :bind
+  (("C-x C-a C-n" . activities-new)
+   ("C-x C-a C-d" . activities-define)
+   ("C-x C-a C-a" . activities-resume)
+   ("C-x C-a C-s" . activities-suspend)
+   ("C-x C-a C-k" . activities-kill)
+   ("C-x C-a RET" . activities-switch)
+   ("C-x C-a b" . activities-switch-buffer)
+   ("C-x C-a g" . activities-revert)
+   ("C-x C-a l" . activities-list)))
+#+end_src
 ** Window layout management via perspective.el
 This seems like it might work nicely with projectile mode? Let's try
 it out.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package perspective
     :custom
     (persp-mode-prefix-key (kbd "C-c w"))
@@ -1076,12 +1131,12 @@ This allows easy navigation through camelCaseWords.
     :bind ("M-g t" . consult-todo))
 #+end_src
 
-*** Project Support (Projectile)
+*** Project Support (via Projectile) [disabled]
 TODO: Try out the new built-in support for projects using
 project.el. A bunch of stuff might have to change, so that's not
 really a high priority.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package projectile
     :config
     (projectile-mode +1)
@@ -1091,6 +1146,10 @@ really a high priority.
     )
 #+end_src
 
+*** Project Support (via project.el)
+#+begin_src emacs-lisp
+  (use-package project)
+#+end_src
 *** Search with RipGrep
 #+begin_src emacs-lisp
   (use-package rg
@@ -2166,35 +2225,6 @@ using a popup. Hooray!
     (text-mode-ispell-word-completion t))
 #+end_src
 
-* Tree Navigation
-Set up a tree-based navigation system, just in case.
-
-I honestly almost never use this, so maybe it's better to remove it.
-#+begin_src emacs-lisp
-  (use-package neotree
-    :bind ("<f8>" . neotree-project-dir)
-    :hook
-    (neotree-mode . (lambda ()
-                      (variable-pitch-mode t)))
-    :config
-    (setq neo-smart-open t
-          projectile-switch-project-action 'neotree-projectile-action
-          neo-theme 'icons
-          neo-window-width 35)
-    (defun neotree-project-dir ()
-      "Open NeoTree using the git root."
-      (interactive)
-      (let ((project-dir (projectile-project-root))
-            (file-name (buffer-file-name)))
-        (neotree-toggle)
-        (if project-dir
-            (if (neo-global--window-exists-p)
-                (progn
-                  (neotree-dir project-dir)
-                  (neotree-find file-name)))
-          (message "Could not find git project root.")))))
-#+end_src
-
 * LLM Support
 This enables the =gptel= package, which is used to allow emacs to
 interact with LLM servers.
@@ -2220,7 +2250,6 @@ interact with LLM servers.
      (setq gptel-expert-commands t))
 #+end_src
 * Wrap-Up Configuration
-
 Reset garbage collection to a reasonable default.
 #+begin_src emacs-lisp
   (setq gc-cons-threshold (* 2 1024 1024))
