@@ -1082,14 +1082,14 @@ example) is seamless.
     (setq backward-delete-char-untabify-method 'all))
 #+end_src
 *** Highlight indentation levels
-**** Indent-bars [disabled]
+**** Indent-bars
 [[https://github.com/jdtsmith/indent-bars][Indent-bars]] is an alternative to ~highlight-indent-guides~ that behaves
 a bit better w.r.t. empty lines.
 
 This is currently disabled because it doesn't work at all with Common
-Lisp code.
+Lisp code. (Going to simply disable this in lisp modes)
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package indent-bars
     :custom
     (indent-bars-color '(default :face-bg nil :blend 0.2))
@@ -1098,9 +1098,9 @@ Lisp code.
     (indent-bars-prefer-character t)
     :hook (prog-mode . indent-bars-mode))
 #+end_src
-**** Highlight-indent-guides
+**** Highlight-indent-guides [disabled]
 Show an indicator for the start of an indentation scope.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package highlight-indent-guides
     :custom
     ;; See if these are necessary with my new theme

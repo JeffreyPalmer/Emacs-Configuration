@@ -170,8 +170,12 @@
   ; My previous theme
   ; (load-theme 'doom-dark+ t)
   (load-theme 'doom-oceanic-next t)
+  ;; I can't figure out how to get this to work so it's commented out for now
+  ;; (custom-theme-set-faces
+  ;;  'doom-oceanic-next
+  ;;  '(tab-bar-tab ((t (:foreground "yellow")))))
+  ;; (load-theme 'doom-oceanic-next t)
   (doom-themes-visual-bell-config)
-  (doom-themes-neotree-config)
   (doom-themes-org-config))
 
 (use-package idle-highlight-mode
@@ -219,7 +223,15 @@
 (setq mac-command-modifier 'super
       mac-option-modifier 'meta)
 
+;; which-key is built-in for emacs 30+
 (use-package which-key
+  :if (version< emacs-version "30")
+  :init (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-delay 1))
+(use-package which-key
+  :if (version< "30" emacs-version)
   :straight (:type built-in)
   :init (which-key-mode)
   :diminish which-key-mode
@@ -488,28 +500,35 @@
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
-(use-package perspective
+(use-package tab-bar
+  :straight (:type built-in)
   :custom
-  (persp-mode-prefix-key (kbd "C-c w"))
-  (persp-state-default-file (locate-user-emacs-file "var/.emacs.desktop"))
-  :bind
-  (("C-x k" . persp-kill-buffer*)
-   ("C-x C-b" . persp-list-buffers))
-  :hook (kill-emacs . persp-state-save)
+  (tab-bar-show 1)
+  (tab-bar-new-button-show nil)
+  (tab-bar-close-button-show nil)
+  (tab-bar-tab-hints t)
+  (tab-bar-separator " ")
+  (tab-bar-select-tab-modifiers '(super))
   :init
-  (persp-mode))
+  (tab-bar-mode 1))
 
-;; Customize consult to support perspective buffer restrictions
-(with-eval-after-load 'consult
-  (consult-customize consult-source-buffer :hidden t :default nil)
-  (add-to-list 'consult-buffer-sources persp-consult-source))
+(use-package activities
+  :init
+  (activities-mode)
+  (activities-tabs-mode)
+  ;; Prevent `edebug' default bindings from interfering.
+  (setq edebug-inhibit-emacs-lisp-mode-bindings t)
 
-;; Also add support for creating new perspectives in projectile
-(use-package persp-projectile
-  :straight (:host github :repo "bbatsov/persp-projectile")
-  :after (projectile perspective)
   :bind
-  (:map projectile-command-map ("p" . projectile-persp-switch-project)))
+  (("C-x C-a C-n" . activities-new)
+   ("C-x C-a C-d" . activities-define)
+   ("C-x C-a C-a" . activities-resume)
+   ("C-x C-a C-s" . activities-suspend)
+   ("C-x C-a C-k" . activities-kill)
+   ("C-x C-a RET" . activities-switch)
+   ("C-x C-a b" . activities-switch-buffer)
+   ("C-x C-a g" . activities-revert)
+   ("C-x C-a l" . activities-list)))
 
 (winner-mode 1)
 
@@ -639,15 +658,13 @@
   :config
   (setq backward-delete-char-untabify-method 'all))
 
-(use-package highlight-indent-guides
+(use-package indent-bars
   :custom
-  ;; See if these are necessary with my new theme
-  (highlight-indent-guides-auto-character-face-perc 20)
-  (highlight-indent-guides-auto-top-character-face-perc 100)
-  (highlight-indent-guides-responsive 'top)
-  (highlight-indent-guides-method 'character)
-  :hook
-  (prog-mode . highlight-indent-guides-mode))
+  (indent-bars-color '(default :face-bg nil :blend 0.2))
+  ;; (indent-bars-highlight-current-depth '(:face default :blend 0.4))
+  (indent-bars-color-by-depth nil)
+  (indent-bars-prefer-character t)
+  :hook (prog-mode . indent-bars-mode))
 
 (global-subword-mode 1)
 
@@ -661,13 +678,7 @@
   :after consult
   :bind ("M-g t" . consult-todo))
 
-(use-package projectile
-  :config
-  (projectile-mode +1)
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-  ;; Not sure yet why I originally had this disabled
-  ; :diminish projectile-mode
-  )
+(use-package project)
 
 (use-package rg
   :init
@@ -1258,29 +1269,6 @@
 (use-package emacs
   :custom
   (text-mode-ispell-word-completion t))
-
-(use-package neotree
-  :bind ("<f8>" . neotree-project-dir)
-  :hook
-  (neotree-mode . (lambda ()
-                    (variable-pitch-mode t)))
-  :config
-  (setq neo-smart-open t
-        projectile-switch-project-action 'neotree-projectile-action
-        neo-theme 'icons
-        neo-window-width 35)
-  (defun neotree-project-dir ()
-    "Open NeoTree using the git root."
-    (interactive)
-    (let ((project-dir (projectile-project-root))
-          (file-name (buffer-file-name)))
-      (neotree-toggle)
-      (if project-dir
-          (if (neo-global--window-exists-p)
-              (progn
-                (neotree-dir project-dir)
-                (neotree-find file-name)))
-        (message "Could not find git project root.")))))
 
 (use-package gptel
    :custom
