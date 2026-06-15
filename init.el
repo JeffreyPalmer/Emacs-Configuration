@@ -658,13 +658,16 @@
   :config
   (setq backward-delete-char-untabify-method 'all))
 
+(defun jpalmer/prog-mode-indent-no-lisp-hook ()
+  (unless (derived-mode-p 'lisp-mode)
+    (indent-bars-mode)))
 (use-package indent-bars
   :custom
   (indent-bars-color '(default :face-bg nil :blend 0.2))
   ;; (indent-bars-highlight-current-depth '(:face default :blend 0.4))
   (indent-bars-color-by-depth nil)
   (indent-bars-prefer-character t)
-  :hook (prog-mode . indent-bars-mode))
+  :hook (prog-mode . jpalmer/prog-mode-indent-no-lisp-hook))
 
 (global-subword-mode 1)
 
@@ -731,7 +734,7 @@
     (lsp-headerline-breadcrumb-enable nil)
     (lsp-completion-provider :none)       ; we use Corfu!
     (lsp-enable-snippet nil)
-    (lsp-enable-suggest-server-download nil)
+    ;; (lsp-enable-suggest-server-download nil)
     :init
     ;; Improve IO performance for LSP, from the documentation here:
     ;; https://emacs-lsp.github.io/lsp-mode/page/performance/#increase-the-amount-of-data-which-emacs-reads-from-the-process
