@@ -55,8 +55,8 @@ starting point.
   (defvar jpalmer/default-font "Jetbrains Mono")
   (defvar jpalmer/variable-font "Lato")
   (defvar jpalmer/default-font-size 140)
-  (defvar jpalmer/default-variable-font-size 170)
-  (defvar jpalmer/is-emacs-mac t)
+  (defvar jpalmer/default-variable-font-size 180)
+  (defvar jpalmer/is-emacs-mac nil)
 #+end_src
 
 * User Information
@@ -439,13 +439,14 @@ only when in a windowed mode.
 #+end_src
 ** Which Key Support
 #+begin_src emacs-lisp
-  ;; which-key is built-in for emacs 30+
+  ;; install which-key if emacs < v30
   (use-package which-key
     :if (version< emacs-version "30")
     :init (which-key-mode)
     :diminish which-key-mode
     :config
     (setq which-key-idle-delay 1))
+  ;; which-key is built-in for emacs 30+
   (use-package which-key
     :if (version< "30" emacs-version)
     :straight (:type built-in)
