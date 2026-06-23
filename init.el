@@ -8,8 +8,8 @@
 (defvar jpalmer/default-font "Jetbrains Mono")
 (defvar jpalmer/variable-font "Lato")
 (defvar jpalmer/default-font-size 140)
-(defvar jpalmer/default-variable-font-size 170)
-(defvar jpalmer/is-emacs-mac t)
+(defvar jpalmer/default-variable-font-size 180)
+(defvar jpalmer/is-emacs-mac nil)
 
 (setq user-full-name "Jeffrey Palmer"
       user-mail-address "jeffrey.palmer@acm.org")
@@ -79,9 +79,8 @@
 ;; Revert buffers when the underlying file has changed
 (global-auto-revert-mode 1)
 
-(unless (and (fboundp 'server-running-p)
-         (server-running-p))
-  (server-start))
+(require 'server)
+(when (not (server-running-p)) (server-start))
 
 (scroll-bar-mode -1)                    ; Disable the visible scrollbar
 (tool-bar-mode -1)                      ; Disable the toolbar
@@ -223,13 +222,14 @@
 (setq mac-command-modifier 'super
       mac-option-modifier 'meta)
 
-;; which-key is built-in for emacs 30+
+;; install which-key if emacs < v30
 (use-package which-key
   :if (version< emacs-version "30")
   :init (which-key-mode)
   :diminish which-key-mode
   :config
   (setq which-key-idle-delay 1))
+;; which-key is built-in for emacs 30+
 (use-package which-key
   :if (version< "30" emacs-version)
   :straight (:type built-in)
@@ -568,7 +568,7 @@
                               "\\*julia\\*"
                               "\\*sly-mrepl"
                               "\\*slime-repl\\*"))
-  (popper-group-function #'popper-group-by-perspective)
+  (popper-group-function #'popper-group-by-project)
   (popper-display-control nil)
   :config
   (popper-mode +1)

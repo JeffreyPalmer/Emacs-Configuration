@@ -193,9 +193,8 @@ instead of at midnight, when the computer is not typically on.
 #+end_src
 * Server Mode
 #+begin_src emacs-lisp
-  (unless (and (fboundp 'server-running-p)
-	       (server-running-p))
-    (server-start))
+  (require 'server)
+  (when (not (server-running-p)) (server-start))
 #+end_src
 * Built-In Packages
 ** Transient
@@ -901,7 +900,7 @@ Support directional and letter-based buffer navigation
                                   "\\*julia\\*"
                                   "\\*sly-mrepl"
                                   "\\*slime-repl\\*"))
-      (popper-group-function #'popper-group-by-perspective)
+      (popper-group-function #'popper-group-by-project)
       (popper-display-control nil)
       :config
       (popper-mode +1)
