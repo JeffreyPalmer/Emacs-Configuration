@@ -273,6 +273,21 @@
   (vertico-mode)
   (vertico-multiform-mode))
 
+;; (use-package vertico-posframe
+;;   :init
+;;   (setq vertico-multiform-commands
+;;     '((consult-line
+;;        posframe
+;;        (vertico-posframe-poshandler . posframe-poshandler-frame-top-center)
+;;        (vertico-posframe-border-width . 10)
+;;        ;; NOTE: This is useful when emacs is used in both in X and
+;;        ;; terminal, for posframe do not work well in terminal, so
+;;        ;; vertico-buffer-mode will be used as fallback at the
+;;        ;; moment.
+;;        (vertico-posframe-fallback-mode . vertico-buffer-mode))
+;;       (t posframe)))
+;;   (vertico-posframe-mode))
+
 ;; Enable savehist to save search history over time
 (use-package savehist
   :init
@@ -512,23 +527,9 @@
   :init
   (tab-bar-mode 1))
 
-(use-package activities
-  :init
-  (activities-mode)
-  (activities-tabs-mode)
-  ;; Prevent `edebug' default bindings from interfering.
-  (setq edebug-inhibit-emacs-lisp-mode-bindings t)
-
-  :bind
-  (("C-x C-a C-n" . activities-new)
-   ("C-x C-a C-d" . activities-define)
-   ("C-x C-a C-a" . activities-resume)
-   ("C-x C-a C-s" . activities-suspend)
-   ("C-x C-a C-k" . activities-kill)
-   ("C-x C-a RET" . activities-switch)
-   ("C-x C-a b" . activities-switch-buffer)
-   ("C-x C-a g" . activities-revert)
-   ("C-x C-a l" . activities-list)))
+(use-package project-tab-groups
+  :config
+  (project-tab-groups-mode))
 
 (winner-mode 1)
 
@@ -546,6 +547,8 @@
   :custom
   (shackle-default-rule '(:select t))
   (shackle-rules '(("\\*sly-mrepl" :regexp t :align t :size 0.2 :select t)
+                   ("\\*slime-repl.*\\*" :regexp t :align t :size 0.2 :select t)
+                   ("\\*inferior-lisp\\*" :regexp t :align t :size 0.1 :select t)
                    ("\\*sly-compilation" :regexp t :align 'below :size 0.3)
                    ("\\*sly-db" :regexp t :align 'right :size 0.4)
                    ("\\*julia\\*" :regexp t :align 'below :size 0.2 :select t)))
@@ -567,7 +570,8 @@
                               "\\*helpful"
                               "\\*julia\\*"
                               "\\*sly-mrepl"
-                              "\\*slime-repl\\*"))
+                              "\\*inferior-lisp\\*"
+                              "\\*slime-repl.*\\*"))
   (popper-group-function #'popper-group-by-project)
   (popper-display-control nil)
   :config
@@ -846,9 +850,6 @@
 
 (use-package sly-asdf
   :config (push 'sly-asdf sly-contribs))
-;;(use-package sly-quicklisp
-;;  :config (push 'sly-quicklisp sly-contribs))
-;;(use-package sly-overlay)
 (use-package sly-repl-ansi-color
   :config (push 'sly-repl-ansi-color sly-contribs))
 
@@ -1177,28 +1178,6 @@
           (delete-region (point) (1+ (point-at-eol))))))
     (setq buffer-read-only t))
 (add-hook 'org-agenda-finalize-hook #'jpalmer/org-agenda-delete-empty-blocks)
-
-(use-package org-roam
-  :ensure t
-  :init
-  (setq org-roam-v2-ack t)
-  :custom
-  (org-roam-directory "~/Documents/OrgRoam")
-  (org-roam-completion-everywhere t)
-  :bind (("C-c n l" . org-roam-buffer-toggle)
-         ("C-c n f" . org-roam-node-find)
-         ("C-c n i" . org-roam-node-insert)
-         ("C-c n r" . org-roam-refile)
-         :map org-mode-map
-         ("C-M-i" . completion-at-point)
-         :map org-roam-dailies-map
-         ("Y" . org-roam-dailies-capture-yesterday)
-         ("T" . org-roam-dailies-capture-tomorrow))
-  :bind-keymap
-  ("C-c n d" . org-roam-dailies-map)
-  :config
-  (require 'org-roam-dailies)
-  (org-roam-db-autosync-mode))
 
 ;; Install any required org-contrib libraries
 (use-package org-contrib

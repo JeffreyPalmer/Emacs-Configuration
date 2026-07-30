@@ -1,5 +1,4 @@
 #+PROPERTY: header-args:emacs-lisp :tangle ~/.config/emacs/init.el
-
 This file contains the complete, documented configuration for my
 Emacs.
 
@@ -523,6 +522,21 @@ completion system.
     (vertico-mode)
     (vertico-multiform-mode))
 
+  ;; (use-package vertico-posframe
+  ;;   :init
+  ;;   (setq vertico-multiform-commands
+  ;;     '((consult-line
+  ;;        posframe
+  ;;        (vertico-posframe-poshandler . posframe-poshandler-frame-top-center)
+  ;;        (vertico-posframe-border-width . 10)
+  ;;        ;; NOTE: This is useful when emacs is used in both in X and
+  ;;        ;; terminal, for posframe do not work well in terminal, so
+  ;;        ;; vertico-buffer-mode will be used as fallback at the
+  ;;        ;; moment.
+  ;;        (vertico-posframe-fallback-mode . vertico-buffer-mode))
+  ;;       (t posframe)))
+  ;;   (vertico-posframe-mode))
+
   ;; Enable savehist to save search history over time
   (use-package savehist
     :init
@@ -784,9 +798,41 @@ created Vertico.
     :init
     (tab-bar-mode 1))
 #+end_src
-** Window layouts via activities.el
-Trying out [[https://github.com/alphapapa/activities.el][activities.el]] for window management along with trying out tab bar mode.
+** Project Tab Groups
+use [[https://github.com/fritzgrabo/project-tab-groups][project-tab-groups]] to isolate buffers by project.
 #+begin_src emacs-lisp
+  (use-package project-tab-groups
+    :config
+    (project-tab-groups-mode))
+#+end_src
+** Tabspaces
+Try out [[https://codeberg.org/mclear-tools/tabspaces][tabspaces]] for managing files in tab contexts.
+#+begin_src emacs-lisp :tangle no
+  (use-package tabspaces
+    ;; use this next line only if you also use straight, otherwise ignore it.
+    :straight (:type git :host codeberg :repo "mclear-tools/tabspaces")
+    :hook (after-init . tabspaces-mode) ;; use this only if you want the minor-mode loaded at startup.
+    :commands (tabspaces-switch-or-create-workspace
+               tabspaces-open-or-create-project-and-workspace)
+    :custom
+    (tabspaces-echo-area-enable nil)
+    (tabspaces-use-filtered-buffers-as-default t)
+    (tabspaces-default-tab "Default")
+    (tabspaces-remove-to-default t)
+    (tabspaces-include-buffers '("*scratch*"))
+    (tabspaces-initialize-project-with-todo nil)
+    (tabspaces-todo-file-name "README.md")
+    ;; sessions
+    (tabspaces-session t)
+    (tabspaces-session-auto-restore t)
+    ;; additional options
+    (tabspaces-fully-resolve-paths t)  ; Resolve relative project paths to absolute
+    (tabspaces-exclude-buffers '("*Messages*" "*Compile-Log*"))  ; Additional buffers to exclude
+    (tab-bar-new-tab-choice "*scratch*"))
+#+end_src
+** Window layouts via activities.el [disabled]
+Trying out [[https://github.com/alphapapa/activities.el][activities.el]] for window management along with trying out tab bar mode.
+#+begin_src emacs-lisp :tangle no
 (use-package activities
   :init
   (activities-mode)
@@ -871,60 +917,43 @@ Support directional and letter-based buffer navigation
 ** Control buffer placement
 *** Shackle
 #+begin_src emacs-lisp
-        (use-package shackle
-          :custom
-          (shackle-default-rule '(:select t))
-          (shackle-rules '(("\\*sly-mrepl" :regexp t :align t :size 0.2 :select t)
-                           ("\\*sly-compilation" :regexp t :align 'below :size 0.3)
-                           ("\\*sly-db" :regexp t :align 'right :size 0.4)
-                           ("\\*julia\\*" :regexp t :align 'below :size 0.2 :select t)))
-          :config
-          (shackle-mode))
+  (use-package shackle
+    :custom
+    (shackle-default-rule '(:select t))
+    (shackle-rules '(("\\*sly-mrepl" :regexp t :align t :size 0.2 :select t)
+                     ("\\*slime-repl.*\\*" :regexp t :align t :size 0.2 :select t)
+                     ("\\*inferior-lisp\\*" :regexp t :align t :size 0.1 :select t)
+                     ("\\*sly-compilation" :regexp t :align 'below :size 0.3)
+                     ("\\*sly-db" :regexp t :align 'right :size 0.4)
+                     ("\\*julia\\*" :regexp t :align 'below :size 0.2 :select t)))
+    :config
+    (shackle-mode))
 #+end_src
 *** Popper
 #+begin_src emacs-lisp
 
-    (use-package popper
-      :bind (("C-'" . popper-toggle)
-             ("M-'" . popper-cycle)
-             ("C-M-'" . popper-toggle-type))
-      :custom
-      (popper-reference-buffers '("\\*Messages\\*"
-                                  "Output\\*$"
-                                  "\\*Async Shell Command\\*"
-                                  help-mode
-                                  compilation-mode
-                                  messages-mode
-                                  occur-mode
-                                  "\\*helpful"
-                                  "\\*julia\\*"
-                                  "\\*sly-mrepl"
-                                  "\\*slime-repl\\*"))
-      (popper-group-function #'popper-group-by-project)
-      (popper-display-control nil)
-      :config
-      (popper-mode +1)
-      (popper-echo-mode +1))
-#+end_src
-*** Emacs-Purpose [disabled]
-Try using [[https://github.com/bmag/emacs-purpose][emacs-purpose]] to manage my window layouts/etc. This did not
-(easily) do what I wanted. At least, not enough to keep it around.
-
-#+begin_src emacs-lisp :tangle no
-  (use-package window-purpose
+  (use-package popper
+    :bind (("C-'" . popper-toggle)
+           ("M-'" . popper-cycle)
+           ("C-M-'" . popper-toggle-type))
+    :custom
+    (popper-reference-buffers '("\\*Messages\\*"
+                                "Output\\*$"
+                                "\\*Async Shell Command\\*"
+                                help-mode
+                                compilation-mode
+                                messages-mode
+                                occur-mode
+                                "\\*helpful"
+                                "\\*julia\\*"
+                                "\\*sly-mrepl"
+                                "\\*inferior-lisp\\*"
+                                "\\*slime-repl.*\\*"))
+    (popper-group-function #'popper-group-by-project)
+    (popper-display-control nil)
     :config
-    (add-to-list 'purpose-user-mode-purposes '(lisp-mode . lisp-file-purpose))
-    ;; I don't know why this isn't working
-    ;; (add-to-list 'purpose-user-mode-purposes '(sly-mrepl-mode . lisp-repl-purpose))
-    (add-to-list 'purpose-user-regexp-purposes '("\\*sly-mrepl" . lisp-repl-purpose))
-    (purpose-compile-user-configuration)
-
-    ;; This is required to load up the following extensions
-    (require 'window-purpose-x)
-    (purpose-x-magit-single-on)
-    (purpose-x-persp-setup)
-    (purpose-x-kill-setup)
-    (purpose-mode))
+    (popper-mode +1)
+    (popper-echo-mode +1))
 #+end_src
 *** Display Buffer Alist [disabled]
 Hack the window placement control mechanism directly.
@@ -1168,6 +1197,7 @@ I'm now using [[https://github.com/DevelopmentCool2449/colorful-mode][colorful-m
     :custom
     (colorful-use-prefix t)
     (colorful-only-strings 'only-prog)
+    (colorful-hghlight-in-comments t)
     (css-fontify-colors nil)
     :config
     (global-colorful-mode t)
@@ -1433,9 +1463,6 @@ I use [[https://github.com/joaotavora/sly][SLY]] - a fork of Slime that has some
 
   (use-package sly-asdf
     :config (push 'sly-asdf sly-contribs))
-  ;;(use-package sly-quicklisp
-  ;;  :config (push 'sly-quicklisp sly-contribs))
-  ;;(use-package sly-overlay)
   (use-package sly-repl-ansi-color
     :config (push 'sly-repl-ansi-color sly-contribs))
 
@@ -1446,8 +1473,9 @@ Try out the lisp OG instead of Sly. The Vera REPL-based rendering doesn't work w
   (use-package slime
     :config
     (setq slime-lisp-implementations
-          '((sbcl ("sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix)
-            (qlot ("qlot" "exec" "sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix)))
+          '((qlot ("qlot" "exec" "sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix)
+            (sbcl ("sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix)
+            ))
     (slime-setup '(slime-fancy slime-quicklisp slime-asdf slime-mrepl)))
 #+end_src
 **** Hyperspec Info Files
@@ -2045,7 +2073,7 @@ I don't really use this in any meaningful way - I should probably move
 the content that I did put into it back into normal org files, or
 actually commit to doing something more with it. Being in this halfway
 state is not great.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package org-roam
     :ensure t
     :init
