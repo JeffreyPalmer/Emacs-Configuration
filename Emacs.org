@@ -938,11 +938,13 @@ Support directional and letter-based buffer navigation
     :custom
     (shackle-default-rule '(:select t))
     (shackle-rules '(("\\*sly-mrepl" :regexp t :align t :size 0.2 :select t)
-                     ("\\*slime-repl.*\\*" :regexp t :align t :size 0.2 :select t)
-                     ("\\*inferior-lisp\\*" :regexp t :align t :size 0.1 :select t)
-                     ("\\*sly-compilation" :regexp t :align 'below :size 0.3)
-                     ("\\*sly-db" :regexp t :align 'right :size 0.4)
-                     ("\\*julia\\*" :regexp t :align 'below :size 0.2 :select t)))
+                     ("\\*info\\*" :regexp t :align above :size 0.35 :select t)
+                     (comint-mode :ignore t)
+                     ("\\*slime-repl" :regexp t :align t :size 0.1  :select t)
+                     ("\\*slime-description" :regexp t :align right :popup t  :select t)
+                     ("\\*sly-compilation" :regexp t :align below :size 0.3  :select t)
+                     ("\\*sly-db" :regexp t :align right :size 0.4  :select t)
+                     ("\\*julia\\*" :regexp t :align below :size 0.2 :select t)))
     :config
     (shackle-mode))
 #+end_src
@@ -959,10 +961,10 @@ TODO: It would be nice if the documentation showed up in an ephemeral window on 
     (popper-reference-buffers '("\\*Messages\\*"
                                 "Output\\*$"
                                 "\\*Async Shell Command\\*"
-                                help-mode
                                 compilation-mode
                                 messages-mode
                                 occur-mode
+                                ("\\*inferior-lisp\\*" . hide)
                                 "\\*helpful"
                                 "\\*julia\\*"
                                 "\\*sly-mrepl"

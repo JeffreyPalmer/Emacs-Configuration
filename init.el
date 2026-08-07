@@ -5,10 +5,16 @@
 ;; Please edit that file and tangle it to generate both init.el and early-init.el
 ;;
 
-(defvar jpalmer/default-font "Jetbrains Mono")
-(defvar jpalmer/variable-font "Lato")
-(defvar jpalmer/default-font-size 140)
-(defvar jpalmer/default-variable-font-size 180)
+;; (defvar jpalmer/default-font "D2KodingLigature Nerd Font Mono")
+;; (defvar jpalmer/default-font "MartianMono Nerd Font")
+;; (defvar jpalmer/default-font "JetBrains Mono")
+(defvar jpalmer/default-font "LythMono Nerd Font")
+(defvar jpalmer/default-font-weight 'light)
+(defvar jpalmer/default-font-size 150)
+;; (defvar jpalmer/variable-font "Lato")
+(defvar jpalmer/variable-font "Raleway")
+(defvar jpalmer/variable-font-weight 'regular)
+(defvar jpalmer/variable-font-size 180)
 (defvar jpalmer/is-emacs-mac nil)
 
 (setq user-full-name "Jeffrey Palmer"
@@ -115,13 +121,22 @@
 (put 'narrow-to-region 'disabled nil)
 
 ;; Set the default face
-(set-face-attribute 'default nil :font jpalmer/default-font :height jpalmer/default-font-size :weight 'light)
+(set-face-attribute 'default nil
+                    :font jpalmer/default-font
+                    :height jpalmer/default-font-size
+                    :weight jpalmer/default-font-weight)
 
 ;; Set the fixed pitch face
-(set-face-attribute 'fixed-pitch nil :font jpalmer/default-font :height jpalmer/default-font-size :weight 'light)
+(set-face-attribute 'fixed-pitch nil
+                    :font jpalmer/default-font
+                    :height jpalmer/default-font-size
+                    :weight jpalmer/default-font-weight)
 
 ;; Set the variable pitch face
-(set-face-attribute 'variable-pitch nil :font jpalmer/variable-font :height jpalmer/default-variable-font-size :weight 'regular)
+(set-face-attribute 'variable-pitch nil
+                    :font jpalmer/variable-font
+                    :height jpalmer/variable-font-size
+                    :weight jpalmer/variable-font-weight)
 
 ;; Customize the global cursor color
 (set-face-attribute 'cursor nil :background "goldenrod")
@@ -167,8 +182,10 @@
         doom-themes-enable-italic t
         doom-themes-padded-modeline t) ; Adds a 4 pixel margin around the modeline
   ; My previous theme
-  ; (load-theme 'doom-dark+ t)
-  (load-theme 'doom-oceanic-next t)
+  ;; (load-theme 'doom-dark+ t)
+  ;; (load-theme 'doom-material t)
+  (load-theme 'doom-nord t)
+  ;; (load-theme 'doom-oceanic-next t)
   ;; I can't figure out how to get this to work so it's commented out for now
   ;; (custom-theme-set-faces
   ;;  'doom-oceanic-next
@@ -547,11 +564,13 @@
   :custom
   (shackle-default-rule '(:select t))
   (shackle-rules '(("\\*sly-mrepl" :regexp t :align t :size 0.2 :select t)
-                   ("\\*slime-repl.*\\*" :regexp t :align t :size 0.2 :select t)
-                   ("\\*inferior-lisp\\*" :regexp t :align t :size 0.1 :select t)
-                   ("\\*sly-compilation" :regexp t :align 'below :size 0.3)
-                   ("\\*sly-db" :regexp t :align 'right :size 0.4)
-                   ("\\*julia\\*" :regexp t :align 'below :size 0.2 :select t)))
+                   ("\\*info\\*" :regexp t :align above :size 0.35 :select t)
+                   (comint-mode :ignore t)
+                   ("\\*slime-repl" :regexp t :align t :size 0.1  :select t)
+                   ("\\*slime-description" :regexp t :align right :popup t  :select t)
+                   ("\\*sly-compilation" :regexp t :align below :size 0.3  :select t)
+                   ("\\*sly-db" :regexp t :align right :size 0.4  :select t)
+                   ("\\*julia\\*" :regexp t :align below :size 0.2 :select t)))
   :config
   (shackle-mode))
 
@@ -563,15 +582,14 @@
   (popper-reference-buffers '("\\*Messages\\*"
                               "Output\\*$"
                               "\\*Async Shell Command\\*"
-                              help-mode
                               compilation-mode
                               messages-mode
                               occur-mode
+                              ("\\*inferior-lisp\\*" . hide)
                               "\\*helpful"
                               "\\*julia\\*"
                               "\\*sly-mrepl"
-                              "\\*inferior-lisp\\*"
-                              "\\*slime-repl.*\\*"))
+                              "\\*slime-repl"))
   (popper-group-function #'popper-group-by-project)
   (popper-display-control nil)
   :config
@@ -839,20 +857,13 @@
                          (require 'lsp-pyright)
                          (lsp))))
 
-(use-package sly
-  :custom (inferior-lisp-program "sbcl")
-  ;; Configure SLY to support running with QLOT
-  ;; Some of the packages that I use regularly require more memory
+(use-package slime
   :config
-  (setq sly-lisp-implementations
+  (setq slime-lisp-implementations
         '((qlot ("qlot" "exec" "ros" "-L" "sbcl/2.6.6" "run" "--" "--dynamic-space-size" "4096") :coding-system utf-8-unix)
-          (sbcl ("ros" "-L" "sbcl/2.6.6" "run" "--" "--dynamic-space-size" "4096") :coding-system utf-8-unix))
-        ))
-
-(use-package sly-asdf
-  :config (push 'sly-asdf sly-contribs))
-(use-package sly-repl-ansi-color
-  :config (push 'sly-repl-ansi-color sly-contribs))
+          (sbcl ("sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix)
+          ))
+  (slime-setup '(slime-fancy slime-quicklisp slime-asdf slime-mrepl)))
 
 (use-package info
   :config
@@ -957,6 +968,9 @@
   ;; FIXME: This will probably need to be fixed
   ; :hook (lsp-mode glsl-mode)
   :config (global-flycheck-mode))
+
+(use-package beads
+  :straight (:host github :repo "r0man/beads.el"))
 
 (use-package org
   ;; :ensure org-contrib
