@@ -695,6 +695,7 @@
   :custom
   (colorful-use-prefix t)
   (colorful-only-strings 'only-prog)
+  (colorful-hghlight-in-comments t)
   (css-fontify-colors nil)
   :config
   (global-colorful-mode t)
@@ -844,8 +845,8 @@
   ;; Some of the packages that I use regularly require more memory
   :config
   (setq sly-lisp-implementations
-        '((qlot ("qlot" "exec" "sbcl" "--dynamic-space-size" "8192") :coding-system utf-8-unix)
-          (sbcl ("sbcl" "--dynamic-space-size" "8192") :coding-system utf-8-unix))
+        '((qlot ("qlot" "exec" "ros" "-L" "sbcl/2.6.6" "run" "--" "--dynamic-space-size" "4096") :coding-system utf-8-unix)
+          (sbcl ("ros" "-L" "sbcl/2.6.6" "run" "--" "--dynamic-space-size" "4096") :coding-system utf-8-unix))
         ))
 
 (use-package sly-asdf
