@@ -196,7 +196,9 @@
 
 (use-package idle-highlight-mode
   :diminish idle-highlight-mode
-  :config (setq idle-highlight-idle-time 0.5)
+  :config
+  (setq idle-highlight-idle-time 0.5)
+  (set-face-attribute 'idle-highlight nil :background "goldenrod")
   :hook (prog-mode . idle-highlight-mode))
 
 (use-package all-the-icons)
@@ -567,7 +569,7 @@
                    ("\\*info\\*" :regexp t :align above :size 0.35 :select t)
                    (comint-mode :ignore t)
                    ("\\*slime-repl" :regexp t :align t :size 0.1  :select t)
-                   ("\\*slime-description" :regexp t :align right :popup t  :select t)
+                   ("\\*slime-description" :regexp t :align above :size 0.35 :select t)
                    ("\\*sly-compilation" :regexp t :align below :size 0.3  :select t)
                    ("\\*sly-db" :regexp t :align right :size 0.4  :select t)
                    ("\\*julia\\*" :regexp t :align below :size 0.2 :select t)))
