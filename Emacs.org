@@ -54,7 +54,8 @@ starting point.
   ;; (defvar jpalmer/default-font "D2KodingLigature Nerd Font Mono")
   ;; (defvar jpalmer/default-font "MartianMono Nerd Font")
   ;; (defvar jpalmer/default-font "JetBrains Mono")
-  (defvar jpalmer/default-font "LythMono Nerd Font")
+  ;; (defvar jpalmer/default-font "LythMono Nerd Font")
+  (defvar jpalmer/default-font "Maple Mono Normal")
   (defvar jpalmer/default-font-weight 'light)
   (defvar jpalmer/default-font-size 150)
   ;; (defvar jpalmer/variable-font "Lato")
@@ -377,7 +378,8 @@ This configuration is for the built-in version of the modus themes:
     :diminish idle-highlight-mode
     :config
     (setq idle-highlight-idle-time 0.5)
-    (set-face-attribute 'idle-highlight nil :background "goldenrod")
+    ;; this is a bit much. might revisit
+    ;; (set-face-attribute 'idle-highlight nil :background "goldenrod")
     :hook (prog-mode . idle-highlight-mode))
 #+end_src
 
