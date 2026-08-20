@@ -52,10 +52,9 @@ starting point.
 
 #+begin_src emacs-lisp
   ;; (defvar jpalmer/default-font "D2KodingLigature Nerd Font Mono")
-  ;; (defvar jpalmer/default-font "MartianMono Nerd Font")
+  ;; (defvar jpalmer/default-font "Martian Mono VF")
   ;; (defvar jpalmer/default-font "JetBrains Mono")
-  ;; (defvar jpalmer/default-font "LythMono Nerd Font")
-  (defvar jpalmer/default-font "Maple Mono Normal")
+  (defvar jpalmer/default-font "LythMono Nerd Font")
   (defvar jpalmer/default-font-weight 'light)
   (defvar jpalmer/default-font-size 150)
   ;; (defvar jpalmer/variable-font "Lato")
