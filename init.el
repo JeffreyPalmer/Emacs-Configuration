@@ -6,7 +6,7 @@
 ;;
 
 ;; (defvar jpalmer/default-font "D2KodingLigature Nerd Font Mono")
-;; (defvar jpalmer/default-font "MartianMono Nerd Font")
+;; (defvar jpalmer/default-font "Martian Mono VF")
 ;; (defvar jpalmer/default-font "JetBrains Mono")
 (defvar jpalmer/default-font "LythMono Nerd Font")
 (defvar jpalmer/default-font-weight 'light)
@@ -87,6 +87,8 @@
 
 (require 'server)
 (when (not (server-running-p)) (server-start))
+
+(use-package transient)
 
 (scroll-bar-mode -1)                    ; Disable the visible scrollbar
 (tool-bar-mode -1)                      ; Disable the toolbar
@@ -198,15 +200,15 @@
   :diminish idle-highlight-mode
   :config
   (setq idle-highlight-idle-time 0.5)
-  (set-face-attribute 'idle-highlight nil :background "goldenrod")
+  ;; this is a bit much. might revisit
+  ;; (set-face-attribute 'idle-highlight nil :background "goldenrod")
   :hook (prog-mode . idle-highlight-mode))
 
-(use-package all-the-icons)
 (use-package nerd-icons)
 (use-package doom-modeline
   :init (doom-modeline-mode 1)
   :custom ((doom-modeline-buffer-encoding nil)
-           (coom-modeline-display-default-persp-name t)
+           (doom-modeline-display-default-persp-name t)
            (doom-modeline-buffer-file-name-style 'relative-from-project)))
 
 (use-package hl-line
@@ -228,18 +230,19 @@
   (when (eq (key-binding (kbd "<C-tab>")) 'mac-next-tab-or-toggle-tab-bar)
     (global-unset-key (kbd "<C-tab>"))))
 
-;; Keybindings for Mac Emacs
-(global-set-key [(super a)] 'mark-whole-buffer)
-(global-set-key [(super v)] 'yank)
-(global-set-key [(super c)] 'kill-ring-save)
-(global-set-key [(super s)] 'save-buffer)
-(global-set-key [(super l)] 'goto-line)
-(global-set-key [(super w)]
-                (lambda () (interactive) (delete-window)))
-(global-set-key [(super z)] 'undo)
+(when (eq system-type 'darwin)
+  ;; Keybindings for Mac Emacs
+  (global-set-key [(super a)] 'mark-whole-buffer)
+  (global-set-key [(super v)] 'yank)
+  (global-set-key [(super c)] 'kill-ring-save)
+  (global-set-key [(super s)] 'save-buffer)
+  (global-set-key [(super l)] 'goto-line)
+  (global-set-key [(super w)]
+                  (lambda () (interactive) (delete-window)))
+  (global-set-key [(super z)] 'undo)
 
-(setq mac-command-modifier 'super
-      mac-option-modifier 'meta)
+  (setq mac-command-modifier 'super
+        mac-option-modifier 'meta))
 
 ;; install which-key if emacs < v30
 (use-package which-key
@@ -715,7 +718,7 @@
   :custom
   (colorful-use-prefix t)
   (colorful-only-strings 'only-prog)
-  (colorful-hghlight-in-comments t)
+  (colorful-highlight-in-comments t)
   (css-fontify-colors nil)
   :config
   (global-colorful-mode t)
@@ -938,6 +941,9 @@
 
 ;; Try to fix lsp mode's support for wgsl-ts-mode
 (add-to-list 'lsp-language-id-configuration '(wgsl-ts-mode . "wgsl"))
+
+(use-package hlsl-mode
+  :straight (:host github :repo "jcaw/hlsl-mode"))
 
 (use-package web-mode
   :mode "\\.html?\\'"

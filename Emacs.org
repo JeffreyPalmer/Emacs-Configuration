@@ -70,7 +70,8 @@ starting point.
         user-mail-address "jeffrey.palmer@acm.org")
 #+end_src
 
-* Startup Performance
+* General/Miscellany
+** Startup Performance
 Make startup faster by reducing the frequency of garbage collection
 and then use a hook to measure and report startup time.
 
@@ -87,16 +88,15 @@ and then use a hook to measure and report startup time.
                        gcs-done)))
 
 #+end_src
-
-* Package Management
-** package
+** Package Management
+*** package
 First of all we need to ensure that package isn't loaded at startup.
 
 #+begin_src emacs-lisp :tangle ~/.config/emacs/early-init.el
   (setq package-enable-at-startup nil)
 #+end_src
 
-** straight.el
+*** straight.el
 Now straight.el needs to be bootstrapped. This bootstrapping code is
 provided directly by the [[https://github.com/radian-software/straight.el][straight.el]] project.
 
@@ -127,7 +127,7 @@ provided directly by the [[https://github.com/radian-software/straight.el][strai
   ;; (require 'straight-x)
 #+end_src
 
-* Native Compilation
+** Native Compilation
 
 #+begin_src emacs-lisp
   ;; Silence native code compiler warnings, as they're pretty chatty
@@ -159,7 +159,7 @@ you DO need to set up the shell environment.
       (expand-file-name "var/eln-cache/" user-emacs-directory))))
 #+end_src
 
-* Keep runtime files out of .emacs.d
+** Keep runtime files out of .emacs.d
 
 #+begin_src emacs-lisp
   ;; Use no-littering to automatically set common paths to the new user-emacs-directory
@@ -178,7 +178,7 @@ you DO need to set up the shell environment.
 
 #+end_src
 
-* Allow periodic tasks to run during the day
+** Allow periodic tasks to run during the day
 This allows things like buffer cleanup to happen during the day
 instead of at midnight, when the computer is not typically on.
 
@@ -188,7 +188,7 @@ instead of at midnight, when the computer is not typically on.
     (midnight-delay-set 'midnight-delay "10:00am"))
 #+end_src
 
-* Auto-Reverting
+** Auto-Reverting
 #+begin_src emacs-lisp
   ;; Revert Dired and other buffers
   (setq global-auto-revert-non-file-buffers t)
@@ -196,15 +196,17 @@ instead of at midnight, when the computer is not typically on.
   ;; Revert buffers when the underlying file has changed
   (global-auto-revert-mode 1)
 #+end_src
-* Server Mode
+** Server Mode
 #+begin_src emacs-lisp
   (require 'server)
   (when (not (server-running-p)) (server-start))
 #+end_src
-* Built-In Packages
-** Transient
+** Built-In Packages
+*** Transient
 This is a built-in package, but we want the lastest released version, so override the built-in version here.
-(use-package transient)
+#+begin_src emacs-lisp
+  (use-package transient)
+#+end_src
 * Basic UI Configuration
 ** Generic Settings
 #+begin_src emacs-lisp
@@ -384,15 +386,14 @@ This configuration is for the built-in version of the modus themes:
 
 ** Modeline Improvements
 NOTE: The first time this configuration is loaded, the mode line icons
-will need to be installed via =M-x all-the-icons-install-fonts=.
+will need to be installed via =M-x nerd-icons-install-fonts=.
 
 #+begin_src emacs-lisp
-  (use-package all-the-icons)
   (use-package nerd-icons)
   (use-package doom-modeline
     :init (doom-modeline-mode 1)
     :custom ((doom-modeline-buffer-encoding nil)
-             (coom-modeline-display-default-persp-name t)
+             (doom-modeline-display-default-persp-name t)
              (doom-modeline-buffer-file-name-style 'relative-from-project)))
 #+end_src
 
@@ -442,18 +443,19 @@ only when in a windowed mode.
 #+end_src
 ** Emacs-Mac Keybinds
 #+begin_src emacs-lisp
-  ;; Keybindings for Mac Emacs
-  (global-set-key [(super a)] 'mark-whole-buffer)
-  (global-set-key [(super v)] 'yank)
-  (global-set-key [(super c)] 'kill-ring-save)
-  (global-set-key [(super s)] 'save-buffer)
-  (global-set-key [(super l)] 'goto-line)
-  (global-set-key [(super w)]
-                  (lambda () (interactive) (delete-window)))
-  (global-set-key [(super z)] 'undo)
+  (when (eq system-type 'darwin)
+    ;; Keybindings for Mac Emacs
+    (global-set-key [(super a)] 'mark-whole-buffer)
+    (global-set-key [(super v)] 'yank)
+    (global-set-key [(super c)] 'kill-ring-save)
+    (global-set-key [(super s)] 'save-buffer)
+    (global-set-key [(super l)] 'goto-line)
+    (global-set-key [(super w)]
+                    (lambda () (interactive) (delete-window)))
+    (global-set-key [(super z)] 'undo)
 
-  (setq mac-command-modifier 'super
-        mac-option-modifier 'meta)
+    (setq mac-command-modifier 'super
+          mac-option-modifier 'meta))
 #+end_src
 ** Which Key Support
 #+begin_src emacs-lisp
@@ -1220,7 +1222,7 @@ I'm now using [[https://github.com/DevelopmentCool2449/colorful-mode][colorful-m
     :custom
     (colorful-use-prefix t)
     (colorful-only-strings 'only-prog)
-    (colorful-hghlight-in-comments t)
+    (colorful-highlight-in-comments t)
     (css-fontify-colors nil)
     :config
     (global-colorful-mode t)
@@ -1611,6 +1613,13 @@ Try using a different WGSL mode that doesn't use treesitter.
     ;                  :activation-fn (lsp-activate-on "wgsl")
     ;                  :server-id "wgsl-ls"))
     )
+#+end_src
+*** HLSL
+HLSL is the shader language used in SDL3/DirectX.
+
+#+begin_src emacs-lisp
+  (use-package hlsl-mode
+    :straight (:host github :repo "jcaw/hlsl-mode"))
 #+end_src
 *** HTML/Svelte/Astro
 #+begin_src emacs-lisp
