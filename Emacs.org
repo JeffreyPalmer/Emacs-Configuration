@@ -29,6 +29,7 @@ Include these warnings at the top of both generated files so that I
 don't accidentally edit them.
 
 #+begin_src emacs-lisp
+  ;; ...  -*- lexical-binding: t -*-
   ;;
   ;; DO NOT EDIT!
   ;;
@@ -38,6 +39,7 @@ don't accidentally edit them.
 #+end_src
 
 #+begin_src emacs-lisp :tangle ~/.config/emacs/early-init.el
+  ;; ...  -*- lexical-binding: t -*-
   ;;
   ;; DO NOT EDIT!
   ;;
