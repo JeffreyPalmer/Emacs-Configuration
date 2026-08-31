@@ -1,3 +1,4 @@
+;; ...  -*- lexical-binding: t -*-
 ;;
 ;; DO NOT EDIT!
 ;;
@@ -623,6 +624,10 @@
 
 (save-place-mode 1)
 
+(when window-system
+  (add-hook 'prog-mode-hook
+            (lambda () (set-fill-column 140))))
+
 (define-key prog-mode-map (kbd "s-/") 'comment-line)
 
 (use-package move-text
@@ -679,6 +684,7 @@
   (show-paren-mode 0))
 
 (use-package paredit
+  :straight (paredit.el :type git :host github :repo "paredit/paredit.el")
   ;:diminish paredit-mode
   :hook
   ((clojure-mode cider-repl-mode emacs-lisp-mode lisp-mode lisp-interaction-mode) . enable-paredit-mode)
@@ -865,7 +871,7 @@
 (use-package slime
   :config
   (setq slime-lisp-implementations
-        '((qlot ("qlot" "exec" "ros" "-L" "sbcl/2.6.6" "run" "--" "--dynamic-space-size" "4096") :coding-system utf-8-unix)
+        '((qlot ("qlot" "exec" "ros" "run" "--" "--dynamic-space-size" "4096") :coding-system utf-8-unix)
           (sbcl ("sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix)
           ))
   (slime-setup '(slime-fancy slime-quicklisp slime-asdf slime-mrepl)))
