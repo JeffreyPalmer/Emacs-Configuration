@@ -1490,8 +1490,8 @@ I use [[https://github.com/joaotavora/sly][SLY]] - a fork of Slime that has some
     ;; Some of the packages that I use regularly require more memory
     :config
     (setq sly-lisp-implementations
-          '((qlot ("qlot" "exec" "ros" "-L" "sbcl/2.6.6" "run" "--" "--dynamic-space-size" "4096") :coding-system utf-8-unix)
-            (sbcl ("ros" "-L" "sbcl/2.6.6" "run" "--" "--dynamic-space-size" "4096") :coding-system utf-8-unix))
+          '((qlot ("qlot" "exec" "ros" "run" "--" "--dynamic-space-size" "4096") :coding-system utf-8-unix)
+            (sbcl ("ros" "run" "--" "--dynamic-space-size" "4096") :coding-system utf-8-unix))
           ))
 
   (use-package sly-asdf
