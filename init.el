@@ -871,8 +871,8 @@
 (use-package slime
   :config
   (setq slime-lisp-implementations
-        '((qlot ("qlot" "exec" "ros" "run" "--" "--dynamic-space-size" "4096") :coding-system utf-8-unix)
-          (sbcl ("sbcl" "--dynamic-space-size" "4096") :coding-system utf-8-unix)
+        '((qlot ("qlot" "exec" "ros" "run" "--" "--dynamic-space-size" "8192") :coding-system utf-8-unix)
+          (sbcl ("sbcl" "--dynamic-space-size" "8192") :coding-system utf-8-unix)
           ))
   (slime-setup '(slime-fancy slime-quicklisp slime-asdf slime-mrepl)))
 
