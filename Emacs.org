@@ -504,8 +504,9 @@ should fix that.
 
 Also install [[https://github.com/kickingvegas/casual-avy][casual-avy]] to make learning this package a little easier.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package casual-avy
+    :after org
     :bind ("C-M-g" . casual-avy-tmenu))
 #+end_src
 
@@ -1988,7 +1989,7 @@ Use beads.el to be able to interactively browse and edit a beads repo.
 ** Support org-capture
 This needs to come after we install and configure org, or else emacs
 will use the built-in version
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (require 'org-protocol)
 #+end_src
 ** Better Fonts
@@ -2114,6 +2115,7 @@ state is not great.
 #+begin_src emacs-lisp :tangle no
   (use-package org-roam
     :ensure t
+    :after org
     :init
     (setq org-roam-v2-ack t)
     :custom
@@ -2140,12 +2142,14 @@ state is not great.
 #+begin_src emacs-lisp
   ;; Install any required org-contrib libraries
   (use-package org-contrib
+    :after org
     :config
     (require 'org-checklist))
 #+end_src
 *** Add support for project review via org-review
 #+begin_src emacs-lisp
   (use-package org-review
+    :after org
     :bind
     (("C-c v" . org-review-insert-last-review)))
 #+end_src
@@ -2154,6 +2158,7 @@ state is not great.
   ;; FIXME: This is disabled for now
   ;; Add support for pomodoro time tracking
   (use-package org-pomodoro
+    :after org
     :bind
     ("s-p" . org-pomodoro)
     :config
@@ -2164,15 +2169,17 @@ state is not great.
 #+begin_src emacs-lisp
 
   ;; TODO: Enable this once org mode is fully set up
-  (require 'org-tempo)
-  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-  (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+  (with-eval-after-load "Org"
+    (require 'org-tempo)
+    (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+    (add-to-list 'org-structure-template-alist '("sh" . "src shell")))
 
 #+end_src
 *** Show org markup when inside of a formatted element
 Use [[https://github.com/awth13/org-appear][org-appear]] to get this behavior.
 #+begin_src emacs-lisp
   (use-package org-appear
+    :after org
     :hook (org-mode . org-appear-mode))
 #+end_src
 ** Auto-Tangle Configuration Files
@@ -2196,6 +2203,7 @@ more advanced than my current agenda views (probably not really
 necessary, tbh)
 #+begin_src emacs-lisp
   (use-package org-ql
+    :after org
     :straight (:host github
                :repo "alphapapa/org-ql"
                :files (:defaults (:exclude "helm-org-ql.el")))
@@ -2207,7 +2215,8 @@ necessary, tbh)
 ** Org-Chef
 Try out this package and see how it works.
 #+begin_src emacs-lisp
-  (use-package org-chef)
+  (use-package org-chef
+    :after org)
 #+end_src
 
 ** Org-Capture [DISABLED]
